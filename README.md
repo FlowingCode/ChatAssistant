@@ -1,22 +1,24 @@
-[![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/template-addon)
-[![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/app-layout-addon.svg)](https://vaadin.com/directory/component/template-addon)
-[![Build Status](https://jenkins.flowingcode.com/job/template-addon/badge/icon)](https://jenkins.flowingcode.com/job/template-addon)
+[![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/chat-assistant)
+[![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/app-layout-addon.svg)](https://vaadin.com/directory/component/chat-assistant)
+[![Build Status](https://jenkins.flowingcode.com/job/ChatAssistant-addon/badge/icon)](https://jenkins.flowingcode.com/job/ChatAssistant-addon)
 
-# Template Add-on
+# Chat Assistant Add-on
 
-This is a template project for building new Vaadin 24 add-ons
+Vaadin Addon that displays a chat assistant floating window using [wc-chatbot](https://github.com/yishiashia/wc-chatbot).
 
 ## Features
 
-* List the features of your add-on in here
+* Messages can be sent by the user or programmatically.
+* Listen for new messages written by the user.
+* Toggle the chat window on/off.
 
 ## Online demo
 
-[Online demo here](http://addonsv24.flowingcode.com/template)
+[Online demo here](http://addonsv24.flowingcode.com/chat-assistant)
 
 ## Download release
 
-[Available in Vaadin Directory](https://vaadin.com/directory/component/template-addon)
+[Available in Vaadin Directory](https://vaadin.com/directory/component/chat-assistant)
 
 ### Maven install
 
@@ -25,7 +27,7 @@ Add the following dependencies in your pom.xml file:
 ```xml
 <dependency>
    <groupId>org.vaadin.addons.flowingcode</groupId>
-   <artifactId>template-addon</artifactId>
+   <artifactId>chat-assistant</artifactId>
    <version>X.Y.Z</version>
 </dependency>
 ```
@@ -49,7 +51,7 @@ To see the demo, navigate to http://localhost:8080/
 
 ## Release notes
 
-See [here](https://github.com/FlowingCode/TemplateAddon/releases)
+See [here](https://github.com/FlowingCode/ChatAssistant/releases)
 
 ## Issue tracking
 
@@ -74,13 +76,30 @@ Then, follow these steps for creating a contibution:
 
 This add-on is distributed under Apache License 2.0. For license terms, see LICENSE.txt.
 
-TEMPLATE_ADDON is written by Flowing Code S.A.
+Chat Assistant is written by Flowing Code S.A.
 
 # Developer Guide
 
 ## Getting started
 
-Add your code samples in this section
+Simple example showing the basic options:
+
+	ChatAssistant chatAssistant = new ChatAssistant();
+	TextArea message = new TextArea();
+	message.setLabel("Enter a message from the assistant");
+	message.setSizeFull();
+	
+	Button chat = new Button("Chat");
+	chat.addClickListener(ev->{
+	  Message m = new Message(message.getValue(),false,false,0,false,new Sender("Assistant","1","https://ui-avatars.com/api/?name=Bot"));
+	  chatAssistant.sendMessage(m);
+	  message.clear();
+	});
+	chatAssistant.sendMessage(new Message("Hello, I am here to assist you",false,false,0,false,new Sender("Assistant","1","https://ui-avatars.com/api/?name=Bot")));
+	chatAssistant.toggle();
+	chatAssistant.addChatSentListener(ev->{
+		Notification.show(ev.getMessage());
+	});
 
 ## Special configuration when using Spring
 

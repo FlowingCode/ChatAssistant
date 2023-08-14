@@ -17,15 +17,22 @@
  * limitations under the License.
  * #L%
  */
-package com.flowingcode.vaadin.addons;
+package com.flowingcode.vaadin.addons.chatbot;
 
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.RouterLayout;
+import com.flowingcode.vaadin.addons.DemoLayout;
+import com.flowingcode.vaadin.addons.GithubLink;
+import com.flowingcode.vaadin.addons.demo.TabbedDemo;
+import com.vaadin.flow.router.ParentLayout;
+import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-public class DemoLayout extends Div implements RouterLayout {
+@ParentLayout(DemoLayout.class)
+@Route("chat-assistant")
+@GithubLink("https://github.com/FlowingCode/ChatAssistant")
+public class ChatAssistantDemoView extends TabbedDemo {
 
-  public DemoLayout() {
+  public ChatAssistantDemoView() {
+    addDemo(ChatAssistantDemo.class);
     setSizeFull();
   }
 }
