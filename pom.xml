@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.vaadin.addons.flowingcode</groupId>
-	<artifactId>template-addon</artifactId>
+	<artifactId>chat-assistant-addon</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>Template Add-on</name>
-	<description>Template Add-on for Vaadin Flow</description>
+	<name>Chat Assistant Add-on</name>
+	<description>Chat Assistant Add-on for Vaadin Flow</description>
 
 	<properties>
         <vaadin.version>24.1.2</vaadin.version>
@@ -19,7 +19,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<drivers.dir>${project.basedir}/drivers</drivers.dir>
 		<jetty.version>11.0.12</jetty.version>
-		<flowingcode.commons.demo.version>3.6.0</flowingcode.commons.demo.version>
+		<flowingcode.commons.demo.version>3.7.1</flowingcode.commons.demo.version>
 		<frontend.hotdeploy>true</frontend.hotdeploy>
 	</properties>
 
@@ -173,14 +173,6 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.1</version>
-					<configuration>
-						<useSystemClassLoader>false</useSystemClassLoader>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -242,7 +234,6 @@
 					<webApp>
 						<resourceBases>
 							<resourceBase>src/test/resources/META-INF/resources</resourceBase>
-							<resourceBase>src/main/resources/META-INF/resources</resourceBase>
 						</resourceBases>
 					</webApp>
 					<supportedPackagings>

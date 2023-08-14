@@ -1,6 +1,6 @@
 /*-
  * #%L
- * Template Add-on
+ * Chat Assistant Add-on
  * %%
  * Copyright (C) 2023 Flowing Code
  * %%
@@ -17,16 +17,10 @@
  * limitations under the License.
  * #L%
  */
+package com.flowingcode.vaadin.addons.chatbot.it.po;
 
-package com.flowingcode.vaadin.addons.template;
+import com.vaadin.testbench.TestBenchElement;
+import com.vaadin.testbench.elementsbase.Element;
 
-import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.html.Div;
-
-@SuppressWarnings("serial")
-@NpmPackage(value = "@polymer/paper-input", version = "3.2.1")
-@JsModule("@polymer/paper-input/paper-input.js")
-@Tag("paper-input")
-public class TemplateAddon extends Div {}
+@Element("chat-bubble")
+public class ChatBubbleElement extends TestBenchElement {}

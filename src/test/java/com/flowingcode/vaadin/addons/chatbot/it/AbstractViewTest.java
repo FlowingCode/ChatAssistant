@@ -1,15 +1,15 @@
 /*-
  * #%L
- * Template Add-on
+ * Chat Assistant Add-on
  * %%
  * Copyright (C) 2023 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.flowingcode.vaadin.addons.template.it;
+package com.flowingcode.vaadin.addons.chatbot.it;
 
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
@@ -47,8 +47,7 @@ public abstract class AbstractViewTest extends ParallelTest {
 
   private final String route;
 
-  @Rule
-  public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this, true);
+  @Rule public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this, true);
 
   public AbstractViewTest() {
     this("");
@@ -87,8 +86,7 @@ public abstract class AbstractViewTest extends ParallelTest {
   private static final String USE_HUB_PROPERTY = "test.use.hub";
 
   /**
-   * Returns whether we are using a test hub. This means that the starter is
-   * running tests in
+   * Returns whether we are using a test hub. This means that the starter is running tests in
    * Vaadin's CI environment, and uses TestBench to connect to the testing hub.
    *
    * @return whether we are using a test hub
