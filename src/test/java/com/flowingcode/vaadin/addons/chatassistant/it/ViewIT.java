@@ -18,7 +18,7 @@
  * #L%
  */
 
-package com.flowingcode.vaadin.addons.chatbot.it;
+package com.flowingcode.vaadin.addons.chatassistant.it;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;

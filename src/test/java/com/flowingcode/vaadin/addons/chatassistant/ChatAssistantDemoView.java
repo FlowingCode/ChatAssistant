@@ -17,20 +17,22 @@
  * limitations under the License.
  * #L%
  */
+package com.flowingcode.vaadin.addons.chatassistant;
 
-package com.flowingcode.vaadin.addons.chatbot;
-
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
+import com.flowingcode.vaadin.addons.DemoLayout;
+import com.flowingcode.vaadin.addons.GithubLink;
+import com.flowingcode.vaadin.addons.demo.TabbedDemo;
+import com.vaadin.flow.router.ParentLayout;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-@Route("")
-public class DemoView extends VerticalLayout implements BeforeEnterObserver {
+@ParentLayout(DemoLayout.class)
+@Route("chat-assistant")
+@GithubLink("https://github.com/FlowingCode/ChatAssistant")
+public class ChatAssistantDemoView extends TabbedDemo {
 
-  @Override
-  public void beforeEnter(BeforeEnterEvent event) {
-    event.forwardTo(ChatAssistantDemoView.class);
+  public ChatAssistantDemoView() {
+    addDemo(ChatAssistantDemo.class);
+    setSizeFull();
   }
 }

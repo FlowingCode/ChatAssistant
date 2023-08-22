@@ -17,10 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package com.flowingcode.vaadin.addons.chatbot.it;
+package com.flowingcode.vaadin.addons.chatassistant.it;
 
-import com.flowingcode.vaadin.addons.chatbot.it.po.ChatAssistantElement;
-import com.flowingcode.vaadin.addons.chatbot.it.po.ChatBubbleElement;
+import com.flowingcode.vaadin.addons.chatassistant.it.po.ChatAssistantElement;
+import com.flowingcode.vaadin.addons.chatassistant.it.po.ChatBubbleElement;
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
 import com.vaadin.flow.component.html.testbench.ParagraphElement;

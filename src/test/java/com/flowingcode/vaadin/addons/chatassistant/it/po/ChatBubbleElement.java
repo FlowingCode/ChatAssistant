@@ -17,10 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package com.flowingcode.vaadin.addons.chatbot.it.po;
+package com.flowingcode.vaadin.addons.chatassistant.it.po;
 
 import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.elementsbase.Element;
 
-@Element("chat-bot")
-public class ChatAssistantElement extends TestBenchElement {}
+@Element("chat-bubble")
+public class ChatBubbleElement extends TestBenchElement {}

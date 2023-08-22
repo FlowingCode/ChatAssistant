@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.flowingcode.vaadin.addons.chatbot.test;
+package com.flowingcode.vaadin.addons.chatassistant.test;
 
 import com.flowingcode.vaadin.addons.chatassistant.ChatAssistant;
 import java.io.ByteArrayInputStream;
