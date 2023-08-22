@@ -4,7 +4,7 @@
 
 # Chat Assistant Add-on
 
-Vaadin Addon that displays a chat assistant floating window using [wc-chatbot](https://github.com/yishiashia/wc-chatbot).
+Vaadin Add-on that displays a chat assistant floating window using [wc-chatbot](https://github.com/yishiashia/wc-chatbot).
 
 ## Features
 
