@@ -101,7 +101,7 @@ public class ChatAssistant extends Div {
    * message is sent by the user or programmatically.
    *
    * @param listener
-   * @return Registration object to allow removing the listener.
+   * @return Registration object to allow removing the listener
    */
   public Registration addChatSentListener(ComponentEventListener<ChatSentEvent> listener) {
     return addListener(ChatSentEvent.class, listener);
