@@ -76,7 +76,7 @@ Then, follow these steps for creating a contibution:
 
 This add-on is distributed under Apache License 2.0. For license terms, see LICENSE.txt.
 
-Chat Assistant is written by Flowing Code S.A.
+Chat Assistant Add-on is written by Flowing Code S.A.
 
 # Developer Guide
 
