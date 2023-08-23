@@ -33,7 +33,7 @@ import org.junit.Test;
 public class BasicIT extends AbstractViewTest {
 
   @Test
-  public void sendMessageTest() {
+  public void sendMessageFromUser() {
     ChatAssistantElement element = $(ChatAssistantElement.class).first();
     TestBenchElement input = element.$(TestBenchElement.class).id("msg-input");
     input.sendKeys("hello");
@@ -41,12 +41,16 @@ public class BasicIT extends AbstractViewTest {
     button.click();
     String notificationMessage = $(NotificationElement.class).waitForFirst().getText();
     Assert.assertEquals("hello", notificationMessage);
-
+  }
+  
+  @Test
+  public void sendMessageFromAssistant() {
+    ChatAssistantElement element = $(ChatAssistantElement.class).first();
     TextAreaElement ta = $(TextAreaElement.class).first();
     ta.setValue("What can I do for you?");
     ButtonElement chatButton = $(ButtonElement.class).first();
     chatButton.click();
-    ChatBubbleElement cb = element.$(ChatBubbleElement.class).get(2);
+    ChatBubbleElement cb = element.$(ChatBubbleElement.class).get(1);
     String chat = cb.$(ParagraphElement.class).first().getText();
     Assert.assertEquals("What can I do for you?", chat);
   }
