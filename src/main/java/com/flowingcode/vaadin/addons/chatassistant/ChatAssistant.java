@@ -115,13 +115,13 @@ public class ChatAssistant extends Div {
   @DomEvent("sent")
   public static class ChatSentEvent extends ComponentEvent<ChatAssistant> {
     private final String message;
-    private Boolean right;
+    private boolean right;
 
     public ChatSentEvent(
         ChatAssistant source,
         boolean fromClient,
         @EventData("event.detail.message.message") String message,
-        @EventData("event.detail.message.right") Boolean right) {
+        @EventData("event.detail.message.right") boolean right) {
       super(source, fromClient);
       this.message = message.replaceAll("^<[^>]+>|<[^>]+>$", "");
       this.right = right;
@@ -131,7 +131,7 @@ public class ChatAssistant extends Div {
       return message;
     }
 
-    public Boolean isRight() {
+    public boolean isRight() {
       return right;
     }
 
