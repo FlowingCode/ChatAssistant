@@ -134,9 +134,5 @@ public class ChatAssistant extends Div {
     public boolean isRight() {
       return right;
     }
-
-    public ChatAssistant getChatBot() {
-      return (ChatAssistant) source;
-    }
   }
 }
