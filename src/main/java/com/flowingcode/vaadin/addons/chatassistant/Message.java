@@ -54,10 +54,10 @@ public class Message {
 
   public Message(
       String content,
-      Boolean continued,
-      Boolean right,
+      boolean continued,
+      boolean right,
       Integer delay,
-      Boolean loading,
+      boolean loading,
       Sender sender) {
     super();
     this.content = content;
