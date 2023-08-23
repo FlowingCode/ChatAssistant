@@ -29,7 +29,7 @@
   chat-bot::part(chat-bubble) {
     --chat-bubble-color: var(--lumo-success-color);
     --chat-bubble-right-color: white;
-    --chat-bubble-font-color: white;;
+    --chat-bubble-font-color: white;
     --chat-bubble-font-right-color: var(--lumo-contrast-90pct);
     --chat-bubble-avatar-color: var(--lumo-secondary-color);
     --chat-bubble-delay: 0.2s;
