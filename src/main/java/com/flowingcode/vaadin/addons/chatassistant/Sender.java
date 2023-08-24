@@ -19,6 +19,14 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import java.util.Optional;
+import elemental.json.Json;
+import elemental.json.JsonObject;
+import elemental.json.JsonValue;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Class that represents a chat message sender:
  *
@@ -30,40 +38,13 @@ package com.flowingcode.vaadin.addons.chatassistant;
  *
  * @author mmlopez
  */
+@Getter
+@Setter
+@Builder
 public class Sender {
 
   private String name;
   private String id;
   private String avatar;
-
-  public Sender(String name, String id, String avatar) {
-    super();
-    this.name = name;
-    this.id = id;
-    this.avatar = avatar;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getAvatar() {
-    return avatar;
-  }
-
-  public void setAvatar(String avatar) {
-    this.avatar = avatar;
-  }
+  
 }

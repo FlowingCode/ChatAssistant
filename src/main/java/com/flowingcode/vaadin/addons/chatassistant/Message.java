@@ -19,6 +19,13 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import java.util.Optional;
+import elemental.json.Json;
+import elemental.json.JsonObject;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Class that represents a chat message. It contains several configurations to control the
  * appearance of the message, such as:
@@ -33,86 +40,17 @@ package com.flowingcode.vaadin.addons.chatassistant;
  *
  * @author mmlopez
  */
+@Getter
+@Setter
+@Builder
 public class Message {
 
   private String content;
   private boolean continued;
   private boolean right;
+  @Builder.Default
   private Integer delay = 0;
   private boolean loading;
   private Sender sender;
 
-  public Message(String content) {
-    this(
-        content,
-        false,
-        true,
-        0,
-        false,
-        new Sender("Guest", "2", "https://ui-avatars.com/api/?name=Guest"));
-  }
-
-  public Message(
-      String content,
-      boolean continued,
-      boolean right,
-      Integer delay,
-      boolean loading,
-      Sender sender) {
-    super();
-    this.content = content;
-    this.continued = continued;
-    this.right = right;
-    this.delay = delay;
-    this.loading = loading;
-    this.sender = sender;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
-
-  public boolean isContinued() {
-    return continued;
-  }
-
-  public void setContinued(boolean continued) {
-    this.continued = continued;
-  }
-
-  public boolean isRight() {
-    return right;
-  }
-
-  public void setRight(boolean right) {
-    this.right = right;
-  }
-
-  public Integer getDelay() {
-    return delay;
-  }
-
-  public void setDelay(Integer delay) {
-    this.delay = delay;
-  }
-
-  public boolean isLoading() {
-    return loading;
-  }
-
-  public void setLoading(boolean loading) {
-    this.loading = loading;
-  }
-
-  public Sender getSender() {
-    return sender;
-  }
-
-  public void setSender(Sender sender) {
-    this.sender = sender;
-  }
 }
