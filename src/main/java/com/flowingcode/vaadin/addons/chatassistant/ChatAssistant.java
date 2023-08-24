@@ -51,7 +51,7 @@ public class ChatAssistant extends Div {
    * @param message
    */
   public void sendMessage(String message) {
-    sendMessage(new Message(message));
+    sendMessage(Message.builder().content(message).build());
   }
 
   /** Shows or hides the chat window */
