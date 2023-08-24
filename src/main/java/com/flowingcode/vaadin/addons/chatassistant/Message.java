@@ -52,5 +52,16 @@ public class Message {
   private Integer delay = 0;
   private boolean loading;
   private Sender sender;
+  
+  public JsonObject getJsonObject() {
+    JsonObject result = Json.createObject();
+    result.put("message", content);
+    result.put("continued", continued);
+    result.put("right", right);
+    Optional.ofNullable(delay).ifPresent(value->result.put("delay", delay));
+    result.put("loading", loading);
+    Optional.ofNullable(sender).ifPresent(value->result.put("sender", sender.getJsonObject()));
+    return result;
+  }
 
 }
