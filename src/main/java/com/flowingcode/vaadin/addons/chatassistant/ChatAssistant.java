@@ -67,33 +67,7 @@ public class ChatAssistant extends Div {
   public void sendMessage(Message message) {
     getElement()
         .executeJs(
-            "setTimeout(() => { this.sendMessage('"
-                + message.getContent()
-                + "', {\n"
-                + "  continued: "
-                + message.isContinued()
-                + ",\n"
-                + "  right: "
-                + message.isRight()
-                + ",\n"
-                + "  delay: "
-                + message.getDelay()
-                + ",\n"
-                + "  loading: "
-                + message.isLoading()
-                + ",\n"
-                + "  sender: {\n"
-                + "    name: '"
-                + message.getSender().getName()
-                + "',\n"
-                + "    id: '"
-                + message.getSender().getId()
-                + "',\n"
-                + "    avatar: '"
-                + message.getSender().getAvatar()
-                + "'\n"
-                + "  }\n"
-                + "}) });");
+            "setTimeout(() => {debugger;this.sendMessage(null, JSON.parse($0));})", message.getJsonObject().toJson());
   }
 
   /**
