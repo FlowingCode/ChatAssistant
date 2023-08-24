@@ -51,7 +51,7 @@ public class BasicIT extends AbstractViewTest {
     ButtonElement chatButton = $(ButtonElement.class).first();
     chatButton.click();
     ChatBubbleElement cb = element.$(ChatBubbleElement.class).get(1);
-    String chat = cb.$(ParagraphElement.class).first().getText();
+    String chat = cb.getText();
     Assert.assertEquals("What can I do for you?", chat);
   }
 }
