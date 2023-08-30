@@ -4,7 +4,7 @@
 
 	<groupId>org.vaadin.addons.flowingcode</groupId>
 	<artifactId>chat-assistant-addon</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>Chat Assistant Add-on</name>
 	<description>Chat Assistant Add-on for Vaadin Flow</description>
 
@@ -39,7 +39,7 @@
 		<url>https://github.com/FlowingCode/ChatAssistant</url>
 		<connection>scm:git:git://github.com/FlowingCode/ChatAssistant.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com:/FlowingCode/ChatAssistant.git</developerConnection>
-		<tag>chat-assistant-addon-1.0.0</tag>
+		<tag>master</tag>
 	</scm>
 
         <developers>
