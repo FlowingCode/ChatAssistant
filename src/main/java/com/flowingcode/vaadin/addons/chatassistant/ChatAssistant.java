@@ -67,7 +67,7 @@ public class ChatAssistant extends Div {
   public void sendMessage(Message message) {
     getElement()
         .executeJs(
-            "setTimeout(() => {debugger;this.sendMessage(null, JSON.parse($0));})", message.getJsonObject().toJson());
+            "setTimeout(() => {this.sendMessage(null, JSON.parse($0));})", message.getJsonObject().toJson());
   }
 
   /**
