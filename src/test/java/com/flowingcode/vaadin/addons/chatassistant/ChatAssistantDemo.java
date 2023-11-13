@@ -52,12 +52,11 @@ public class ChatAssistantDemo extends VerticalLayout {
     chatAssistant.sendMessage(Message.builder().content("Hello, I am here to assist you")
         .sender(Sender.builder().name("Assistant").id("1").avatar("chatbot.png").build()).build());
     chatAssistant.toggle();
-    chatAssistant.addChatSentListener(
-        ev -> {
-          if (ev.isRight()) {
-            Notification.show(ev.getMessage());
-          }
-        });
+    chatAssistant.addChatSentListener(ev -> {
+      if (ev.isRight()) {
+        Notification.show(ev.getMessage());
+      }
+    });
 
     add(message, chat, chatAssistant);
   }
