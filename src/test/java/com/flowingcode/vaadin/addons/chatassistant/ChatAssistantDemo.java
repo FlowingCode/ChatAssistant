@@ -19,9 +19,6 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant;
 
-import com.flowingcode.vaadin.addons.chatassistant.ChatAssistant;
-import com.flowingcode.vaadin.addons.chatassistant.Message;
-import com.flowingcode.vaadin.addons.chatassistant.Sender;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -45,27 +42,15 @@ public class ChatAssistantDemo extends VerticalLayout {
     message.setSizeFull();
 
     Button chat = new Button("Chat");
-    chat.addClickListener(
-        ev -> {
-          Message m =
-              new Message(
-                  message.getValue(),
-                  false,
-                  false,
-                  0,
-                  false,
-                  new Sender("Assistant", "1", "chatbot.png"));
-          chatAssistant.sendMessage(m);
-          message.clear();
-        });
-    chatAssistant.sendMessage(
-        new Message(
-            "Hello, I am here to assist you",
-            false,
-            false,
-            0,
-            false,
-            new Sender("Assistant", "1", "chatbot.png")));
+    chat.addClickListener(ev -> {
+      Message m = Message.builder().content(message.getValue())
+          .sender(Sender.builder().name("Assistant").id("1").avatar("chatbot.png").build()).build();
+
+      chatAssistant.sendMessage(m);
+      message.clear();
+    });
+    chatAssistant.sendMessage(Message.builder().content("Hello, I am here to assist you")
+        .sender(Sender.builder().name("Assistant").id("1").avatar("chatbot.png").build()).build());
     chatAssistant.toggle();
     chatAssistant.addChatSentListener(
         ev -> {
