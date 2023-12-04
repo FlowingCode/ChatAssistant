@@ -20,6 +20,7 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.demo.DemoSource;
+import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.notification.Notification;
@@ -28,7 +29,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@DemoSource
+@DemoSource(sourcePosition = SourcePosition.PRIMARY)
 @PageTitle("Chat Assistant Add-on Demo")
 @SuppressWarnings("serial")
 @Route(value = "chat-assistant/basic-demo", layout = ChatAssistantDemoView.class)
