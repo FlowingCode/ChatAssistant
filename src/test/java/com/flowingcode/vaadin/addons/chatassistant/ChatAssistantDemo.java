@@ -30,7 +30,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @DemoSource(sourcePosition = SourcePosition.PRIMARY)
-@PageTitle("Chat Assistant Add-on Demo")
+@PageTitle("Basic Demo")
 @SuppressWarnings("serial")
 @Route(value = "chat-assistant/basic-demo", layout = ChatAssistantDemoView.class)
 @CssImport("./styles/chat-assistant-styles-demo.css")
