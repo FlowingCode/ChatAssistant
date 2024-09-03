@@ -20,6 +20,7 @@
 
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
@@ -43,6 +44,9 @@ import com.vaadin.flow.shared.Registration;
 @CssImport("./styles/chat-assistant-styles.css")
 @Tag("chat-bot")
 public class ChatAssistant extends Div {
+  
+  private Component headerComponent;
+  private Component footerComponent;
 
   /**
    * Sends a message represented by the string message programmatically to the component, with
@@ -109,4 +113,25 @@ public class ChatAssistant extends Div {
       return right;
     }
   }
+  
+  public void setHeaderComponent(Component component) {
+    this.headerComponent = component;
+    this.getElement().executeJs("return;").then((ev) -> this.getElement()
+        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chatbot-header", "<slot name='header'></slot>"));
+    component.getElement().setAttribute("slot", "header");
+    this.add(headerComponent);
+  }
+  
+  public Component getHeaderComponent() {
+    return headerComponent;
+  }
+  
+  public void setFooterComponent(Component component) {
+    this.footerComponent = component;
+    this.getElement().executeJs("return;").then((ev) -> this.getElement()
+        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chat-footer", "<slot name='footer'></slot>"));
+    component.getElement().setAttribute("slot", "footer");
+    this.add(footerComponent);
+  }
+  
 }
