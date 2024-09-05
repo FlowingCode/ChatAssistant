@@ -21,6 +21,8 @@ package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
+import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
@@ -40,9 +42,12 @@ import com.vaadin.flow.router.Route;
 @Route(value = "chat-assistant/customized-demo", layout = ChatAssistantDemoView.class)
 @CssImport("./styles/chat-assistant-styles-demo.css")
 public class CustomizedChatAssistantDemo extends VerticalLayout {
+  
+  private Message delayedMessage;
+  private ChatAssistant chatAssistant;
 
   public CustomizedChatAssistantDemo() {
-    ChatAssistant chatAssistant = new ChatAssistant();
+    chatAssistant = new ChatAssistant();
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");
     message.setSizeFull();
@@ -53,6 +58,17 @@ public class CustomizedChatAssistantDemo extends VerticalLayout {
           .sender(Sender.builder().name("Assistant").id("1").avatar("chatbot.png").build()).build();
 
       chatAssistant.sendMessage(m);
+      message.clear();
+    });
+    Button chatWithThinking = new Button("Chat With Thinking");
+    chatWithThinking.addClickListener(ev -> {
+      Message m = Message.builder().loading(true)
+          .sender(Sender.builder().name("Assistant").id("3").avatar("chatbot.png").build()).build();
+      delayedMessage = Message.builder().content(message.getValue()).continued(false)
+          .sender(Sender.builder().name("Assistant").id("1").avatar("chatbot.png").build()).build();
+
+      chatAssistant.sendMessage(m);
+      this.getElement().executeJs("setTimeout(()=>{this.$server.sendDelayedMessage();}, 5000)");
       message.clear();
     });
     chatAssistant.sendMessage(Message.builder().content("Hello, I am here to assist you")
@@ -81,10 +97,25 @@ public class CustomizedChatAssistantDemo extends VerticalLayout {
     button.addClickListener(ev->{
       Message m = Message.builder().content(messageTF.getValue()).right(true).build();
       chatAssistant.sendMessage(m);
+      messageTF.clear();
+    });
+    messageTF.addKeyPressListener(Key.ENTER, ev->{
+      button.click();
+      messageTF.clear();
     });
     footer.add(messageTF,button);
     chatAssistant.setFooterComponent(footer);
 
-    add(message, chat, chatAssistant);
+    add(message, chat, chatWithThinking, chatAssistant);
   }
+  
+  @ClientCallable
+  public void sendDelayedMessage() {
+    if (delayedMessage!= null) {
+      chatAssistant.sendMessage(delayedMessage);
+      chatAssistant.hideLastLoading();
+      delayedMessage = null;
+    }
+  }
+  
 }
