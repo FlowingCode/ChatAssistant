@@ -39,7 +39,7 @@ import com.vaadin.flow.shared.Registration;
  * @author mmlopez
  */
 @SuppressWarnings("serial")
-@NpmPackage(value = "wc-chatbot", version = "0.1.1")
+@NpmPackage(value = "wc-chatbot", version = "0.2.0")
 @JsModule("wc-chatbot/dist/wc-chatbot.js")
 @CssImport("./styles/chat-assistant-styles.css")
 @Tag("chat-bot")
