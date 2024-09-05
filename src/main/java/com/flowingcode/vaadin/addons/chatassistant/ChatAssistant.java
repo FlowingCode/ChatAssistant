@@ -114,6 +114,10 @@ public class ChatAssistant extends Div {
     }
   }
   
+  /**
+   * Sets a Vaadin component as a replacement for the header of the chat
+   * @param component
+   */
   public void setHeaderComponent(Component component) {
     this.headerComponent = component;
     this.getElement().executeJs("return;").then((ev) -> this.getElement()
@@ -122,10 +126,18 @@ public class ChatAssistant extends Div {
     this.add(headerComponent);
   }
   
+  /**
+   * Returns the current Vaadin component configured as a replacement for the header of the chat
+   * @return
+   */
   public Component getHeaderComponent() {
     return headerComponent;
   }
   
+  /**
+   * Sets a Vaadin component as a replacement for the footer of the chat
+   * @param component
+   */
   public void setFooterComponent(Component component) {
     this.footerComponent = component;
     this.getElement().executeJs("return;").then((ev) -> this.getElement()
