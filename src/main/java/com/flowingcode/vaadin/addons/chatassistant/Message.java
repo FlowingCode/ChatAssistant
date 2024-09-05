@@ -45,7 +45,8 @@ import lombok.Setter;
 @Builder
 public class Message {
 
-  private String content;
+  @Builder.Default
+  private String content = "";
   private boolean continued;
   private boolean right;
   @Builder.Default
