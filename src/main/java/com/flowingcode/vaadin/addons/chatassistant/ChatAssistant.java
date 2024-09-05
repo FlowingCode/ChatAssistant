@@ -20,6 +20,7 @@
 
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
@@ -38,11 +39,14 @@ import com.vaadin.flow.shared.Registration;
  * @author mmlopez
  */
 @SuppressWarnings("serial")
-@NpmPackage(value = "wc-chatbot", version = "0.1.1")
+@NpmPackage(value = "wc-chatbot", version = "0.2.0")
 @JsModule("wc-chatbot/dist/wc-chatbot.js")
 @CssImport("./styles/chat-assistant-styles.css")
 @Tag("chat-bot")
 public class ChatAssistant extends Div {
+  
+  private Component headerComponent;
+  private Component footerComponent;
 
   /**
    * Sends a message represented by the string message programmatically to the component, with
@@ -109,4 +113,45 @@ public class ChatAssistant extends Div {
       return right;
     }
   }
+  
+  /**
+   * Sets a Vaadin component as a replacement for the header of the chat
+   * @param component
+   */
+  public void setHeaderComponent(Component component) {
+    this.headerComponent = component;
+    this.getElement().executeJs("return;").then((ev) -> this.getElement()
+        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chatbot-header", "<slot name='header'></slot>"));
+    component.getElement().setAttribute("slot", "header");
+    this.add(headerComponent);
+  }
+  
+  /**
+   * Returns the current Vaadin component configured as a replacement for the header of the chat
+   * @return
+   */
+  public Component getHeaderComponent() {
+    return headerComponent;
+  }
+  
+  /**
+   * Sets a Vaadin component as a replacement for the footer of the chat
+   * @param component
+   */
+  public void setFooterComponent(Component component) {
+    this.footerComponent = component;
+    this.getElement().executeJs("return;").then((ev) -> this.getElement()
+        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chat-footer", "<slot name='footer'></slot>"));
+    component.getElement().setAttribute("slot", "footer");
+    this.add(footerComponent);
+  }
+  
+  /**
+   * Returns the current Vaadin component configured as a replacement for the footer of the chat
+   * @return
+   */
+  public Component getFooterComponent() {
+    return footerComponent;
+  }
+  
 }
