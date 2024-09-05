@@ -62,6 +62,29 @@ public class ChatAssistant extends Div {
   public void toggle() {
     getElement().executeJs("setTimeout(() => {this.toggle();})");
   }
+  
+  /**
+   * This method is used to remove a specific loading bubble from the chat UI.
+   * 
+   * @param index The index of the chat-bubble element to be removed.
+   */
+  public void hideLoading(int index) {
+    getElement().executeJs("setTimeout(() => {this.hideLoading($0);})", index);
+  }
+  
+  /**
+   * This method is used to remove all loading bubbles from the chat UI.
+   */
+  public void hideAllLoading() {
+    getElement().executeJs("setTimeout(() => {this.hideAllLoading();})");
+  }
+  
+  /**
+   * This method is used to remove the last loading bubble from the chat UI.
+   */
+  public void hideLastLoading() {
+    getElement().executeJs("setTimeout(() => {this.hideLastLoading();})");
+  }
 
   /**
    * Sends a message to the component, by using the supplied Message object.
@@ -153,5 +176,6 @@ public class ChatAssistant extends Div {
   public Component getFooterComponent() {
     return footerComponent;
   }
+  
   
 }
