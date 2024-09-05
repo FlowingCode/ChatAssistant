@@ -134,4 +134,12 @@ public class ChatAssistant extends Div {
     this.add(footerComponent);
   }
   
+  /**
+   * Returns the current Vaadin component configured as a replacement for the footer of the chat
+   * @return
+   */
+  public Component getFooterComponent() {
+    return footerComponent;
+  }
+  
 }
