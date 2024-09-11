@@ -22,11 +22,9 @@ package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.DomEvent;
-import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -36,7 +34,6 @@ import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,13 +64,6 @@ public class ChatAssistant extends Div {
 
   public ChatAssistant(List<Message> messages) {
     this.messages = messages;
-    this.getElement().executeJs("return;").then(
-        (ev) -> this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
-            ".chatbot-body", "<slot name='content'></slot>"));
-    this.getElement().executeJs("return;")
-        .then((ev) -> this.getElement().executeJs(
-            "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
-            ".chatbot-body"));
     content.getElement().setAttribute("slot", "content");
     content.setItems(messages);
 
@@ -92,6 +82,22 @@ public class ChatAssistant extends Div {
   
   public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
     return messageInput.addSubmitListener(listener);
+  }
+  
+  protected void onAttach(AttachEvent attachEvent) {
+    this.getElement().executeJs("return;").then(
+        (ev) -> this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
+            ".chatbot-body", "<slot name='content'></slot>"));
+    this.getElement().executeJs("return;")
+        .then((ev) -> this.getElement().executeJs(
+            "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
+            ".chatbot-body"));
+    if (footerComponent!=null) {
+      this.setFooterComponent(footerComponent);
+    }
+    if (headerComponent!=null) {
+      this.setHeaderComponent(headerComponent);
+    }
   }
 
   /**
