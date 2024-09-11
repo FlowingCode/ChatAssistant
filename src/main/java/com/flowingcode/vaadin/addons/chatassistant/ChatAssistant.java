@@ -115,6 +115,11 @@ public class ChatAssistant extends Div {
     this.whoIsTyping.setVisible(false);
   }
   
+  /**
+   * Adds a SubmitListener that will be notified when the user submits a message on the underlying messageInput
+   * @param listener
+   * @return
+   */
   public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
     return messageInput.addSubmitListener(listener);
   }
