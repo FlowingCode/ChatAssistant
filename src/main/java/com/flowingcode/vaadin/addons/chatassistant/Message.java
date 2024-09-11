@@ -19,9 +19,12 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant;
 
-import java.util.Optional;
 import elemental.json.Json;
 import elemental.json.JsonObject;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,13 +48,17 @@ import lombok.Setter;
 @Builder
 public class Message {
 
-  private String content;
+  @Builder.Default
+  private UUID id = UUID.randomUUID();
+  @Builder.Default
+  private String content = "";
   private boolean continued;
   private boolean right;
   @Builder.Default
   private Integer delay = 0;
   private boolean loading;
   private Sender sender;
+  private LocalDateTime messageTime;
   
   public JsonObject getJsonObject() {
     JsonObject result = Json.createObject();
@@ -62,6 +69,23 @@ public class Message {
     result.put("loading", loading);
     Optional.ofNullable(sender).ifPresent(value->result.put("sender", sender.getJsonObject()));
     return result;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Message other = (Message) obj;
+    return Objects.equals(id, other.id);
   }
 
 }
