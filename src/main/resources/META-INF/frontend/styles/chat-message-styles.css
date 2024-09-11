@@ -61,3 +61,11 @@
     transform: translate(24px, 0);
   }
 }
+
+.chat-assistant-who-is-typing {
+	width: 100%;
+    padding: var(--lumo-space-xs);
+    font-size: var(--lumo-font-size-xs);
+    font-family: var(--lumo-font-family);
+    color: var(--lumo-secondary-text-color);
+}
