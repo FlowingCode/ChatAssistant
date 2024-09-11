@@ -20,6 +20,8 @@
 
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import com.flowingcode.vaadin.addons.chatassistant.model.Message;
+import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -30,7 +32,15 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
+import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component that allows to create a floating chat button that will open a chat window that can be
@@ -47,6 +57,42 @@ public class ChatAssistant extends Div {
   
   private Component headerComponent;
   private Component footerComponent;
+  private VirtualList<Message> content = new VirtualList<>();
+  private List<Message> messages;
+  private MessageInput messageInput;
+  
+  public ChatAssistant() {
+    this(new ArrayList<>());
+  }
+
+  public ChatAssistant(List<Message> messages) {
+    this.messages = messages;
+    this.getElement().executeJs("return;").then(
+        (ev) -> this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
+            ".chatbot-body", "<slot name='content'></slot>"));
+    this.getElement().executeJs("return;")
+        .then((ev) -> this.getElement().executeJs(
+            "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
+            ".chatbot-body"));
+    content.getElement().setAttribute("slot", "content");
+    content.setItems(messages);
+
+    content.setRenderer(new ComponentRenderer<ChatMessage, Message>(
+        message -> new ChatMessage(message), (component, message) -> {
+          ((ChatMessage) component).setMessage(message);
+          return component;
+        }));
+    this.add(content);
+    messageInput = new MessageInput();
+    messageInput.addSubmitListener(
+        se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
+            .sender(Sender.builder().name("User").build()).content(se.getValue()).build()));
+    this.setFooterComponent(messageInput);
+  }
+  
+  public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
+    return messageInput.addSubmitListener(listener);
+  }
 
   /**
    * Sends a message represented by the string message programmatically to the component, with
@@ -55,67 +101,39 @@ public class ChatAssistant extends Div {
    * @param message
    */
   public void sendMessage(String message) {
-    sendMessage(Message.builder().content(message).build());
-  }
-
-  /** Shows or hides the chat window */
-  public void toggle() {
-    getElement().executeJs("setTimeout(() => {this.toggle();})");
+    messages.add(Message.builder().content(message).build());
+    content.getDataProvider().refreshAll();
+    content.scrollToEnd();
   }
 
   /**
-   * Sends a message to the component, by using the supplied Message object.
+   * Sends a message programmatically to the component
    *
    * @param message
    */
   public void sendMessage(Message message) {
-    getElement()
-        .executeJs(
-            "setTimeout(() => {this.sendMessage(null, JSON.parse($0));})", message.getJsonObject().toJson());
-  }
-
-  /**
-   * Adds a listener that will be notified when the ChatSentEvent is fired, allowing to react when a
-   * message is sent by the user or programmatically.
-   *
-   * @param listener
-   * @return Registration object to allow removing the listener
-   */
-  public Registration addChatSentListener(ComponentEventListener<ChatSentEvent> listener) {
-    return addListener(ChatSentEvent.class, listener);
-  }
-
-  /**
-   * Event that represents a chat being sent to the component.
-   *
-   * @author mmlopez
-   */
-  @DomEvent("sent")
-  public static class ChatSentEvent extends ComponentEvent<ChatAssistant> {
-    private final String message;
-    private boolean right;
-
-    public ChatSentEvent(
-        ChatAssistant source,
-        boolean fromClient,
-        @EventData("event.detail.message.message") String message,
-        @EventData("event.detail.message.right") boolean right) {
-      super(source, fromClient);
-      this.message = message.replaceAll("^<[^>]+>|<[^>]+>$", "");
-      this.right = right;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-
-    public boolean isRight() {
-      return right;
-    }
+    messages.add(message);
+    content.getDataProvider().refreshAll();
+    content.scrollToEnd();
   }
   
   /**
-   * Sets a Vaadin component as a replacement for the header of the chat
+   * Updates a message
+   * @param message
+   */
+  public void updateMessage(Message message) {
+    this.content.getDataProvider().refreshItem(message);
+  }
+
+  /**
+   * Shows or hides chat assistant
+   */
+  public void toggle() {
+    getElement().executeJs("setTimeout(() => {this.toggle();})");
+  }
+  
+  /**
+   * Sets a component as a replacement for the header of the chat
    * @param component
    */
   public void setHeaderComponent(Component component) {
@@ -127,7 +145,7 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Returns the current Vaadin component configured as a replacement for the header of the chat
+   * Returns the current component configured as a replacement for the header of the chat
    * @return
    */
   public Component getHeaderComponent() {
@@ -153,5 +171,6 @@ public class ChatAssistant extends Div {
   public Component getFooterComponent() {
     return footerComponent;
   }
+  
   
 }

@@ -19,6 +19,7 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant;
 
+import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.vaadin.flow.component.button.Button;
