@@ -23,6 +23,7 @@ import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -50,6 +51,12 @@ public class ChatAssistantDemo extends VerticalLayout {
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");
     message.setSizeFull();
+    message.addKeyPressListener(ev->{
+      if (Strings.isNullOrEmpty(chatAssistant.getWhoIsTyping())) {
+        chatAssistant.setWhoIsTyping("Assistant is generating an answer ...");
+      }
+    });
+    message.addBlurListener(ev->chatAssistant.clearWhoIsTyping());
 
     Button chat = new Button("Chat");
     chat.addClickListener(ev -> {

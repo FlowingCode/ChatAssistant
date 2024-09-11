@@ -30,8 +30,10 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.shared.Registration;
@@ -57,6 +59,7 @@ public class ChatAssistant extends Div {
   private VirtualList<Message> content = new VirtualList<>();
   private List<Message> messages;
   private MessageInput messageInput;
+  private Span whoIsTyping;
   
   public ChatAssistant() {
     this(new ArrayList<>());
@@ -77,7 +80,39 @@ public class ChatAssistant extends Div {
     messageInput.addSubmitListener(
         se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
             .sender(Sender.builder().name("User").build()).content(se.getValue()).build()));
-    this.setFooterComponent(messageInput);
+    whoIsTyping = new Span();
+    whoIsTyping.setClassName("chat-assistant-who-is-typing");
+    whoIsTyping.setVisible(false);
+    VerticalLayout vl = new VerticalLayout(whoIsTyping, messageInput);
+    vl.setSpacing(false);
+    vl.setMargin(false);
+    vl.setPadding(false);
+    this.setFooterComponent(vl);
+  }
+  
+  /**
+   * Uses the provided string as the text shown over the message input to indicate that someone is typing
+   * @param whoIsTyping
+   */
+  public void setWhoIsTyping(String whoIsTyping) {
+    this.whoIsTyping.setText(whoIsTyping);
+    this.whoIsTyping.setVisible(true);
+  }
+  
+  /**
+   * Returns the current text shown over the message input to indicate that someone is typing
+   * @return the current text or null if not configured
+   */
+  public String getWhoIsTyping() {
+    return whoIsTyping.getText();
+  }
+  
+  /**
+   * Clears the text shown over the message input to indicate that someone is typing
+   */
+  public void clearWhoIsTyping() {
+    this.whoIsTyping.setText(null);
+    this.whoIsTyping.setVisible(false);
   }
   
   public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
@@ -136,6 +171,7 @@ public class ChatAssistant extends Div {
    */
   public void toggle() {
     getElement().executeJs("setTimeout(() => {this.toggle();})");
+    
   }
   
   /**
