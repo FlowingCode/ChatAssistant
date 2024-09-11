@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package com.flowingcode.vaadin.addons.chatassistant;
+package com.flowingcode.vaadin.addons.chatassistant.model;
 
 import java.util.Optional;
 import elemental.json.Json;
@@ -44,15 +44,6 @@ import lombok.Setter;
 public class Sender {
 
   private String name;
-  private String id;
   private String avatar;
-  
-  public JsonValue getJsonObject() {
-    JsonObject result = Json.createObject();
-    Optional.ofNullable(name).ifPresent(value->result.put("name", name));
-    Optional.ofNullable(id).ifPresent(value->result.put("id", id));
-    Optional.ofNullable(avatar).ifPresent(value->result.put("avatar", avatar));
-    return result;
-  }
   
 }
