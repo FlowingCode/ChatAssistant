@@ -36,6 +36,7 @@ import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class ChatAssistant extends Div {
   private List<Message> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
-  
+  private boolean minimized = true;
+
   public ChatAssistant() {
     this(new ArrayList<>());
   }
@@ -77,8 +79,9 @@ public class ChatAssistant extends Div {
         }));
     this.add(content);
     messageInput = new MessageInput();
-    messageInput.addSubmitListener(
-        se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
+    messageInput.setSizeFull();
+    messageInput
+        .addSubmitListener(se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
             .sender(Sender.builder().name("User").build()).content(se.getValue()).build()));
     whoIsTyping = new Span();
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
@@ -88,8 +91,20 @@ public class ChatAssistant extends Div {
     vl.setMargin(false);
     vl.setPadding(false);
     this.setFooterComponent(vl);
+    this.getElement().addEventListener("bot-button-clicked", this::handleClick);
   }
-  
+
+  private void handleClick(DomEvent event) {
+    getElement().executeJs(
+        "return this.shadowRoot.querySelector(\".chatbot-container\").classList.contains('animation-scale-out')")
+        .then(result -> {
+          minimized = result.asBoolean();
+          if (!minimized) {
+            refreshContent();
+          }
+        });
+  }
+
   /**
    * Uses the provided string as the text shown over the message input to indicate that someone is typing
    * @param whoIsTyping
@@ -125,19 +140,39 @@ public class ChatAssistant extends Div {
   }
   
   protected void onAttach(AttachEvent attachEvent) {
-    this.getElement().executeJs("return;").then(
-        (ev) -> this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
-            ".chatbot-body", "<slot name='content'></slot>"));
-    this.getElement().executeJs("return;")
-        .then((ev) -> this.getElement().executeJs(
-            "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
-            ".chatbot-body"));
+    if (!minimized) {
+      getElement().executeJs("setTimeout(() => this.toggle())");
+      this.getElement().executeJs("return;").then((ev) -> {
+        refreshContent();
+      });
+    }
+    this.getElement().executeJs("return;").then((ev) -> {
+      this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
+          ".chatbot-body", "<slot name='content'></slot>");
+      this.getElement().executeJs(
+          "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
+          ".chatbot-body");
+    });
+    this.getElement().executeJs("""
+        setTimeout(() => {
+          let chatbot = this;
+          this.shadowRoot.querySelector($0).addEventListener("click", function() {
+            chatbot.dispatchEvent(new CustomEvent("bot-button-clicked"));
+          });
+        })
+        """, ".bot-button");
     if (footerComponent!=null) {
       this.setFooterComponent(footerComponent);
     }
     if (headerComponent!=null) {
       this.setHeaderComponent(headerComponent);
     }
+  }
+
+  private void refreshContent() {
+    this.content.getDataProvider().refreshAll();
+    this.content.getElement().executeJs("this.requestContentUpdate();");
+    this.content.scrollToEnd();
   }
 
   /**
@@ -176,7 +211,14 @@ public class ChatAssistant extends Div {
    */
   public void toggle() {
     getElement().executeJs("setTimeout(() => {this.toggle();})");
-    
+    getElement().executeJs(
+        "return this.shadowRoot.querySelector(\".chatbot-container\").classList.contains('animation-scale-out')")
+        .then(result -> {
+          minimized = result.asBoolean(); 
+          if (!minimized) {
+            refreshContent();
+          }
+        });
   }
   
   /**
