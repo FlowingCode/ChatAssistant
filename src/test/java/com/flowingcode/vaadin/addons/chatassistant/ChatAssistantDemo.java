@@ -20,7 +20,6 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
-import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.google.common.base.Strings;
@@ -30,7 +29,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -61,7 +59,7 @@ public class ChatAssistantDemo extends VerticalLayout {
     Button chat = new Button("Chat");
     chat.addClickListener(ev -> {
       Message m = Message.builder().content(message.getValue()).messageTime(LocalDateTime.now())
-          .sender(Sender.builder().name("Assistant").avatar("chatbot.png").build()).build();
+          .name("Assistant").avatar("chatbot.png").build();
 
       chatAssistant.sendMessage(m);
       message.clear();
@@ -70,7 +68,7 @@ public class ChatAssistantDemo extends VerticalLayout {
     chatWithThinking.addClickListener(ev -> {
       Message delayedMessage = Message.builder().loading(true).content(message.getValue())
           .messageTime(LocalDateTime.now())
-          .sender(Sender.builder().name("Assistant").avatar("chatbot.png").build()).build();
+          .name("Assistant").avatar("chatbot.png").build();
 
       UI currentUI = UI.getCurrent();
       chatAssistant.sendMessage(delayedMessage);
@@ -89,7 +87,7 @@ public class ChatAssistantDemo extends VerticalLayout {
     });
     chatAssistant.sendMessage(Message.builder().content("Hello, I am here to assist you")
         .messageTime(LocalDateTime.now())
-        .sender(Sender.builder().name("Assistant").avatar("chatbot.png").build()).build());
+        .name("Assistant").avatar("chatbot.png").build());
     chatAssistant.toggle();
     Icon minimize = VaadinIcon.MINUS.create();
     minimize.addClickListener(ev -> chatAssistant.toggle());

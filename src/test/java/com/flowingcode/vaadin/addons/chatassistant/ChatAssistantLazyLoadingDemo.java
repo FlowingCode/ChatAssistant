@@ -20,17 +20,14 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
-import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.google.common.base.Strings;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -40,7 +37,6 @@ import com.vaadin.flow.router.Route;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 @DemoSource(sourcePosition = SourcePosition.PRIMARY)
 @PageTitle("Lazy Loading Demo")
@@ -75,7 +71,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
     Button chat = new Button("Chat");
     chat.addClickListener(ev -> {
       Message m = Message.builder().content(message.getValue()).messageTime(LocalDateTime.now())
-          .sender(Sender.builder().name("Assistant").avatar("chatbot.png").build()).build();
+          .name("Assistant").avatar("chatbot.png").build();
 
       messages.add(m);
       dataProvider.refreshAll();
@@ -84,12 +80,12 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
     });
     Message welcomeMessage = Message.builder().content("Hello, I am here to assist you")
         .messageTime(LocalDateTime.now())
-        .sender(Sender.builder().name("Assistant").avatar("chatbot.png").build()).build();
+        .name("Assistant").avatar("chatbot.png").build();
     messages.add(welcomeMessage);
     chatAssistant.toggle();
     chatAssistant.setSubmitListener(ev -> {
       Message userMessage = Message.builder().messageTime(LocalDateTime.now())
-          .sender(Sender.builder().name("User").build()).content(ev.getValue()).build();
+          .name("User").content(ev.getValue()).build();
       messages.add(userMessage);
       dataProvider.refreshAll();
       chatAssistant.scrollToEnd();

@@ -65,10 +65,10 @@ public class ChatMessage extends Component implements HasComponents {
       }
       this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
     }
-    if (message.getSender()!=null) {
-      this.setUserName(message.getSender().getName());
-      if (message.getSender().getAvatar()!=null) {
-        this.setUserImg(message.getSender().getAvatar());
+    if (message.getName()!=null) {
+      this.setUserName(message.getName());
+      if (message.getAvatar()!=null) {
+        this.setUserImg(message.getAvatar());
       }
     }
     if (message.getMessageTime()!=null) {

@@ -42,7 +42,8 @@ public class Message {
   @Builder.Default
   private String content = "";
   private boolean loading;
-  private Sender sender;
+  private String name;
+  private String avatar;
   private LocalDateTime messageTime;
   
 }
