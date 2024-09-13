@@ -184,18 +184,6 @@ public class ChatAssistant extends Div {
   }
 
   /**
-   * Sends a message represented by the string message programmatically to the component, with
-   * default settings.
-   *
-   * @param message
-   */
-  public void sendMessage(String message) {
-    messages.add(Message.builder().content(message).build());
-    content.getDataProvider().refreshAll();
-    content.scrollToEnd();
-  }
-
-  /**
    * Sends a message programmatically to the component
    *
    * @param message
