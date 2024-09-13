@@ -35,6 +35,7 @@ import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.shared.Registration;
@@ -103,6 +104,14 @@ public class ChatAssistant extends Div {
             refreshContent();
           }
         });
+  }
+  
+  /**
+   * Sets the data provider of the internal VirtualList
+   * @param dataProvider
+   */
+  public void setDataProvider(DataProvider<Message, ?> dataProvider) {
+    content.setDataProvider(dataProvider);
   }
 
   /**
