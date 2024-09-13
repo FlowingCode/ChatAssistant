@@ -63,6 +63,7 @@ public class ChatAssistant extends Div {
   private MessageInput messageInput;
   private Span whoIsTyping;
   private boolean minimized = true;
+  private Registration defaultSubmitListenerRegistration;
 
   public ChatAssistant() {
     this(new ArrayList<>());
@@ -81,7 +82,7 @@ public class ChatAssistant extends Div {
     this.add(content);
     messageInput = new MessageInput();
     messageInput.setSizeFull();
-    messageInput
+    defaultSubmitListenerRegistration = messageInput
         .addSubmitListener(se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
             .sender(Sender.builder().name("User").build()).content(se.getValue()).build()));
     whoIsTyping = new Span();
@@ -140,11 +141,12 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Adds a SubmitListener that will be notified when the user submits a message on the underlying messageInput
+   * Sets the SubmitListener that will be notified when the user submits a message on the underlying messageInput
    * @param listener
    * @return
    */
-  public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {
+  public Registration setSubmitListener(ComponentEventListener<SubmitEvent> listener) {
+    defaultSubmitListenerRegistration.remove();
     return messageInput.addSubmitListener(listener);
   }
   
