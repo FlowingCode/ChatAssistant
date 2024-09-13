@@ -88,9 +88,8 @@ public class ChatAssistantDemo extends VerticalLayout {
     chatAssistant.sendMessage(Message.builder().content("Hello, I am here to assist you")
         .messageTime(LocalDateTime.now())
         .name("Assistant").avatar("chatbot.png").build());
-    chatAssistant.toggle();
     Icon minimize = VaadinIcon.MINUS.create();
-    minimize.addClickListener(ev -> chatAssistant.toggle());
+    minimize.addClickListener(ev -> chatAssistant.setMinimized(!chatAssistant.isMinimized()));
     Span title = new Span("Customized Assistant Header");
     title.setWidthFull();
     HorizontalLayout headerBar = new HorizontalLayout(title, minimize);
