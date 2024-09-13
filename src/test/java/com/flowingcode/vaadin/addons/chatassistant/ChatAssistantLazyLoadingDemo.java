@@ -82,7 +82,6 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
         .messageTime(LocalDateTime.now())
         .name("Assistant").avatar("chatbot.png").build();
     messages.add(welcomeMessage);
-    chatAssistant.toggle();
     chatAssistant.setSubmitListener(ev -> {
       Message userMessage = Message.builder().messageTime(LocalDateTime.now())
           .name("User").content(ev.getValue()).build();
@@ -91,7 +90,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       chatAssistant.scrollToEnd();
     });
     Icon minimize = VaadinIcon.MINUS.create();
-    minimize.addClickListener(ev -> chatAssistant.toggle());
+    minimize.addClickListener(ev -> chatAssistant.setMinimized(!chatAssistant.isMinimized()));
     Span title = new Span("Customized Assistant Header");
     title.setWidthFull();
     HorizontalLayout headerBar = new HorizontalLayout(title, minimize);

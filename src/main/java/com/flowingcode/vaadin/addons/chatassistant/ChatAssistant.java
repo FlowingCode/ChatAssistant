@@ -61,7 +61,7 @@ public class ChatAssistant extends Div {
   private List<Message> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
-  private boolean minimized = true;
+  private boolean minimized = false;
   private Registration defaultSubmitListenerRegistration;
 
   public ChatAssistant() {
@@ -92,18 +92,14 @@ public class ChatAssistant extends Div {
     vl.setMargin(false);
     vl.setPadding(false);
     this.setFooterComponent(vl);
-    this.getElement().addEventListener("bot-button-clicked", this::handleClick);
+    this.getElement().addEventListener("bot-button-clicked", this::handleClick).addEventData("event.detail");
   }
 
   private void handleClick(DomEvent event) {
-    getElement().executeJs(
-        "return this.shadowRoot.querySelector(\".chatbot-container\").classList.contains('animation-scale-out')")
-        .then(result -> {
-          minimized = result.asBoolean();
-          if (!minimized) {
-            refreshContent();
-          }
-        });
+    minimized = event.getEventData().getObject("event.detail").getBoolean("minimized");
+    if (!minimized) {
+      refreshContent();
+    }
   }
   
   /**
@@ -164,11 +160,18 @@ public class ChatAssistant extends Div {
     this.getElement().executeJs("""
         setTimeout(() => {
           let chatbot = this;
+          let chatBotContainer = this.shadowRoot.querySelector($1);
           this.shadowRoot.querySelector($0).addEventListener("click", function() {
-            chatbot.dispatchEvent(new CustomEvent("bot-button-clicked"));
+            debugger;
+            let buttonClickedEvent = new CustomEvent("bot-button-clicked", {
+                detail: {
+                  minimized: chatBotContainer.classList.contains('animation-scale-out'),
+                },
+              });
+            chatbot.dispatchEvent(buttonClickedEvent);
           });
         })
-        """, ".bot-button");
+        """, ".bot-button", ".chatbot-container");
     if (footerComponent!=null) {
       this.setFooterComponent(footerComponent);
     }
@@ -205,16 +208,22 @@ public class ChatAssistant extends Div {
   /**
    * Shows or hides chat assistant
    */
-  public void toggle() {
-    getElement().executeJs("setTimeout(() => {this.toggle();})");
-    getElement().executeJs(
-        "return this.shadowRoot.querySelector(\".chatbot-container\").classList.contains('animation-scale-out')")
-        .then(result -> {
-          minimized = result.asBoolean(); 
-          if (!minimized) {
-            refreshContent();
-          }
-        });
+  public void setMinimized(boolean minimized) {
+    if (!minimized && this.minimized) {
+      getElement().executeJs("setTimeout(() => {this.toggle();})");
+      this.refreshContent();
+    } else if (minimized && !this.minimized) {
+      getElement().executeJs("setTimeout(() => {this.toggle();})");      
+    }
+    this.minimized = minimized;
+  }
+  
+  /**
+   * Returns true if the chat assistant is minimized false otherwise
+   * @return
+   */
+  public boolean isMinimized() {
+    return minimized;
   }
   
   /**
