@@ -19,6 +19,7 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -31,11 +32,12 @@ import lombok.Setter;
  *
  * @author mmlopez
  */
+@SuppressWarnings("serial")
 @Getter
 @Setter
 @Builder
 @EqualsAndHashCode(of = "id")
-public class Message {
+public class Message implements Serializable {
 
   @Builder.Default
   private UUID id = UUID.randomUUID();
