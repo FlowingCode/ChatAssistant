@@ -156,13 +156,11 @@ public class ChatAssistant extends Div {
         refreshContent();
       });
     }
-    this.getElement().executeJs("return;").then((ev) -> {
-      this.getElement().executeJs("this.shadowRoot.querySelector($0).innerHTML = $1",
+    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)",
           ".chatbot-body", "<slot name='content'></slot>");
       this.getElement().executeJs(
           "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
           ".chatbot-body");
-    });
     this.getElement().executeJs("""
         setTimeout(() => {
           let chatbot = this;
@@ -237,8 +235,7 @@ public class ChatAssistant extends Div {
    */
   public void setHeaderComponent(Component component) {
     this.headerComponent = component;
-    this.getElement().executeJs("return;").then((ev) -> this.getElement()
-        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chatbot-header", "<slot name='header'></slot>"));
+    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chatbot-header", "<slot name='header'></slot>");
     component.getElement().setAttribute("slot", "header");
     this.add(headerComponent);
   }
@@ -257,8 +254,7 @@ public class ChatAssistant extends Div {
    */
   public void setFooterComponent(Component component) {
     this.footerComponent = component;
-    this.getElement().executeJs("return;").then((ev) -> this.getElement()
-        .executeJs("this.shadowRoot.querySelector($0).innerHTML = $1", ".chat-footer", "<slot name='footer'></slot>"));
+    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
     component.getElement().setAttribute("slot", "footer");
     this.add(footerComponent);
   }
