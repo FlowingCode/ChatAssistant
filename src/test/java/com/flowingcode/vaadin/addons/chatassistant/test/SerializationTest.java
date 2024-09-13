@@ -20,6 +20,7 @@
 package com.flowingcode.vaadin.addons.chatassistant.test;
 
 import com.flowingcode.vaadin.addons.chatassistant.ChatAssistant;
+import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,7 +45,9 @@ public class SerializationTest {
   @Test
   public void testSerialization() throws ClassNotFoundException, IOException {
     try {
-      testSerializationOf(new ChatAssistant());
+      ChatAssistant chatAssistant = new ChatAssistant();
+      chatAssistant.sendMessage(Message.builder().build());
+      testSerializationOf(chatAssistant);
     } catch (Exception e) {
       Assert.fail("Problem while testing serialization: " + e.getMessage());
     }
