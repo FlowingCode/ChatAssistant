@@ -124,6 +124,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
   
   public ChatAssistantLazyLoadingDemo() {
     ChatAssistant chatAssistant = new ChatAssistant();
+    chatAssistant.setClassName("small");
     Span lazyLoadingData = new Span();
     DataProvider<Message,?> dataProvider = DataProvider.fromCallbacks(query->{
       lazyLoadingData.setText("Loading messages from: " + query.getOffset() + ", with limit: " + query.getLimit());
@@ -170,4 +171,5 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
 
     add(message, lazyLoadingData, chat, chatAssistant);
   }
+  
 }

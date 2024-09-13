@@ -21,3 +21,7 @@
     --chatbot-avatar-img: url(chatbot.png);
     --chatbot-avatar-bg-color: white;
   }
+  
+  chat-bot.small vaadin-message {
+  	font-size: var(--lumo-font-size-xxs);
+  }
