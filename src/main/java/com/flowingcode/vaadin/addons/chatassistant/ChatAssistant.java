@@ -21,7 +21,6 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
-import com.flowingcode.vaadin.addons.chatassistant.model.Sender;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -84,7 +83,7 @@ public class ChatAssistant extends Div {
     messageInput.setSizeFull();
     defaultSubmitListenerRegistration = messageInput
         .addSubmitListener(se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
-            .sender(Sender.builder().name("User").build()).content(se.getValue()).build()));
+            .name("User").content(se.getValue()).build()));
     whoIsTyping = new Span();
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
     whoIsTyping.setVisible(false);
