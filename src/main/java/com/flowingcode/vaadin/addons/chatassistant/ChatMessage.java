@@ -54,6 +54,20 @@ public class ChatMessage extends Component implements HasComponents {
    */
   public void setMessage(Message message) {
     this.message = message;
+    updateLoadingState(message);
+    if (message.getName()!=null) {
+      this.setUserName(message.getName());
+      if (message.getAvatar()!=null) {
+        this.setUserImg(message.getAvatar());
+      }
+    }
+    if (message.getMessageTime()!=null) {
+      String formattedTime = message.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+      this.setTime(formattedTime);
+    }
+  }
+
+  private void updateLoadingState(Message message) {
     if (message.isLoading()) {
       loader = new Div(new Div(),new Div(), new Div(), new Div());
       loader.setClassName("lds-ellipsis");
@@ -64,16 +78,6 @@ public class ChatMessage extends Component implements HasComponents {
         loader = null;
       }
       this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
-    }
-    if (message.getName()!=null) {
-      this.setUserName(message.getName());
-      if (message.getAvatar()!=null) {
-        this.setUserImg(message.getAvatar());
-      }
-    }
-    if (message.getMessageTime()!=null) {
-      String formattedTime = message.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-      this.setTime(formattedTime);
     }
   }
   
