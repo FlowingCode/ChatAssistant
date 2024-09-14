@@ -174,7 +174,6 @@ public class ChatAssistant extends Div {
           let chatbot = this;
           let chatBotContainer = this.shadowRoot.querySelector($1);
           this.shadowRoot.querySelector($0).addEventListener("click", function() {
-            debugger;
             let buttonClickedEvent = new CustomEvent("bot-button-clicked", {
                 detail: {
                   minimized: chatBotContainer.classList.contains('animation-scale-out'),
