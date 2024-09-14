@@ -24,6 +24,12 @@
     --chatbot-header-title-color: var(--lumo-header-text-color);
     --chatbot-body-bg-color: var(--lumo-primary-color-10pct);
     --chatbot-send-button-color: var(--lumo-primary-color);
+    font-size: var(--lumo-font-size-l);
+    font-family: var(--lumo-font-family);	
+  }
+  
+  chat-bot .chat-header {
+    color: var(--lumo-base-color);
   }
   
   chat-bot::part(chat-bubble) {

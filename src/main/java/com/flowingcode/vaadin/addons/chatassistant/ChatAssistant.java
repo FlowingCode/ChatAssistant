@@ -30,8 +30,11 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -55,6 +58,7 @@ import java.util.List;
 @Tag("chat-bot")
 public class ChatAssistant extends Div {
   
+  private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
   private Component headerComponent;
   private Component footerComponent;
   private VirtualList<Message> content = new VirtualList<>();
@@ -93,6 +97,14 @@ public class ChatAssistant extends Div {
     vl.setPadding(false);
     this.setFooterComponent(vl);
     this.getElement().addEventListener("bot-button-clicked", this::handleClick).addEventData("event.detail");
+    
+    Icon minimize = VaadinIcon.CHEVRON_DOWN_SMALL.create();
+    minimize.addClickListener(ev -> this.setMinimized(!minimized));
+    Span title = new Span("Chat Assistant");
+    title.setWidthFull();
+    HorizontalLayout headerBar = new HorizontalLayout(title, minimize);
+    headerBar.setWidthFull();
+    this.setHeaderComponent(headerBar);
   }
 
   private void handleClick(DomEvent event) {
@@ -231,6 +243,10 @@ public class ChatAssistant extends Div {
    * @param component
    */
   public void setHeaderComponent(Component component) {
+    if (headerComponent!=null) {
+      this.remove(headerComponent);
+    }
+    component.addClassName(CHAT_HEADER_CLASS_NAME);
     this.headerComponent = component;
     this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chatbot-header", "<slot name='header'></slot>");
     component.getElement().setAttribute("slot", "header");
