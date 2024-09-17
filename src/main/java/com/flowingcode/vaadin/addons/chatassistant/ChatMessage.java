@@ -44,13 +44,19 @@ public class ChatMessage extends Component implements HasComponents {
   private Message message;
   private Div loader;
   
+  /**
+   * Creates a new ChatMessage based on the supplied message.
+   * 
+   * @param message message used to populate the ChatMessage instance
+   */
   public ChatMessage(Message message) {
     setMessage(message);
   }
 
   /**
-   * Updates the component by setting the current underlying message
-   * @param message
+   * Updates the component by setting the current underlying message.
+   * 
+   * @param message message used to populate the ChatMessage instance
    */
   public void setMessage(Message message) {
     this.message = message;
@@ -82,8 +88,9 @@ public class ChatMessage extends Component implements HasComponents {
   }
   
   /**
-   * Returns the underlying message
-   * @return
+   * Returns the underlying message.
+   * 
+   * @return the message object used to populate this ChatMessage
    */
   public Message getMessage() {
     return message;
