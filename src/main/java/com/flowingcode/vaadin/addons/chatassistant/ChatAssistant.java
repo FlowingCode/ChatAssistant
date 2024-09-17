@@ -68,10 +68,18 @@ public class ChatAssistant extends Div {
   private boolean minimized = false;
   private Registration defaultSubmitListenerRegistration;
 
+  /**
+   * Default constructor. Creates a ChatAssistant with no messages.
+   */
   public ChatAssistant() {
     this(new ArrayList<>());
   }
 
+  /**
+   * Creates a ChatAssistant with the given list of messages.
+   * 
+   * @param messages the list of messages
+   */
   public ChatAssistant(List<Message> messages) {
     this.messages = messages;
     content.getElement().setAttribute("slot", "content");
@@ -115,16 +123,18 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Sets the data provider of the internal VirtualList
-   * @param dataProvider
+   * Sets the data provider of the internal VirtualList.
+   * 
+   * @param dataProvider the data provider to be used
    */
   public void setDataProvider(DataProvider<Message, ?> dataProvider) {
     content.setDataProvider(dataProvider);
   }
 
   /**
-   * Uses the provided string as the text shown over the message input to indicate that someone is typing
-   * @param whoIsTyping
+   * Uses the provided string as the text shown over the message input to indicate that someone is typing.
+   * 
+   * @param whoIsTyping string to be shown as an indication of someone typing
    */
   public void setWhoIsTyping(String whoIsTyping) {
     this.whoIsTyping.setText(whoIsTyping);
@@ -132,7 +142,8 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Returns the current text shown over the message input to indicate that someone is typing
+   * Returns the current text shown over the message input to indicate that someone is typing.
+   * 
    * @return the current text or null if not configured
    */
   public String getWhoIsTyping() {
@@ -140,7 +151,7 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Clears the text shown over the message input to indicate that someone is typing
+   * Clears the text shown over the message input to indicate that someone is typing.
    */
   public void clearWhoIsTyping() {
     this.whoIsTyping.setText(null);
@@ -148,9 +159,10 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Sets the SubmitListener that will be notified when the user submits a message on the underlying messageInput
-   * @param listener
-   * @return
+   * Sets the SubmitListener that will be notified when the user submits a message on the underlying messageInput.
+   * 
+   * @param listener the listener that will be notified when the SubmitEvent is fired
+   * @return registration for removal of the listener
    */
   public Registration setSubmitListener(ComponentEventListener<SubmitEvent> listener) {
     defaultSubmitListenerRegistration.remove();
@@ -198,9 +210,10 @@ public class ChatAssistant extends Div {
   }
 
   /**
-   * Sends a message programmatically to the component
+   * Sends a message programmatically to the component. Should not be used when a custom
+   * DataProvider is used. Instead just refresh the custom DataProvider.
    *
-   * @param message
+   * @param message the message to be sent programmatically
    */
   public void sendMessage(Message message) {
     messages.add(message);
@@ -209,15 +222,18 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Updates a message
-   * @param message
+   * Updates a previously entered message.
+   * 
+   * @param message the message to be updated
    */
   public void updateMessage(Message message) {
     this.content.getDataProvider().refreshItem(message);
   }
 
   /**
-   * Shows or hides chat assistant
+   * Shows or hides chat window.
+   * 
+   * @param minimized true for hiding the chat window and false for displaying it
    */
   public void setMinimized(boolean minimized) {
     if (!minimized && this.minimized) {
@@ -230,16 +246,18 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Returns true if the chat assistant is minimized false otherwise
-   * @return
+   * Returns the visibility of the chat window.
+   * 
+   * @return true if the chat window is minimized false otherwise
    */
   public boolean isMinimized() {
     return minimized;
   }
   
   /**
-   * Sets a component as a replacement for the header of the chat
-   * @param component
+   * Allows changing the header of the chat window.
+   * 
+   * @param component to be used as a replacement for the header
    */
   public void setHeaderComponent(Component component) {
     if (headerComponent!=null) {
@@ -253,16 +271,18 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Returns the current component configured as a replacement for the header of the chat
-   * @return
+   * Returns the current component configured as the header of the chat window.
+   * 
+   * @return component used as the header of the chat window
    */
   public Component getHeaderComponent() {
     return headerComponent;
   }
   
   /**
-   * Sets a Vaadin component as a replacement for the footer of the chat
-   * @param component
+   * Allows changing the footer of the chat window.
+   * 
+   * @param component to be used as a replacement for the footer
    */
   public void setFooterComponent(Component component) {
     this.footerComponent = component;
@@ -272,8 +292,9 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Returns the current Vaadin component configured as a replacement for the footer of the chat
-   * @return
+   * Returns the current component configured as the footer of the chat window.
+   * 
+   * @return component used as the footer of the chat window 
    */
   public Component getFooterComponent() {
     return footerComponent;
