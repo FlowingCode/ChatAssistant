@@ -44,6 +44,7 @@ import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Component that allows to create a floating chat button that will open a chat window that can be
@@ -61,6 +62,7 @@ public class ChatAssistant extends Div {
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
   private Component headerComponent;
   private Component footerComponent;
+  private VerticalLayout footerContainer;
   private VirtualList<Message> content = new VirtualList<>();
   private List<Message> messages;
   private MessageInput messageInput;
@@ -99,11 +101,13 @@ public class ChatAssistant extends Div {
     whoIsTyping = new Span();
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
     whoIsTyping.setVisible(false);
-    VerticalLayout vl = new VerticalLayout(whoIsTyping, messageInput);
-    vl.setSpacing(false);
-    vl.setMargin(false);
-    vl.setPadding(false);
-    this.setFooterComponent(vl);
+    footerContainer = new VerticalLayout(whoIsTyping);
+    footerContainer.setSpacing(false);
+    footerContainer.setMargin(false);
+    footerContainer.setPadding(false);
+    footerContainer.getElement().setAttribute("slot", "footer");
+    add(footerContainer);
+    this.setFooterComponent(messageInput);
     this.getElement().addEventListener("bot-button-clicked", this::handleClick).addEventData("event.detail");
     
     Icon minimize = VaadinIcon.CHEVRON_DOWN_SMALL.create();
@@ -282,13 +286,17 @@ public class ChatAssistant extends Div {
   /**
    * Allows changing the footer of the chat window.
    * 
-   * @param component to be used as a replacement for the footer
+   * @param component to be used as a replacement for the footer, it cannot be null
    */
   public void setFooterComponent(Component component) {
+    Objects.requireNonNull(component, "Component cannot not be null");
+    if (footerComponent==null) {
+      this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
+    } else {
+      this.footerContainer.remove(footerComponent);
+    }
     this.footerComponent = component;
-    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
-    component.getElement().setAttribute("slot", "footer");
-    this.add(footerComponent);
+    footerContainer.add(footerComponent);
   }
   
   /**
