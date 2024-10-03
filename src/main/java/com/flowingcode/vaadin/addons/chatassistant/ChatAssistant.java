@@ -290,11 +290,10 @@ public class ChatAssistant extends Div {
    */
   public void setFooterComponent(Component component) {
     Objects.requireNonNull(component, "Component cannot not be null");
-    if (footerComponent==null) {
-      this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
-    } else {
+    if (footerComponent!=null) {
       this.footerContainer.remove(footerComponent);
     }
+    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
     this.footerComponent = component;
     footerContainer.add(footerComponent);
   }
