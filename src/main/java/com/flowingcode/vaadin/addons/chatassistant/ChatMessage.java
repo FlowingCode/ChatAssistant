@@ -20,6 +20,8 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
+import com.flowingcode.vaadin.addons.markdown.BaseMarkdownComponent.DataColorMode;
+import com.flowingcode.vaadin.addons.markdown.MarkdownViewer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Tag;
@@ -42,14 +44,26 @@ import lombok.EqualsAndHashCode;
 public class ChatMessage extends Component implements HasComponents {
   
   private Message message;
+  private boolean markdownEnabled;
   private Div loader;
+  
+  /**
+   * Creates a new ChatMessage based on the supplied message without markdown support.
+   * 
+   * @param message message used to populate the ChatMessage instance
+   */
+  public ChatMessage(Message message) {
+    this(message, false);
+  }
   
   /**
    * Creates a new ChatMessage based on the supplied message.
    * 
    * @param message message used to populate the ChatMessage instance
+   * @param markdownEnabled whether the message supports markdown or not
    */
-  public ChatMessage(Message message) {
+  public ChatMessage(Message message, boolean markdownEnabled) {
+    this.markdownEnabled = markdownEnabled;
     setMessage(message);
   }
 
@@ -83,7 +97,13 @@ public class ChatMessage extends Component implements HasComponents {
         this.remove(loader);
         loader = null;
       }
-      this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
+      if (markdownEnabled) {
+        MarkdownViewer mdv = new MarkdownViewer(message.getContent());
+        mdv.setDataColorMode(DataColorMode.LIGTH);
+        this.add(mdv);
+      } else {
+        this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
+      }
     }
   }
   

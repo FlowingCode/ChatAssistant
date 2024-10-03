@@ -88,3 +88,18 @@
     font-family: var(--lumo-font-family);
     color: var(--lumo-secondary-text-color);
 }
+
+.wmde-markdown {
+    height: 100%;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    background: none !important;
+}
+
+.language-mermaid {
+	padding: 0px !important;
+}

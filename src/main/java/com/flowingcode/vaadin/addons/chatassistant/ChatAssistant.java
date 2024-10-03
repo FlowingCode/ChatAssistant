@@ -74,21 +74,31 @@ public class ChatAssistant extends Div {
    * Default constructor. Creates a ChatAssistant with no messages.
    */
   public ChatAssistant() {
-    this(new ArrayList<>());
+    this(new ArrayList<>(), false);
   }
 
+  /**
+   * Creates a ChatAssistant with no messages.
+   *
+   * @param markdownEnabled flag to enable or disable markdown support
+   */
+  public ChatAssistant(boolean markdownEnabled) {
+    this(new ArrayList<>(), markdownEnabled);
+  }
+  
   /**
    * Creates a ChatAssistant with the given list of messages.
    * 
    * @param messages the list of messages
+   * @param markdownEnabled flag to enable or disable markdown support
    */
-  public ChatAssistant(List<Message> messages) {
+  public ChatAssistant(List<Message> messages, boolean markdownEnabled) {
     this.messages = messages;
     content.getElement().setAttribute("slot", "content");
     content.setItems(messages);
 
     content.setRenderer(new ComponentRenderer<ChatMessage, Message>(
-        message -> new ChatMessage(message), (component, message) -> {
+        message -> new ChatMessage(message, markdownEnabled), (component, message) -> {
           ((ChatMessage) component).setMessage(message);
           return component;
         }));
