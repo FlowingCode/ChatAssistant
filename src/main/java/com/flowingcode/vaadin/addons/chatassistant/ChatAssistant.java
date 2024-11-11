@@ -318,13 +318,13 @@ public class ChatAssistant extends Div {
   }
   
   /**
-   * Scrolls to the given row index. Scrolls so that the element is shown at
+   * Scrolls to the given position. Scrolls so that the element is shown at
    * the start of the visible area whenever possible.
    * <p>
    * If the index parameter exceeds current item set size the grid will scroll
    * to the end.
    *
-   * @param rowIndex
+   * @param position
    *            zero based index of the item to scroll to in the current view.
    */
   public void scrollToIndex(int position) {
