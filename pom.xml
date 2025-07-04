@@ -18,7 +18,7 @@
 		<drivers.dir>${project.basedir}/drivers</drivers.dir>
 		<jetty.version>11.0.12</jetty.version>
 		<flowingcode.commons.demo.version>3.10.0</flowingcode.commons.demo.version>
-		<markdown-editor.version>1.0.0</markdown-editor.version>	
+		<markdown-editor.version>1.1.0</markdown-editor.version>	
 		<frontend.hotdeploy>true</frontend.hotdeploy>
 	</properties>
 
