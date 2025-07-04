@@ -17,26 +17,20 @@
  * limitations under the License.
  * #L%
  */
-  chat-bot {
-    --chatbot-avatar-bg-color: var(--lumo-primary-color-10pct);
-    --chatbot-avatar-margin: 10%;
-    --chatbot-header-bg-color: var(--lumo-primary-color-50pct);
-    --chatbot-header-title-color: var(--lumo-header-text-color);
-    --chatbot-body-bg-color: var(--lumo-primary-color-10pct);
-    --chatbot-send-button-color: var(--lumo-primary-color);
-    font-size: var(--lumo-font-size-l);
-    font-family: var(--lumo-font-family);	
-  }
-  
-  chat-bot .chat-header {
-    color: var(--lumo-base-color);
-  }
-  
-  chat-bot::part(chat-bubble) {
-    --chat-bubble-color: var(--lumo-success-color);
-    --chat-bubble-right-color: white;
-    --chat-bubble-font-color: white;
-    --chat-bubble-font-right-color: var(--lumo-contrast-90pct);
-    --chat-bubble-avatar-color: var(--lumo-secondary-color);
-    --chat-bubble-delay: 0.2s;
-  }
+vaadin-vertical-layout.chat-assistant-resizable-vertical-layout {
+    transform: rotate(180deg); /* This rotation, along with the one below, is a "double rotation trick." */
+    margin: -0.125em -0.375em 0;
+    overflow: hidden;
+    width: 439px;
+    resize: both;
+    min-height: min-content;
+    min-width: min-content;
+}
+
+vaadin-vertical-layout.chat-assistant-container-vertical-layout {
+    min-height: min-content;
+    transform: rotate(180deg); /* This second rotation completes the "double rotation trick."
+                                  Together, these two rotations position the resize handle in the upper-left corner.
+                                  This new position is more suitable for resizing the chat window because the chat bubble 
+                                  is positioned by default in the bottom-right of the view. */
+}
