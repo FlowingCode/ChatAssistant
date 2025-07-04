@@ -99,7 +99,7 @@ public class ChatMessage extends Component implements HasComponents {
       }
       if (markdownEnabled) {
         MarkdownViewer mdv = new MarkdownViewer(message.getContent());
-        mdv.setDataColorMode(DataColorMode.LIGTH);
+        mdv.setDataColorMode(DataColorMode.LIGHT);
         this.add(mdv);
       } else {
         this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
