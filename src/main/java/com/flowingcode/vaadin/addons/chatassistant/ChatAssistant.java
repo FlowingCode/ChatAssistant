@@ -22,13 +22,14 @@ package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -36,10 +37,11 @@ import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.popover.Popover;
+import com.vaadin.flow.component.react.ReactAdapterComponent;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,17 +55,24 @@ import java.util.Objects;
  * @author mmlopez
  */
 @SuppressWarnings("serial")
-@NpmPackage(value = "wc-chatbot", version = "0.2.0")
-@JsModule("wc-chatbot/dist/wc-chatbot.js")
+@NpmPackage(value = "react-draggable", version = "4.4.6")
+@NpmPackage(value = "@mui/material", version = "7.1.2")
+@NpmPackage(value = "@mui/icons-material", version = "6.1.0")
+@NpmPackage(value = "@emotion/react", version = "11.14.0")
+@NpmPackage(value = "@emotion/styled", version = "11.14.0")
+@JsModule("./react/animated-fab.tsx")
+@Tag("animated-fab")
 @CssImport("./styles/chat-assistant-styles.css")
-@Tag("chat-bot")
-public class ChatAssistant extends Div {
-  
+public class ChatAssistant extends ReactAdapterComponent implements ClickNotifier<ChatAssistant> {
+
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
+  private static final String PADDING_SMALL = "0.5em";
+
   private Component headerComponent;
-  private Component footerComponent;
-  private VerticalLayout footerContainer;
+  private VerticalLayout container;
+  private Component footerContainer;
   private VirtualList<Message> content = new VirtualList<>();
+  private Popover chatWindow;
   private List<Message> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
@@ -94,48 +103,87 @@ public class ChatAssistant extends Div {
    */
   public ChatAssistant(List<Message> messages, boolean markdownEnabled) {
     this.messages = messages;
-    content.getElement().setAttribute("slot", "content");
-    content.setItems(messages);
+    initializeHeader();
+    initializeFooter();
+    initializeContent(markdownEnabled);
+    initializeChatWindow();
+    initializeAvatar();
+  }
 
-    content.setRenderer(new ComponentRenderer<ChatMessage, Message>(
-        message -> new ChatMessage(message, markdownEnabled), (component, message) -> {
-          ((ChatMessage) component).setMessage(message);
-          return component;
-        }));
-    this.add(content);
+  private void initializeHeader() {
+    Icon minimize = VaadinIcon.CLOSE.create();
+    minimize.addClickListener(ev -> setMinimized(!minimized));
+    Span title = new Span("Chat Assistant");
+    title.setWidthFull();
+    HorizontalLayout header = new HorizontalLayout(title, minimize);
+    header.setWidthFull();
+    headerComponent = header;
+  }
+
+  private void initializeFooter() {
     messageInput = new MessageInput();
     messageInput.setSizeFull();
-    defaultSubmitListenerRegistration = messageInput
-        .addSubmitListener(se -> this.sendMessage(Message.builder().messageTime(LocalDateTime.now())
+    messageInput.getStyle().set("padding", PADDING_SMALL);
+    defaultSubmitListenerRegistration = messageInput.addSubmitListener(se -> 
+        sendMessage(Message.builder().messageTime(LocalDateTime.now())
             .name("User").content(se.getValue()).build()));
     whoIsTyping = new Span();
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
     whoIsTyping.setVisible(false);
-    footerContainer = new VerticalLayout(whoIsTyping);
-    footerContainer.setSpacing(false);
-    footerContainer.setMargin(false);
-    footerContainer.setPadding(false);
-    footerContainer.getElement().setAttribute("slot", "footer");
-    add(footerContainer);
-    this.setFooterComponent(messageInput);
-    this.getElement().addEventListener("bot-button-clicked", this::handleClick).addEventData("event.detail");
-    
-    Icon minimize = VaadinIcon.CHEVRON_DOWN_SMALL.create();
-    minimize.addClickListener(ev -> this.setMinimized(!minimized));
-    Span title = new Span("Chat Assistant");
-    title.setWidthFull();
-    HorizontalLayout headerBar = new HorizontalLayout(title, minimize);
-    headerBar.setWidthFull();
-    this.setHeaderComponent(headerBar);
+    VerticalLayout footer = new VerticalLayout(whoIsTyping, messageInput);
+    footer.setSizeFull();
+    footer.setSpacing(false);
+    footer.setMargin(false);
+    footer.setPadding(false);
+    footerContainer = footer;
   }
 
-  private void handleClick(DomEvent event) {
-    minimized = event.getEventData().getObject("event.detail").getBoolean("minimized");
-    if (!minimized) {
-      refreshContent();
-    }
+  private void initializeContent(boolean markdownEnabled) {
+    content.setItems(messages);
+    content.setRenderer(new ComponentRenderer<>(message -> new ChatMessage(message, markdownEnabled), 
+        (component, message) -> {
+          ((ChatMessage) component).setMessage(message);
+          return component;
+        }));
+    content.setMinHeight("400px");
+    content.setMinWidth("400px");
+    container = new VerticalLayout(headerComponent, content, footerContainer);
+    container.setClassName("chat-assistant-container-vertical-layout");
+    container.setPadding(false);
+    container.setMargin(false);
+    container.setSpacing(false);
+    container.setSizeFull();
   }
-  
+
+  private void initializeChatWindow() {
+    VerticalLayout resizableVL = new VerticalLayout();
+    resizableVL.setClassName("chat-assistant-resizable-vertical-layout");
+    resizableVL.add(container);
+    chatWindow = new Popover();
+    chatWindow.add(resizableVL);
+    chatWindow.setOpenOnClick(false);
+    chatWindow.setCloseOnOutsideClick(false);
+    chatWindow.addOpenedChangeListener(ev->{
+      minimized = !ev.isOpened();
+    });
+    this.getElement().addEventListener("avatar-clicked", ev ->{
+      if (this.minimized) {
+        chatWindow.open();
+      } else {
+        chatWindow.close();
+      }
+    });
+  }
+
+  private void initializeAvatar() {
+    Avatar avatar = new Avatar("AI");
+    avatar.setSizeFull();
+    this.getElement().appendChild(avatar.getElement());
+    this.addAttachListener(ev -> this.getElement().executeJs("return;")
+        .then(ev2 -> this.getElement().executeJs("this.childNodes[1].childNodes[0].appendChild($0)", avatar.getElement())
+            .then(ev3 -> chatWindow.setTarget(avatar))));
+  }
+
   /**
    * Sets the data provider of the internal VirtualList.
    * 
@@ -182,45 +230,10 @@ public class ChatAssistant extends Div {
     defaultSubmitListenerRegistration.remove();
     return messageInput.addSubmitListener(listener);
   }
-  
-  protected void onAttach(AttachEvent attachEvent) {
-    if (!minimized) {
-      getElement().executeJs("setTimeout(() => this.toggle())");
-      this.getElement().executeJs("return;").then((ev) -> {
-        refreshContent();
-      });
-    }
-    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)",
-          ".chatbot-body", "<slot name='content'></slot>");
-      this.getElement().executeJs(
-          "this.shadowRoot.querySelector($0).style.setProperty('padding', '0px');",
-          ".chatbot-body");
-    this.getElement().executeJs("""
-        setTimeout(() => {
-          let chatbot = this;
-          let chatBotContainer = this.shadowRoot.querySelector($1);
-          this.shadowRoot.querySelector($0).addEventListener("click", function() {
-            let buttonClickedEvent = new CustomEvent("bot-button-clicked", {
-                detail: {
-                  minimized: chatBotContainer.classList.contains('animation-scale-out'),
-                },
-              });
-            chatbot.dispatchEvent(buttonClickedEvent);
-          });
-        })
-        """, ".bot-button", ".chatbot-container");
-    if (footerComponent!=null) {
-      this.setFooterComponent(footerComponent);
-    }
-    if (headerComponent!=null) {
-      this.setHeaderComponent(headerComponent);
-    }
-  }
 
   private void refreshContent() {
-    this.content.getDataProvider().refreshAll();
-    this.content.getElement().executeJs("this.requestContentUpdate();");
-    this.content.scrollToEnd();
+    content.getDataProvider().refreshAll();
+    content.scrollToEnd();
   }
 
   /**
@@ -250,13 +263,17 @@ public class ChatAssistant extends Div {
    * @param minimized true for hiding the chat window and false for displaying it
    */
   public void setMinimized(boolean minimized) {
-    if (!minimized && this.minimized) {
-      getElement().executeJs("setTimeout(() => {this.toggle();})");
-      this.refreshContent();
-    } else if (minimized && !this.minimized) {
-      getElement().executeJs("setTimeout(() => {this.toggle();})");      
+    if (this.minimized != minimized) {
+      this.minimized = minimized;
+      if (!minimized) {
+        refreshContent();
+      }
     }
-    this.minimized = minimized;
+    if (minimized && chatWindow.isOpened()) {
+      chatWindow.close();
+    } else if (!minimized && !chatWindow.isOpened()) {
+      chatWindow.open();
+    }
   }
   
   /**
@@ -274,14 +291,12 @@ public class ChatAssistant extends Div {
    * @param component to be used as a replacement for the header
    */
   public void setHeaderComponent(Component component) {
-    if (headerComponent!=null) {
-      this.remove(headerComponent);
+    if (headerComponent != null) {
+      container.remove(headerComponent);
     }
     component.addClassName(CHAT_HEADER_CLASS_NAME);
-    this.headerComponent = component;
-    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chatbot-header", "<slot name='header'></slot>");
-    component.getElement().setAttribute("slot", "header");
-    this.add(headerComponent);
+    headerComponent = component;
+    container.addComponentAsFirst(headerComponent);
   }
   
   /**
@@ -300,12 +315,9 @@ public class ChatAssistant extends Div {
    */
   public void setFooterComponent(Component component) {
     Objects.requireNonNull(component, "Component cannot not be null");
-    if (footerComponent!=null) {
-      this.footerContainer.remove(footerComponent);
-    }
-    this.getElement().executeJs("setTimeout(() => this.shadowRoot.querySelector($0).innerHTML = $1)", ".chat-footer", "<slot name='footer'></slot>");
-    this.footerComponent = component;
-    footerContainer.add(footerComponent);
+    container.remove(footerContainer);
+    footerContainer = component;
+    container.add(footerContainer);
   }
   
   /**
@@ -314,7 +326,7 @@ public class ChatAssistant extends Div {
    * @return component used as the footer of the chat window 
    */
   public Component getFooterComponent() {
-    return footerComponent;
+    return footerContainer;
   }
   
   /**
