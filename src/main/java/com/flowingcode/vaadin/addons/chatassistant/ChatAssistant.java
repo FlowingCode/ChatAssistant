@@ -42,6 +42,7 @@ import com.vaadin.flow.component.react.ReactAdapterComponent;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -355,6 +356,16 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    */
   public void scrollToEnd() {
     this.content.scrollToEnd();
+  }
+  
+  /**
+   * Allows changing the renderer used to display messages in the chat window.
+   *
+   * @param renderer the renderer to use for rendering {@link Message} objects, it cannot be null
+   */
+  public void setMessagesRenderer(Renderer<Message> renderer) {
+    Objects.requireNonNull(renderer, "Renderer cannot not be null");
+    content.setRenderer(renderer);
   }
   
 }
