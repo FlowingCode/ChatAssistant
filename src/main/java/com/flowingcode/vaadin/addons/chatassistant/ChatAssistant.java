@@ -43,6 +43,7 @@ import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -79,6 +80,8 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
   private Span whoIsTyping;
   private boolean minimized = false;
   private Registration defaultSubmitListenerRegistration;
+  private SerializableSupplier<Avatar> avatarProvider = () -> new Avatar("Chat Assistant");
+  private Avatar avatar;
 
   /**
    * Default constructor. Creates a ChatAssistant with no messages.
@@ -177,7 +180,8 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
   }
 
   private void initializeAvatar() {
-    Avatar avatar = new Avatar("AI");
+    if (avatar!=null) avatar.removeFromParent();
+    avatar = avatarProvider.get();
     avatar.setSizeFull();
     this.getElement().appendChild(avatar.getElement());
     this.addAttachListener(ev -> this.getElement().executeJs("return;")
@@ -366,6 +370,16 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
   public void setMessagesRenderer(Renderer<Message> renderer) {
     Objects.requireNonNull(renderer, "Renderer cannot not be null");
     content.setRenderer(renderer);
+  }
+  
+  /**
+   * Sets the avatar provider that will be used to create the avatar
+   * 
+   * @param avatarProvider
+   */
+  public void setAvatarProvider(SerializableSupplier<Avatar> avatarProvider) {
+    this.avatarProvider = avatarProvider;
+    this.initializeAvatar();
   }
   
 }

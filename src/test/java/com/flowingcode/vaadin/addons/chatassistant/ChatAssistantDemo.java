@@ -24,6 +24,7 @@ import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,7 +42,8 @@ import java.util.Timer;
 public class ChatAssistantDemo extends VerticalLayout {
   
   public ChatAssistantDemo() {
-    ChatAssistant chatAssistant = new ChatAssistant();
+    ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
+    chatAssistant.setAvatarProvider(()->new Avatar("Chat Assistant","chatbot.png"));
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");
     message.setSizeFull();
