@@ -23,19 +23,13 @@ import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.google.common.base.Strings;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import java.time.LocalDateTime;
-import java.util.Timer;
 
 @DemoSource(sourcePosition = SourcePosition.PRIMARY)
 @PageTitle("Markdown Demo")
@@ -45,7 +39,7 @@ import java.util.Timer;
 public class ChatAssistantMarkdownDemo extends VerticalLayout {
   
   public ChatAssistantMarkdownDemo() {
-    ChatAssistant chatAssistant = new ChatAssistant(true);
+    ChatAssistant<Message> chatAssistant = new ChatAssistant<>(true);
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant (try using Markdown)");
     message.setSizeFull();

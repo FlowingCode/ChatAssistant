@@ -123,7 +123,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       ));
   
   public ChatAssistantLazyLoadingDemo() {
-    ChatAssistant chatAssistant = new ChatAssistant();
+    ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
     chatAssistant.setClassName("small");
     Span lazyLoadingData = new Span();
     DataProvider<Message,?> dataProvider = DataProvider.fromCallbacks(query->{

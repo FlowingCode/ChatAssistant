@@ -41,9 +41,9 @@ import lombok.EqualsAndHashCode;
 @Tag("vaadin-message")
 @CssImport("./styles/chat-message-styles.css")
 @EqualsAndHashCode(callSuper=false)
-public class ChatMessage extends Component implements HasComponents {
+public class ChatMessage<T extends Message> extends Component implements HasComponents {
   
-  private Message message;
+  private T message;
   private boolean markdownEnabled;
   private Div loader;
   
@@ -52,7 +52,7 @@ public class ChatMessage extends Component implements HasComponents {
    * 
    * @param message message used to populate the ChatMessage instance
    */
-  public ChatMessage(Message message) {
+  public ChatMessage(T message) {
     this(message, false);
   }
   
@@ -62,7 +62,7 @@ public class ChatMessage extends Component implements HasComponents {
    * @param message message used to populate the ChatMessage instance
    * @param markdownEnabled whether the message supports markdown or not
    */
-  public ChatMessage(Message message, boolean markdownEnabled) {
+  public ChatMessage(T message, boolean markdownEnabled) {
     this.markdownEnabled = markdownEnabled;
     setMessage(message);
   }
@@ -72,7 +72,7 @@ public class ChatMessage extends Component implements HasComponents {
    * 
    * @param message message used to populate the ChatMessage instance
    */
-  public void setMessage(Message message) {
+  public void setMessage(T message) {
     this.message = message;
     updateLoadingState(message);
     if (message.getName()!=null) {
@@ -87,7 +87,7 @@ public class ChatMessage extends Component implements HasComponents {
     }
   }
 
-  private void updateLoadingState(Message message) {
+  private void updateLoadingState(T message) {
     if (message.isLoading()) {
       loader = new Div(new Div(),new Div(), new Div(), new Div());
       loader.setClassName("lds-ellipsis");
@@ -112,7 +112,7 @@ public class ChatMessage extends Component implements HasComponents {
    * 
    * @return the message object used to populate this ChatMessage
    */
-  public Message getMessage() {
+  public T getMessage() {
     return message;
   }
   

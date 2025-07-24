@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Class that represents a chat message
@@ -35,7 +36,7 @@ import lombok.Setter;
 @SuppressWarnings("serial")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(of = "id")
 public class Message implements Serializable {
 
