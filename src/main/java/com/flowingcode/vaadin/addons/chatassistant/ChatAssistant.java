@@ -21,7 +21,6 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -65,7 +64,7 @@ import java.util.Objects;
 @JsModule("./react/animated-fab.tsx")
 @Tag("animated-fab")
 @CssImport("./styles/chat-assistant-styles.css")
-public class ChatAssistant extends ReactAdapterComponent implements ClickNotifier<ChatAssistant> {
+public class ChatAssistant<T extends Message> extends ReactAdapterComponent implements ClickNotifier<ChatAssistant<T>> {
 
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
   private static final String PADDING_SMALL = "0.5em";
@@ -73,9 +72,9 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
   private Component headerComponent;
   private VerticalLayout container;
   private Component footerContainer;
-  private VirtualList<Message> content = new VirtualList<>();
+  private VirtualList<T> content = new VirtualList<>();
   private Popover chatWindow;
-  private List<Message> messages;
+  private List<T> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
   private boolean minimized = false;
@@ -105,7 +104,7 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    * @param messages the list of messages
    * @param markdownEnabled flag to enable or disable markdown support
    */
-  public ChatAssistant(List<Message> messages, boolean markdownEnabled) {
+  public ChatAssistant(List<T> messages, boolean markdownEnabled) {
     this.messages = messages;
     initializeHeader();
     initializeFooter();
@@ -124,13 +123,15 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
     headerComponent = header;
   }
 
+  @SuppressWarnings("unchecked")
   private void initializeFooter() {
     messageInput = new MessageInput();
     messageInput.setSizeFull();
     messageInput.getStyle().set("padding", PADDING_SMALL);
-    defaultSubmitListenerRegistration = messageInput.addSubmitListener(se -> 
-        sendMessage(Message.builder().messageTime(LocalDateTime.now())
-            .name("User").content(se.getValue()).build()));
+    defaultSubmitListenerRegistration = messageInput.addSubmitListener(se -> {
+      sendMessage((T) Message.builder().messageTime(LocalDateTime.now())
+          .name("User").content(se.getValue()).build());
+    });
     whoIsTyping = new Span();
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
     whoIsTyping.setVisible(false);
@@ -142,13 +143,14 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
     footerContainer = footer;
   }
 
+  @SuppressWarnings("unchecked")
   private void initializeContent(boolean markdownEnabled) {
-    content.setItems(messages);
-    content.setRenderer(new ComponentRenderer<>(message -> new ChatMessage(message, markdownEnabled), 
+    content.setRenderer(new ComponentRenderer<>(message -> new ChatMessage<T>(message, markdownEnabled), 
         (component, message) -> {
-          ((ChatMessage) component).setMessage(message);
+          ((ChatMessage<T>) component).setMessage(message);
           return component;
         }));
+    content.setItems(messages);
     content.setMinHeight("400px");
     content.setMinWidth("400px");
     container = new VerticalLayout(headerComponent, content, footerContainer);
@@ -180,7 +182,9 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
   }
 
   private void initializeAvatar() {
-    if (avatar!=null) avatar.removeFromParent();
+    if (avatar!=null) {
+      avatar.removeFromParent();
+    }
     avatar = avatarProvider.get();
     avatar.setSizeFull();
     this.getElement().appendChild(avatar.getElement());
@@ -194,7 +198,7 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    * 
    * @param dataProvider the data provider to be used
    */
-  public void setDataProvider(DataProvider<Message, ?> dataProvider) {
+  public void setDataProvider(DataProvider<T, ?> dataProvider) {
     content.setDataProvider(dataProvider);
   }
 
@@ -247,7 +251,7 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    *
    * @param message the message to be sent programmatically
    */
-  public void sendMessage(Message message) {
+  public void sendMessage(T message) {
     messages.add(message);
     content.getDataProvider().refreshAll();
     content.scrollToEnd();
@@ -258,7 +262,7 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    * 
    * @param message the message to be updated
    */
-  public void updateMessage(Message message) {
+  public void updateMessage(T message) {
     this.content.getDataProvider().refreshItem(message);
   }
 
@@ -367,7 +371,7 @@ public class ChatAssistant extends ReactAdapterComponent implements ClickNotifie
    *
    * @param renderer the renderer to use for rendering {@link Message} objects, it cannot be null
    */
-  public void setMessagesRenderer(Renderer<Message> renderer) {
+  public void setMessagesRenderer(Renderer<T> renderer) {
     Objects.requireNonNull(renderer, "Renderer cannot not be null");
     content.setRenderer(renderer);
   }
