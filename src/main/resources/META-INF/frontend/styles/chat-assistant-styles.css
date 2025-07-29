@@ -34,3 +34,7 @@ vaadin-vertical-layout.chat-assistant-container-vertical-layout {
                                   This new position is more suitable for resizing the chat window because the chat bubble 
                                   is positioned by default in the bottom-right of the view. */
 }
+
+.MuiBadge-badge {
+    z-index: 2000 !important;
+}
