@@ -43,7 +43,7 @@ class AnimatedFABElement extends ReactAdapterElement {
   
   protected override render(hooks: RenderHooks): ReactElement | null {
     const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [unreadMessages, setUnreadMessages] = hooks.useState<integer>('unreadMessages');
+    const [unreadMessages] = hooks.useState<integer>('unreadMessages');
     const eventControl = (event: { type: any; }) => {
         if (event.type === 'mousemove' || event.type === 'touchmove') {
           setIsDragging(true)
