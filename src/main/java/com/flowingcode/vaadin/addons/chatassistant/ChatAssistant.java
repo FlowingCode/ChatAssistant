@@ -386,10 +386,18 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
     this.initializeAvatar();
   }
 
+  /**
+   * Return the number of unread messages to be displayed in the chat assistant.
+   * @return the number of unread messages
+   */
   public Integer getUnreadMessages() {
     return getState("unreadMessages", Integer.class);
   }
 
+  /**
+   * Sets the number of unread messages to be displayed in the chat assistant.
+   * @param unreadMessages
+   */
   public void setUnreadMessages(Integer unreadMessages) {
     setState("unreadMessages",unreadMessages);
   }
