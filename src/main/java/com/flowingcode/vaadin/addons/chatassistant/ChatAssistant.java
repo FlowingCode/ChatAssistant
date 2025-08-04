@@ -189,7 +189,7 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
     avatar.setSizeFull();
     this.getElement().appendChild(avatar.getElement());
     this.addAttachListener(ev -> this.getElement().executeJs("return;")
-        .then(ev2 -> this.getElement().executeJs("this.childNodes[1].childNodes[0].appendChild($0)", avatar.getElement())
+        .then(ev2 -> this.getElement().executeJs("this.childNodes[1].childNodes[0].childNodes[0].appendChild($0)", avatar.getElement())
             .then(ev3 -> chatWindow.setTarget(avatar))));
   }
 
@@ -384,6 +384,23 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
   public void setAvatarProvider(SerializableSupplier<Avatar> avatarProvider) {
     this.avatarProvider = avatarProvider;
     this.initializeAvatar();
+  }
+
+  /**
+   * Return the number of unread messages to be displayed in the chat assistant.
+   * @return the number of unread messages
+   */
+  public int getUnreadMessages() {
+    Integer unreadMessages = getState("unreadMessages", Integer.class);
+    return unreadMessages==null?0:unreadMessages;
+  }
+
+  /**
+   * Sets the number of unread messages to be displayed in the chat assistant.
+   * @param unreadMessages
+   */
+  public void setUnreadMessages(int unreadMessages) {
+    setState("unreadMessages",unreadMessages);
   }
   
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import {useState} from 'react';
 import Draggable from 'react-draggable';
 import Fab from '@mui/material/Fab';
+import Badge from '@mui/material/Badge';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ReactAdapterElement, type RenderHooks } from 'Frontend/generated/flow/ReactAdapter';
 
@@ -14,6 +15,12 @@ const lumoTheme = createTheme({
       dark: 'var(--lumo-primary-color-20pct)',
       contrastText: 'rgb(var(--lumo-primary-contrast-color))',
     },
+    warning: {
+        main: 'var(--lumo-warning-color)',
+        light: 'var(--lumo-warning-color-50pct)',
+        dark: 'var(--lumo-warning-color-20pct)',
+        contrastText: 'rgb(var(--lumo-warning-contrast-color))',
+    }
     },
     components: {
         MuiFab: {
@@ -36,6 +43,7 @@ class AnimatedFABElement extends ReactAdapterElement {
   
   protected override render(hooks: RenderHooks): ReactElement | null {
     const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [unreadMessages] = hooks.useState<integer>('unreadMessages');
     const eventControl = (event: { type: any; }) => {
         if (event.type === 'mousemove' || event.type === 'touchmove') {
           setIsDragging(true)
@@ -63,11 +71,13 @@ class AnimatedFABElement extends ReactAdapterElement {
               right: 16
             }}
           >
+          <Badge badgeContent={unreadMessages} color="warning" overlap="circular">
             <Fab
               color="primary"
               aria-label="open chat assistant"
             >
             </Fab>
+          </Badge>
           </div>
         </Draggable>
       </ThemeProvider>
