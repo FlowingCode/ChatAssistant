@@ -186,11 +186,13 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
       avatar.removeFromParent();
     }
     avatar = avatarProvider.get();
-    avatar.setSizeFull();
     this.getElement().appendChild(avatar.getElement());
     this.addAttachListener(ev -> this.getElement().executeJs("return;")
         .then(ev2 -> this.getElement().executeJs("this.childNodes[1].childNodes[0].childNodes[0].appendChild($0)", avatar.getElement())
-            .then(ev3 -> chatWindow.setTarget(avatar))));
+            .then(ev3 -> {
+              chatWindow.setTarget(avatar);
+              avatar.setSizeFull();
+            })));
   }
 
   /**
