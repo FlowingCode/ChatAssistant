@@ -34,6 +34,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageInput.SubmitEvent;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
@@ -44,6 +45,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,7 @@ import java.util.Objects;
 @NpmPackage(value = "@emotion/react", version = "11.14.0")
 @NpmPackage(value = "@emotion/styled", version = "11.14.0")
 @JsModule("./react/animated-fab.tsx")
+@JsModule("./fcChatAssistantConnector.js")
 @Tag("animated-fab")
 @CssImport("./styles/chat-assistant-styles.css")
 public class ChatAssistant<T extends Message> extends ReactAdapterComponent implements ClickNotifier<ChatAssistant<T>> {
@@ -126,8 +129,9 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
   @SuppressWarnings("unchecked")
   private void initializeFooter() {
     messageInput = new MessageInput();
-    messageInput.setSizeFull();
-    messageInput.getStyle().set("padding", PADDING_SMALL);
+    messageInput.setWidthFull();
+    messageInput.setMaxHeight("80px");
+    messageInput.getStyle().set("padding", "0");
     defaultSubmitListenerRegistration = messageInput.addSubmitListener(se -> {
       sendMessage((T) Message.builder().messageTime(LocalDateTime.now())
           .name("User").content(se.getValue()).build());
@@ -136,7 +140,7 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
     whoIsTyping.setClassName("chat-assistant-who-is-typing");
     whoIsTyping.setVisible(false);
     VerticalLayout footer = new VerticalLayout(whoIsTyping, messageInput);
-    footer.setSizeFull();
+    footer.setWidthFull();
     footer.setSpacing(false);
     footer.setMargin(false);
     footer.setPadding(false);
@@ -151,14 +155,15 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
           return component;
         }));
     content.setItems(messages);
-    content.setMinHeight("400px");
-    content.setMinWidth("400px");
+    content.setSizeFull();
     container = new VerticalLayout(headerComponent, content, footerContainer);
     container.setClassName("chat-assistant-container-vertical-layout");
     container.setPadding(false);
     container.setMargin(false);
     container.setSpacing(false);
     container.setSizeFull();
+    container.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+    container.setFlexGrow(1, content);
   }
 
   private void initializeChatWindow() {
@@ -169,9 +174,10 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
     chatWindow.add(resizableVL);
     chatWindow.setOpenOnClick(false);
     chatWindow.setCloseOnOutsideClick(false);
-    chatWindow.addOpenedChangeListener(ev->{
-      minimized = !ev.isOpened();
-    });
+    chatWindow.addOpenedChangeListener(ev -> minimized = !ev.isOpened());
+    chatWindow.addAttachListener(e -> e.getUI().getPage()
+        .executeJs("window.Vaadin.Flow.fcChatAssistantConnector.observePopoverResize($0)", chatWindow.getElement()));
+
     this.getElement().addEventListener("avatar-clicked", ev ->{
       if (this.minimized) {
         chatWindow.open();
@@ -404,5 +410,5 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
   public void setUnreadMessages(int unreadMessages) {
     setState("unreadMessages",unreadMessages);
   }
-  
+
 }

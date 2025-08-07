@@ -19,16 +19,19 @@
  */
 vaadin-vertical-layout.chat-assistant-resizable-vertical-layout {
     transform: rotate(180deg); /* This rotation, along with the one below, is a "double rotation trick." */
-    margin: -0.125em -0.375em 0;
+    margin: 0;
+    padding: 10px;
     overflow: hidden;
-    width: 439px;
     resize: both;
-    min-height: min-content;
-    min-width: min-content;
+    min-height: 30vh;
+    min-width: 310px;
+    width: var(--fc-chat-assistant-popover-width, 400px);
+    height: var(--fc-chat-assistant-popover-height, 400px);
 }
 
 vaadin-vertical-layout.chat-assistant-container-vertical-layout {
-    min-height: min-content;
+    flex-grow: 1;
+    gap: var(--lumo-space-s);
     transform: rotate(180deg); /* This second rotation completes the "double rotation trick."
                                   Together, these two rotations position the resize handle in the upper-left corner.
                                   This new position is more suitable for resizing the chat window because the chat bubble 
@@ -37,4 +40,36 @@ vaadin-vertical-layout.chat-assistant-container-vertical-layout {
 
 .MuiBadge-badge {
     z-index: 2000 !important;
+}
+
+vaadin-popover-overlay::part(content){
+    padding: 0;
+}
+
+vaadin-message::part(message) {
+    word-break: break-word;
+}
+
+vaadin-popover-overlay::part(overlay) {
+    max-width: 100vw; /* Prevent width beyond viewport */
+    max-height: 100vh; /* Prevent height beyond viewport */
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+    vaadin-popover-overlay::part(overlay) {
+        width: 100%;
+        height: 100%;
+    }
+
+    vaadin-popover-overlay::part(content) {
+        width: 100%;
+        height: 100%;
+    }
+
+    vaadin-vertical-layout.chat-assistant-resizable-vertical-layout {
+        resize: none;
+        height: 100%;
+        width: 100%;
+    }
 }
