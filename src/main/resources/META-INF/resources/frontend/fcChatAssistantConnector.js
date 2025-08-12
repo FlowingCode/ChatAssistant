@@ -55,13 +55,15 @@
                 resizableContainer.style.maxWidth = '';
             });
 
+            // Debounce calls to avoid excessive recalculations on rapid resize
+            const debouncedClamp = debounce(() => clampToViewport(resizableContainer));
+            
             new ResizeObserver(() => {
                 const popoverOverlay = resizableContainer.parentElement;
                 const overlay = popoverOverlay.shadowRoot?.querySelector('[part="overlay"]');
                 if (!overlay) return;
 
-                // Debounce calls to avoid excessive recalculations on rapid resize
-                debounce(() => clampToViewport(resizableContainer));
+                debouncedClamp();
             }).observe(resizableContainer);
 
 
