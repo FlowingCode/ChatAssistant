@@ -57,7 +57,7 @@
 
             // Debounce calls to avoid excessive recalculations on rapid resize
             const debouncedClamp = debounce(() => clampToViewport(resizableContainer));
-            
+
             new ResizeObserver(() => {
                 const popoverOverlay = resizableContainer.parentElement;
                 const overlay = popoverOverlay.shadowRoot?.querySelector('[part="overlay"]');
@@ -140,7 +140,7 @@
                 let frameId;
 
                 function checkPosition() {
-                    if (!overlay.checkVisibility()) {
+                    if (!isVisible(overlay)) {
                         cancelAnimationFrame(frameId);
                         return;
                     }
@@ -159,6 +159,19 @@
                 }
 
                 frameId = requestAnimationFrame(checkPosition);
+            }
+
+            function isVisible(el) {
+                if (!el) return false;
+
+                if (typeof el.checkVisibility === 'function') {
+                    // Use native checkVisibility if available
+                    return el.checkVisibility();
+                }
+
+                // Fallback: check CSS display and visibility
+                const style = getComputedStyle(el);
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
             }
         },
     }
