@@ -171,7 +171,7 @@
 
                 // Fallback: check CSS display and visibility
                 const style = getComputedStyle(el);
-                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+                return style.display !== 'none' && style.visibility !== 'hidden';
             }
         },
     }
