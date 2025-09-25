@@ -29,6 +29,8 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -39,13 +41,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.component.react.ReactAdapterComponent;
-import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,13 +69,14 @@ import java.util.Objects;
 @CssImport("./styles/chat-assistant-styles.css")
 public class ChatAssistant<T extends Message> extends ReactAdapterComponent implements ClickNotifier<ChatAssistant<T>> {
 
+  private static final String CHAT_ASSISTANT_GRID_COMPACT = "chat-assistant-grid-compact";
+
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
-  private static final String PADDING_SMALL = "0.5em";
 
   private Component headerComponent;
   private VerticalLayout container;
   private Component footerContainer;
-  private VirtualList<T> content = new VirtualList<>();
+  private Grid<T> content = new Grid<>();
   private Popover chatWindow;
   private List<T> messages;
   private MessageInput messageInput;
@@ -149,7 +150,10 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
 
   @SuppressWarnings("unchecked")
   private void initializeContent(boolean markdownEnabled) {
-    content.setRenderer(new ComponentRenderer<>(message -> new ChatMessage<T>(message, markdownEnabled), 
+    content.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+    content.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS);
+    content.setClassName(CHAT_ASSISTANT_GRID_COMPACT);
+    content.addColumn(m->m.getContent()).setKey("content").setRenderer(new ComponentRenderer<>(message -> new ChatMessage<T>(message, markdownEnabled), 
         (component, message) -> {
           ((ChatMessage<T>) component).setMessage(message);
           return component;
@@ -381,7 +385,7 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
    */
   public void setMessagesRenderer(Renderer<T> renderer) {
     Objects.requireNonNull(renderer, "Renderer cannot not be null");
-    content.setRenderer(renderer);
+    content.getColumnByKey("content").setRenderer(renderer);
   }
   
   /**
