@@ -35,6 +35,7 @@ public class ChatAssistantDemoView extends TabbedDemo {
     addDemo(ChatAssistantDemo.class);
     addDemo(ChatAssistantLazyLoadingDemo.class);
     addDemo(ChatAssistantMarkdownDemo.class);
+    addDemo(ChatAssistantGenerativeDemo.class);
     setSizeFull();
   }
 }
