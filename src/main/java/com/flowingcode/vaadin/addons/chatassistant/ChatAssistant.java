@@ -45,7 +45,6 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,6 @@ import java.util.Objects;
 public class ChatAssistant<T extends Message> extends ReactAdapterComponent implements ClickNotifier<ChatAssistant<T>> {
 
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
-  private static final String PADDING_SMALL = "0.5em";
 
   private Component headerComponent;
   private VerticalLayout container;
