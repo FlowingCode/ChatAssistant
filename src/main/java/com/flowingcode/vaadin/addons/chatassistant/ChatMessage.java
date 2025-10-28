@@ -74,7 +74,7 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
    */
   public void setMessage(T message) {
     this.message = message;
-    updateLoadingState(message);
+    updateMessage(message);
     if (message.getName()!=null) {
       this.setUserName(message.getName());
       if (message.getAvatar()!=null) {
@@ -87,7 +87,7 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
     }
   }
 
-  private void updateLoadingState(T message) {
+  private void updateMessage(T message) {
     if (message.isLoading()) {
       loader = new Div(new Div(),new Div(), new Div(), new Div());
       loader.setClassName("lds-ellipsis");
