@@ -134,6 +134,11 @@
 			<version>${markdown-editor.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.flowingcode.vaadin</groupId>
+			<artifactId>json-migration-helper</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
