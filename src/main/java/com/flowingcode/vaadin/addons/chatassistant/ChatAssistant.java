@@ -21,6 +21,7 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
+import com.flowingcode.vaadin.jsonmigration.JsonMigration;
 import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -49,6 +50,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.experimental.ExtensionMethod;
 
 /**
  * Component that allows to create a floating chat button that will open a chat window that can be
@@ -66,6 +68,7 @@ import java.util.Objects;
 @JsModule("./fcChatAssistantConnector.js")
 @Tag("animated-fab")
 @CssImport("./styles/chat-assistant-styles.css")
+@ExtensionMethod(value = JsonMigration.class, suppressBaseMethods = true)
 public class ChatAssistant<T extends Message> extends ReactAdapterComponent implements ClickNotifier<ChatAssistant<T>> {
 
   private static final String CHAT_HEADER_CLASS_NAME = "chat-header";
