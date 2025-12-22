@@ -17,7 +17,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<drivers.dir>${project.basedir}/drivers</drivers.dir>
 		<jetty.version>11.0.26</jetty.version>
-		<flowingcode.commons.demo.version>3.10.0</flowingcode.commons.demo.version>
+		<flowingcode.commons.demo.version>5.0.0</flowingcode.commons.demo.version>
 		<markdown-editor.version>2.0.1</markdown-editor.version>	
 		<frontend.hotdeploy>true</frontend.hotdeploy>
 	</properties>
@@ -489,14 +489,6 @@
 				<vaadin.version>25.0.0-beta2</vaadin.version>
 				<jetty.version>11.0.26</jetty.version>
 			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>com.flowingcode.vaadin.addons.demo</groupId>
-					<artifactId>commons-demo</artifactId>
-					<version>5.0.0</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 		
 	</profiles>
