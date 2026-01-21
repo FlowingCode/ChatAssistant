@@ -81,7 +81,7 @@ public class ChatAssistant<T extends Message> extends ReactAdapterComponent impl
   private List<T> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
-  private boolean minimized = false;
+  private boolean minimized = true;
   private Registration defaultSubmitListenerRegistration;
   private SerializableSupplier<Avatar> avatarProvider = () -> new Avatar("Chat Assistant");
   private Avatar avatar;
