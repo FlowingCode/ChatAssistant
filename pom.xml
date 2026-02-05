@@ -60,11 +60,7 @@
 				<scope>import</scope>
 				<version>${vaadin.version}</version>
 			</dependency>
-            <dependency>
-            	<groupId>com.flowingcode.vaadin.addons.demo</groupId>
-            	<artifactId>commons-demo</artifactId>
-            	<version>${flowingcode.commons.demo.version}</version>
-            </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -152,6 +148,7 @@
         <dependency>
 			<groupId>com.flowingcode.vaadin.addons.demo</groupId>
 			<artifactId>commons-demo</artifactId>
+			<version>${flowingcode.commons.demo.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
