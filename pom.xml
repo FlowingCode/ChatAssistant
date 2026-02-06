@@ -17,7 +17,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<drivers.dir>${project.basedir}/drivers</drivers.dir>
 		<jetty.version>11.0.26</jetty.version>
-		<flowingcode.commons.demo.version>5.0.0</flowingcode.commons.demo.version>
+		<flowingcode.commons.demo.version>5.2.0</flowingcode.commons.demo.version>
 		<markdown-editor.version>2.0.1</markdown-editor.version>	
 		<frontend.hotdeploy>true</frontend.hotdeploy>
 	</properties>
