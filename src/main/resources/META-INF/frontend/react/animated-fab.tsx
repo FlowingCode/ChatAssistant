@@ -7,7 +7,7 @@ import Badge from '@mui/material/Badge';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ReactAdapterElement, type RenderHooks } from 'Frontend/generated/flow/ReactAdapter';
 
-const lumoTheme = createTheme({
+const animatedFabTheme = createTheme({
   palette: {
     primary: {
       main: 'var(--lumo-primary-color)',
@@ -16,10 +16,10 @@ const lumoTheme = createTheme({
       contrastText: 'rgb(var(--lumo-primary-contrast-color))',
     },
     warning: {
-        main: 'var(--lumo-warning-color)',
+        main: 'var(--lumo-warning-color, var(--aura-yellow))',
         light: 'var(--lumo-warning-color-50pct)',
         dark: 'var(--lumo-warning-color-20pct)',
-        contrastText: 'rgb(var(--lumo-warning-contrast-color))',
+        contrastText: 'rgb(var(--lumo-warning-contrast-color, var(--aura-accent-color-light)))',
     }
     },
     components: {
@@ -55,7 +55,7 @@ class AnimatedFABElement extends ReactAdapterElement {
         }
       }
     return (
-      <ThemeProvider theme={lumoTheme}>
+      <ThemeProvider theme={animatedFabTheme}>
         <Draggable 
           nodeRef={this.draggableNodeRef}
           onDrag={eventControl}
