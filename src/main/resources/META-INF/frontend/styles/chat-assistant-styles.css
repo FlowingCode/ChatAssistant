@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ vaadin-vertical-layout.chat-assistant-resizable-vertical-layout {
 
 vaadin-vertical-layout.chat-assistant-container-vertical-layout {
     flex-grow: 1;
-    gap: var(--lumo-space-s);
+    gap: var(--lumo-space-s, var(--vaadin-gap-s));
     transform: rotate(180deg); /* This second rotation completes the "double rotation trick."
                                   Together, these two rotations position the resize handle in the upper-left corner.
                                   This new position is more suitable for resizing the chat window because the chat bubble 
