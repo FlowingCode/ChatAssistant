@@ -38,7 +38,7 @@ import lombok.EqualsAndHashCode;
 @SuppressWarnings("serial")
 @JsModule("@vaadin/message-list/src/vaadin-message.js")
 @Tag("vaadin-message")
-@CssImport("./styles/chat-message-styles.css")
+@CssImport("./styles/fc-chat-message-styles.css")
 @EqualsAndHashCode(callSuper=false)
 public class ChatMessage<T extends Message> extends Component implements HasComponents {
   
