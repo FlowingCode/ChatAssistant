@@ -25,6 +25,7 @@ import com.flowingcode.vaadin.addons.demo.SourcePosition;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
@@ -40,6 +41,11 @@ public class ChatAssistantMarkdownDemo extends VerticalLayout {
   
   public ChatAssistantMarkdownDemo() {
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>(true);
+    SvgIcon icon = new SvgIcon("chatbot.svg");
+    icon.setColor("var(--lumo-primary-contrast-color)");
+    chatAssistant.setFabIcon(icon);
+    chatAssistant.setWindowWidth("400px");
+    chatAssistant.setWindowHeight("400px");
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant (try using Markdown)");
     message.setSizeFull();
