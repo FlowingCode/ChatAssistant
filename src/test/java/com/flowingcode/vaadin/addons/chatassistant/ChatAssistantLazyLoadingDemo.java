@@ -27,6 +27,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -125,6 +126,11 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
   public ChatAssistantLazyLoadingDemo() {
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
     chatAssistant.setClassName("small");
+    SvgIcon icon = new SvgIcon("chatbot.svg");
+    icon.setColor("var(--lumo-primary-contrast-color)");
+    chatAssistant.setFabIcon(icon);
+    chatAssistant.setWindowWidth("400px");
+    chatAssistant.setWindowHeight("400px");
     Span lazyLoadingData = new Span();
     DataProvider<Message,?> dataProvider = DataProvider.fromCallbacks(query->{
       lazyLoadingData.setText("Loading messages from: " + query.getOffset() + ", with limit: " + query.getLimit());
@@ -162,7 +168,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       chatAssistant.scrollToEnd();
     });
     Icon minimize = VaadinIcon.MINUS.create();
-    minimize.addClickListener(ev -> chatAssistant.setMinimized(!chatAssistant.isMinimized()));
+    minimize.addClickListener(ev -> chatAssistant.setOpened(!chatAssistant.isOpened()));
     Span title = new Span("Customized Assistant Header");
     title.setWidthFull();
     HorizontalLayout headerBar = new HorizontalLayout(title, minimize);
