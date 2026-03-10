@@ -27,6 +27,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -125,6 +126,9 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
   public ChatAssistantLazyLoadingDemo() {
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
     chatAssistant.setClassName("small");
+    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
+    chatAssistant.setWindowWidth("400px");
+    chatAssistant.setWindowHeight("400px");
     Span lazyLoadingData = new Span();
     DataProvider<Message,?> dataProvider = DataProvider.fromCallbacks(query->{
       lazyLoadingData.setText("Loading messages from: " + query.getOffset() + ", with limit: " + query.getLimit());
@@ -133,6 +137,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       return messages.size();
     });
     chatAssistant.setDataProvider(dataProvider);
+    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
     
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");

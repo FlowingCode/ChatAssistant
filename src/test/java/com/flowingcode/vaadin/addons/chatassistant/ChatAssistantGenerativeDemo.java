@@ -26,6 +26,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -52,7 +54,9 @@ public class ChatAssistantGenerativeDemo extends VerticalLayout {
         + " the next word. I hope this is useful for your demonstration!";
     
     ChatAssistant<CustomMessage> chatAssistant = new ChatAssistant<>();
-    chatAssistant.setAvatarProvider(()->new Avatar("Chat Assistant","chatbot.png"));
+    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
+    chatAssistant.setWindowWidth("400px");
+    chatAssistant.setWindowHeight("400px");
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");
     message.setSizeFull();

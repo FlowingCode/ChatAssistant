@@ -1,0 +1,54 @@
+/*-
+ * #%L
+ * Chat Assistant Add-on
+ * %%
+ * Copyright (C) 2023 - 2026 Flowing Code
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+/* Base styles */
+.fc-chat-assistant-fab {
+    cursor: pointer;
+    transform: scale(1);
+    box-shadow: var(--lumo-box-shadow-m);
+}
+
+/* Expansion state when being dragged */
+.fc-chat-assistant-fab.dragging {
+    cursor: grabbing;
+    transform: scale(1.15);
+    box-shadow: var(--lumo-box-shadow-xl);
+}
+
+.fc-chat-assistant-popover {
+    --vaadin-popover-offset-top : 15px;
+    --vaadin-popover-offset-bottom : 15px;
+}
+
+.fc-chat-assistant-unread-badge {
+    transition: all 0.15s ease-out;
+}
+
+/* Specific cursors for each corner */
+.fc-chat-assistant-resize-bottom-left.active { cursor: sw-resize; } /* North-West */
+.fc-chat-assistant-resize-bottom-right.active   { cursor: se-resize; } /* North-East */
+.fc-chat-assistant-resize-top-left.active  { cursor: nw-resize; } /* South-West */
+.fc-chat-assistant-resize-top-right.active  { cursor: ne-resize; } /* South-East */
+
+/* Specific cursors for the sides */
+.fc-chat-assistant-resize-bottom.active   { cursor: s-resize; }  /* North/Top */
+.fc-chat-assistant-resize-top.active   { cursor: n-resize; }  /* South/Bottom */
+.fc-chat-assistant-resize-left.active   { cursor: w-resize; }  /* West/Left */
+.fc-chat-assistant-resize-right.active   { cursor: e-resize; }  /* East/Right */

@@ -1,0 +1,101 @@
+/*-
+ * #%L
+ * Chat Assistant Add-on
+ * %%
+ * Copyright (C) 2023 - 2026 Flowing Code
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw) => {
+    const itemWidth = fab.clientWidth;
+    const itemHeight = fab.clientHeight;
+    const margin = parseFloat(marginRaw);
+    const sensitivity = parseFloat(sensitivityRaw);
+    const sizeTransition = 'transform 0.2s ease';
+    const snapTransition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    const position = { x: margin, y: margin };
+    const initialPosition = { x: margin, y: margin };
+
+    let screenWidth = window.innerWidth;
+    let screenHeight = window.innerHeight;
+    let isDragging = false;
+
+    item.style.transition = sizeTransition;
+
+    window.addEventListener("resize", (_) => {
+        screenWidth = window.innerWidth;
+        screenHeight = window.innerHeight;
+        // Reposition the item to ensure it stays within the new screen bounds
+        position.x = margin;
+        position.y = margin;
+        updatePosition();
+    });
+
+    // Update FAB position
+    function updatePosition() {
+        item.style.right = position.x + 'px';
+        item.style.bottom = position.y + 'px';
+    }
+
+    // Ensure the item stays within the screen and margin bounds
+    function snapToBoundary() {
+        const xMax = screenWidth - itemWidth - margin;
+        const yMax = screenHeight - itemHeight - margin;
+        const x = position.x;
+        const y = position.y;
+        if (x < margin) position.x = margin;
+        if (x > xMax) position.x = xMax;
+        if (y < margin) position.y = margin;
+        if (y > yMax) position.y = yMax;
+        updatePosition();
+    }
+
+    // Determine if the pointer event should be treated as a click (no significant movement, based on sensitivity threshold)
+    function isClickOnlyEvent() {
+        const dx = Math.abs(position.x - initialPosition.x);
+        const dy = Math.abs(position.y - initialPosition.y);
+        return dx < sensitivity && dy < sensitivity;
+    }
+
+    item.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        fab.classList.add('dragging');
+        item.setPointerCapture(e.pointerId);
+        item.style.transition = sizeTransition;
+        initialPosition.x = position.x;
+        initialPosition.y = position.y;
+    });
+
+    item.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const offsetX = screenWidth - e.clientX - itemWidth / 2;
+        const offsetY = screenHeight - e.clientY - itemHeight / 2;
+        position.x = offsetX;
+        position.y = offsetY;
+        updatePosition();
+    });
+
+    item.addEventListener('pointerup', (e) => {
+        isDragging = false;
+        item.style.transition = snapTransition + ', ' + sizeTransition;
+        fab.classList.remove('dragging');
+        item.releasePointerCapture(e.pointerId);
+        snapToBoundary();
+        if (isClickOnlyEvent()) {
+            root.$server.onClick();
+        }
+    });
+
+    updatePosition();
+};
