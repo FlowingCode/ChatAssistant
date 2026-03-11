@@ -21,7 +21,6 @@ window.fcChatAssistantResizeBottomLeft = (item, container, popoverTag, sizeRaw, 
     const size = parseFloat(sizeRaw);
     const maxSize = parseFloat(maxSizeRaw);
     const overlayTag = "vaadin-popover-overlay".toUpperCase();
-    const overlayArrowCenteredAttribute = "arrow-centered";
     
     let minWidth = 0;
     let minHeight = 0;
@@ -43,7 +42,7 @@ window.fcChatAssistantResizeBottomLeft = (item, container, popoverTag, sizeRaw, 
     // Restrict dragging capability to when the popover content has enough space in the corresponding directions
     function shouldDrag() {
         const bottomRule = overlay && !overlay.style.bottom && overlay.style.top;
-        const leftRule = overlay && overlay.style.right && overlay.getAttribute(overlayArrowCenteredAttribute) != "";
+        const leftRule = overlay && overlay.style.right && !overlay.style.left;
         return bottomRule && leftRule;
     }
 
