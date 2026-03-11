@@ -688,8 +688,8 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   public void setUnreadMessages(int unreadMessages) {
     this.unreadMessages = unreadMessages >= 0 ? Math.min(unreadMessages, 99) : 0;
-    unreadBadge.setText(String.valueOf(unreadMessages));
-    if(unreadMessages > 0) {
+    unreadBadge.setText(String.valueOf(this.unreadMessages));
+    if(this.unreadMessages > 0) {
       unreadBadge.getStyle().setScale("1");
     }
     else {
