@@ -104,6 +104,6 @@ public class ChatAssistantDemo extends VerticalLayout {
 
     chatAssistant.setUnreadMessages(4);
 
-    add(chatAssistant);
+    add(message, chat, chatWithThinking, chatAssistant);
   }
 }
