@@ -37,9 +37,7 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw) =>
         screenWidth = window.innerWidth;
         screenHeight = window.innerHeight;
         // Reposition the item to ensure it stays within the new screen bounds
-        position.x = margin;
-        position.y = margin;
-        updatePosition();
+        snapToBoundary();
     });
 
     // Update FAB position
