@@ -18,8 +18,6 @@
  * #L%
  */
 window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensitivityRaw) => {
-    const itemWidth = fab.clientWidth;
-    const itemHeight = fab.clientHeight;
     const margin = parseFloat(marginRaw);
     const sensitivity = parseFloat(sensitivityRaw);
     const sizeTransition = 'transform 0.2s ease';
@@ -79,8 +77,11 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
 
     // Ensure the item stays within the screen and margin bounds
     function snapToBoundary() {
-        const xMax = screenWidth - itemWidth - margin;
-        const yMax = screenHeight - itemHeight - margin;
+        // Get current dimensions to account for transforms
+        const itemRect = fab.getBoundingClientRect();
+        
+        const xMax = screenWidth - itemRect.width - margin;
+        const yMax = screenHeight - itemRect.height - margin;
         const x = position.x;
         const y = position.y;
         if (x < margin) position.x = margin;
@@ -108,10 +109,11 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
 
     item.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
-        const offsetX = screenWidth - e.clientX - itemWidth / 2;
-        const offsetY = screenHeight - e.clientY - itemHeight / 2;
-        position.x = offsetX;
-        position.y = offsetY;
+        const itemRect = fab.getBoundingClientRect();
+        // Calculate position from right and bottom edges
+        position.x = screenWidth - e.clientX - (itemRect.width / 2);
+        position.y = screenHeight - e.clientY - (itemRect.height / 2);
+        
         updatePosition();
     });
 
