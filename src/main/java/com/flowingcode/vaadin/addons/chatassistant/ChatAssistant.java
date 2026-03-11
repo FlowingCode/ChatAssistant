@@ -350,7 +350,7 @@ public class ChatAssistant<T extends Message> extends Div {
         String.format(
             """
             if(!this['%1$s']) { %2$s }
-            else {
+            if(!this['%1$s']) {
               this['%1$s'] = this;
             };
             """, uniqueFlag, executable),
