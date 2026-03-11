@@ -42,7 +42,7 @@ window.fcChatAssistantResizeTopLeft = (item, container, popoverTag, sizeRaw, max
     // Restrict dragging capability to when the popover content has enough space in the corresponding directions
     function shouldDrag() {
         const topRule = overlay && overlay.style.bottom && !overlay.style.top;
-        const leftRule = overlay && overlay.style.right && !overlay.hasAttribute(overlayArrowCenteredAttribute);
+        const leftRule = overlay && overlay.style.right && !overlay.style.left;
         return topRule && leftRule;
     }
 
