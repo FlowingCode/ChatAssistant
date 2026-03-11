@@ -33,7 +33,10 @@ window.fcChatAssistantResizeBottom = (item, container, popoverTag, sizeRaw, maxS
     // Fetch the root overlay component
     function fetchOverlay() {
         if (!overlay) {
-            overlay = [...document.getElementsByClassName(popoverTag)].find(p => p.tagName == overlayTag);
+            overlay = document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag);
+            if(!overlay) {
+                overlay = [...document.getElementsByClassName(popoverTag)].find(p => p.tagName == overlayTag);
+            }
         }
     }
 
