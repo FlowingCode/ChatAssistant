@@ -56,11 +56,13 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
             }
             // Apply adjustments
             if (widthAdjustment > 0) {
-                const newWidth = Math.max(0, rect.width - widthAdjustment);
+                const minWidth = parseFloat(container.style.minWidth) || 0;
+                const newWidth = Math.max(minWidth, rect.width - widthAdjustment);
                 container.style.width = newWidth + 'px';
             }
             if (heightAdjustment > 0) {
-                const newHeight = Math.max(0, rect.height - heightAdjustment);
+                const minHeight = parseFloat(container.style.minHeight) || 0;
+                const newHeight = Math.max(minHeight, rect.height - heightAdjustment);
                 container.style.height = newHeight + 'px';
             }
         }
