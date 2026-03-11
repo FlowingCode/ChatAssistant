@@ -523,8 +523,11 @@ public class ChatAssistant<T extends Message> extends Div {
    * @return registration for removal of the listener
    */
   public Registration setSubmitListener(ComponentEventListener<MessageInput.SubmitEvent> listener) {
-    this.defaultSubmitListenerRegistration.remove();
-    return this.messageInput.addSubmitListener(listener);
+    if(this.defaultSubmitListenerRegistration != null) {
+      this.defaultSubmitListenerRegistration.remove();
+    }
+    this.defaultSubmitListenerRegistration = this.messageInput.addSubmitListener(listener);
+    return this.defaultSubmitListenerRegistration;
   }
 
   private void refreshContent() {
