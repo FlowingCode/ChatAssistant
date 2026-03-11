@@ -107,7 +107,7 @@ public class ChatAssistant<T extends Message> extends Div {
   private MessageInput messageInput;
   private Span whoIsTyping;
   private Registration defaultSubmitListenerRegistration;
-  private int unreadMessages;
+  private int unreadMessages = 0;
 
   public ChatAssistant(List<T> messages, boolean markdownEnabled) {
     this.setUI();
@@ -240,7 +240,7 @@ public class ChatAssistant<T extends Message> extends Div {
         .setJustifyContent(Style.JustifyContent.CENTER)
         .setPosition(Style.Position.FIXED);
 
-    unreadBadge.setText(String.valueOf(99));
+    unreadBadge.setText(String.valueOf(unreadMessages));
     unreadBadge.addClassName(DEFAULT_UNREAD_BADGE_CLASS);
     unreadBadge.getStyle()
         .setTextAlign(Style.TextAlign.CENTER)
