@@ -132,15 +132,15 @@ public class ChatAssistant<T extends Message> extends Div {
   protected void onAttach(AttachEvent attachEvent) {
     super.onAttach(attachEvent);
     addComponentRefreshedListener(
-        "fc-chat-assistant-drag-listener", this,
+        "fc-chat-assistant-drag-listener",
         () -> this.getElement().executeJs(
             "window.fcChatAssistantMovement($0, $1, $2, $3, $4);",
             this.getElement(), fabWrapper.getElement(), fab.getElement(), DEFAULT_FAB_MARGIN, DEFAULT_DRAG_SENSITIVITY
         )
     );
     chatWindow.addOpenedChangeListener(ev -> {
-      if(ev.isOpened()) {
-        addComponentRefreshedListener("fc-chat-assistant-resize-top-listener", this,
+      if (ev.isOpened()) {
+        addComponentRefreshedListener("fc-chat-assistant-resize-top-listener",
             () ->
                 this.getElement().executeJs(
                     "window.fcChatAssistantResizeTop($0, $1, $2, $3, $4);",
@@ -149,7 +149,7 @@ public class ChatAssistant<T extends Message> extends Div {
                 )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-bottom-right-listener", this,
+            "fc-chat-assistant-resize-bottom-right-listener",
             () ->
                 this.getElement().executeJs(
                     "window.fcChatAssistantResizeBottomRight($0, $1, $2, $3, $4);",
@@ -158,7 +158,7 @@ public class ChatAssistant<T extends Message> extends Div {
                 )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-top-right-listener", this,
+            "fc-chat-assistant-resize-top-right-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeTopRight($0, $1, $2, $3, $4);",
                 resizerTopRight.getElement(), overlay,
@@ -166,7 +166,7 @@ public class ChatAssistant<T extends Message> extends Div {
             )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-right-listener", this,
+            "fc-chat-assistant-resize-right-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeRight($0, $1, $2, $3, $4);",
                 resizerRight.getElement(), overlay,
@@ -174,7 +174,7 @@ public class ChatAssistant<T extends Message> extends Div {
             )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-bottom-listener", this,
+            "fc-chat-assistant-resize-bottom-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeBottom($0, $1, $2, $3, $4);",
                 resizerBottom.getElement(), overlay,
@@ -182,7 +182,7 @@ public class ChatAssistant<T extends Message> extends Div {
             )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-left-listener", this,
+            "fc-chat-assistant-resize-left-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeLeft($0, $1, $2, $3, $4);",
                 resizerLeft.getElement(), overlay,
@@ -190,7 +190,7 @@ public class ChatAssistant<T extends Message> extends Div {
             )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-top-left-listener", this,
+            "fc-chat-assistant-resize-top-left-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeTopLeft($0, $1, $2, $3, $4);",
                 resizerTopLeft.getElement(), overlay,
@@ -198,7 +198,7 @@ public class ChatAssistant<T extends Message> extends Div {
             )
         );
         addComponentRefreshedListener(
-            "fc-chat-assistant-resize-bottom-left-listener", this,
+            "fc-chat-assistant-resize-bottom-left-listener",
             () -> this.getElement().executeJs(
                 "window.fcChatAssistantResizeBottomLeft($0, $1, $2, $3, $4);",
                 resizerBottomLeft.getElement(), overlay,
@@ -350,24 +350,21 @@ public class ChatAssistant<T extends Message> extends Div {
     resizer.addClassName(DEFAULT_RESIZE_CLASS + "-" + direction);
   }
 
+
   /**
-   * Adds a listener to the given root component that executes the provided
-   * callback when the DOM instance of the component is replaced (i.e., when the previous
-   * client-side JavaScript code attached to the old component disappears and a new instance
-   * is created).
-   * This is useful for re-initializing client-side logic after component
-   * refreshes while preventing listeners from stacking.
+   * Adds a component refresh listener that prevents stacking up duplicate listeners on the client side.
+   * Uses a unique flag to track if the listener has already been added for this component instance,
+   * ensuring the callback only executes once per component refresh cycle.
    *
    * @param uniqueFlag a unique identifier for the component instance
-   * @param root       the root component to observe
    * @param callback   the action to execute when the component is refreshed
    */
-  protected static void addComponentRefreshedListener(String uniqueFlag, Component root, Runnable callback) {
-    root.getElement().executeJs(
+  protected void addComponentRefreshedListener(String uniqueFlag, Runnable callback) {
+    this.getElement().executeJs(
         """
             const flag = $0;
-            if(document[flag] && document[flag] == this) return true;
-            document[flag] = this;
+            if(this[flag]) return true;
+            this[flag] = this;
             return false;
             """, uniqueFlag).then(r -> {
       if (!r.asBoolean())
