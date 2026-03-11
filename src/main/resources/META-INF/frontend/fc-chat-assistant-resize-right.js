@@ -45,6 +45,7 @@ window.fcChatAssistantResizeRight = (item, container, popoverTag, sizeRaw, maxSi
     item.addEventListener('pointerenter', (e) => {
         if (shouldDrag()) {
             item.classList.add('active');
+            item.setPointerCapture(e.pointerId);
             minWidth = container.style.minWidth ? parseFloat(container.style.minWidth) : 0;
             maxWidth = container.style.maxWidth ? parseFloat(container.style.maxWidth) : Infinity;
         }
@@ -70,15 +71,17 @@ window.fcChatAssistantResizeRight = (item, container, popoverTag, sizeRaw, maxSi
         }
     });
 
-    item.addEventListener('pointerup', (_) => {
+    item.addEventListener('pointerup', (e) => {
         isDragging = false;
         item.style.width = size + 'px';
         item.style.marginRight = '';
+        item.releasePointerCapture(e.pointerId);
     });
 
-    item.addEventListener('pointerleave', (_) => {
+    item.addEventListener('pointerleave', (e) => {
         isDragging = false;
         item.style.width = size + 'px';
         item.style.marginRight = '';
+        item.releasePointerCapture(e.pointerId);
     });
 };

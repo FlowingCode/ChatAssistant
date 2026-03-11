@@ -49,6 +49,7 @@ window.fcChatAssistantResizeBottomRight = (item, container, popoverTag, sizeRaw,
     item.addEventListener('pointerenter', (e) => {
         if (shouldDrag()) {
             item.classList.add('active');
+            item.setPointerCapture(e.pointerId);
         }
         else {
             item.classList.remove('active');
@@ -83,19 +84,21 @@ window.fcChatAssistantResizeBottomRight = (item, container, popoverTag, sizeRaw,
         }
     });
 
-    item.addEventListener('pointerup', (_) => {
+    item.addEventListener('pointerup', (e) => {
         isDragging = false;
         item.style.height = size + 'px';
         item.style.width = size + 'px';
         item.style.marginBottom = '';
         item.style.marginRight = '';
+        item.releasePointerCapture(e.pointerId);
     });
 
-    item.addEventListener('pointerleave', (_) => {
+    item.addEventListener('pointerleave', (e) => {
         isDragging = false;
         item.style.height = size + 'px';
         item.style.width = size + 'px';
         item.style.marginBottom = '';
         item.style.marginRight = '';
+        item.releasePointerCapture(e.pointerId);
     });
 };

@@ -43,13 +43,14 @@ window.fcChatAssistantResizeTopLeft = (item, container, popoverTag, sizeRaw, max
     // Restrict dragging capability to when the popover content has enough space in the corresponding directions
     function shouldDrag() {
         const topRule = overlay && overlay.style.bottom && !overlay.style.top;
-        const leftRule = overlay && overlay.style.right && overlay.getAttribute(overlayArrowCenteredAttribute) != "";
+        const leftRule = overlay && overlay.style.right && overlay.getAttribute(overlayArrowCenteredAttribute) != "");
         return topRule && leftRule;
     }
 
     item.addEventListener('pointerenter', (e) => {
         if (shouldDrag()) {
             item.classList.add('active');
+            item.setPointerCapture(e.pointerId);
             minHeight = container.style.minHeight ? parseFloat(container.style.minHeight) : 0;
             minWidth = container.style.minWidth ? parseFloat(container.style.minWidth) : 0;
             maxWidth = container.style.maxWidth ? parseFloat(container.style.maxWidth) : Infinity;
@@ -84,19 +85,21 @@ window.fcChatAssistantResizeTopLeft = (item, container, popoverTag, sizeRaw, max
         }
     });
 
-    item.addEventListener('pointerup', (_) => {
+    item.addEventListener('pointerup', (e) => {
         isDragging = false;
         item.style.height = size + 'px';
         item.style.width = size + 'px';
         item.style.marginTop = '';
         item.style.marginLeft = '';
+        item.releasePointerCapture(e.pointerId);
     });
 
-    item.addEventListener('pointerleave', (_) => {
+    item.addEventListener('pointerleave', (e) => {
         isDragging = false;
         item.style.height = size + 'px';
         item.style.width = size + 'px';
         item.style.marginTop = '';
         item.style.marginLeft = '';
+        item.releasePointerCapture(e.pointerId);
     });
 };

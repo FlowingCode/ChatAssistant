@@ -43,9 +43,10 @@ window.fcChatAssistantResizeLeft = (item, container, popoverTag, sizeRaw, maxSiz
         return overlay && overlay.style.right && overlay.getAttribute(overlayArrowCenteredAttribute) != "";
     }
 
-    item.addEventListener('pointerenter', (_) => {
+    item.addEventListener('pointerenter', (e) => {
         if (shouldDrag()) {
             item.classList.add('active');
+            item.setPointerCapture(e.pointerId);
         }
         else {
             item.classList.remove('active');
@@ -71,15 +72,17 @@ window.fcChatAssistantResizeLeft = (item, container, popoverTag, sizeRaw, maxSiz
         }
     });
 
-    item.addEventListener('pointerup', (_) => {
+    item.addEventListener('pointerup', (e) => {
         isDragging = false;
         item.style.width = size + 'px';
         item.style.marginLeft = '';
+        item.releasePointerCapture(e.pointerId);
     });
 
-    item.addEventListener('pointerleave', (_) => {
+    item.addEventListener('pointerleave', (e) => {
         isDragging = false;
         item.style.width = size + 'px';
         item.style.marginLeft = '';
+        item.releasePointerCapture(e.pointerId);
     });
 };
