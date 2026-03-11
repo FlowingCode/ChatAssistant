@@ -50,6 +50,7 @@ import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,77 +134,61 @@ public class ChatAssistant<T extends Message> extends Div {
     super.onAttach(attachEvent);
     addComponentRefreshedListener(
         "fc-chat-assistant-drag-listener",
-        () -> this.getElement().executeJs(
-            "window.fcChatAssistantMovement($0, $1, $2, $3, $4, $5);",
-            this.getElement(), fabWrapper.getElement(), overlay, fab.getElement(), DEFAULT_FAB_MARGIN, DEFAULT_DRAG_SENSITIVITY
-        )
+        "window.fcChatAssistantMovement($0, $1, $2, $3, $4, $5);",
+        this.getElement(), fabWrapper.getElement(), overlay, fab.getElement(), DEFAULT_FAB_MARGIN,
+        DEFAULT_DRAG_SENSITIVITY
+
     );
     chatWindow.addOpenedChangeListener(ev -> {
       if (ev.isOpened()) {
-        addComponentRefreshedListener("fc-chat-assistant-resize-top-listener",
-            () ->
-                this.getElement().executeJs(
-                    "window.fcChatAssistantResizeTop($0, $1, $2, $3, $4);",
-                    resizerTop.getElement(), overlay,
-                    DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-                )
+        addComponentRefreshedListener(
+            "fc-chat-assistant-resize-top-listener",
+            "window.fcChatAssistantResizeTop($0, $1, $2, $3, $4);",
+            resizerTop.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
+
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-right-listener",
-            () ->
-                this.getElement().executeJs(
-                    "window.fcChatAssistantResizeBottomRight($0, $1, $2, $3, $4);",
-                    resizerBottomRight.getElement(), overlay,
-                    DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-                )
+            "window.fcChatAssistantResizeBottomRight($0, $1, $2, $3, $4);",
+            resizerBottomRight.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-top-right-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeTopRight($0, $1, $2, $3, $4);",
-                resizerTopRight.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeTopRight($0, $1, $2, $3, $4);",
+            resizerTopRight.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-right-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeRight($0, $1, $2, $3, $4);",
-                resizerRight.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeRight($0, $1, $2, $3, $4);",
+            resizerRight.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeBottom($0, $1, $2, $3, $4);",
-                resizerBottom.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeBottom($0, $1, $2, $3, $4);",
+            resizerBottom.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-left-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeLeft($0, $1, $2, $3, $4);",
-                resizerLeft.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeLeft($0, $1, $2, $3, $4);",
+            resizerLeft.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-top-left-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeTopLeft($0, $1, $2, $3, $4);",
-                resizerTopLeft.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeTopLeft($0, $1, $2, $3, $4);",
+            resizerTopLeft.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-left-listener",
-            () -> this.getElement().executeJs(
-                "window.fcChatAssistantResizeBottomLeft($0, $1, $2, $3, $4);",
-                resizerBottomLeft.getElement(), overlay,
-                DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
-            )
+            "window.fcChatAssistantResizeBottomLeft($0, $1, $2, $3, $4);",
+            resizerBottomLeft.getElement(), overlay,
+            DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
       }
     });
@@ -356,20 +341,21 @@ public class ChatAssistant<T extends Message> extends Div {
    * Uses a unique flag to track if the listener has already been added for this component instance,
    * ensuring the callback only executes once per component refresh cycle.
    *
-   * @param uniqueFlag a unique identifier for the component instance
-   * @param callback   the action to execute when the component is refreshed
+   * @param uniqueFlag   a unique identifier for the component instance
+   * @param executable   the JavaScript action to execute when the component is refreshed,
+   * @param parameters   parameters for the executable
    */
-  protected void addComponentRefreshedListener(String uniqueFlag, Runnable callback) {
+  protected void addComponentRefreshedListener(String uniqueFlag, String executable, Serializable... parameters) {
     this.getElement().executeJs(
-        """
-            const flag = $0;
-            if(this[flag]) return true;
-            this[flag] = this;
-            return false;
-            """, uniqueFlag).then(r -> {
-      if (!r.asBoolean())
-        callback.run();
-    });
+        String.format(
+            """
+            if(!this['%1$s']) { %2$s }
+            else {
+              this['%1$s'] = this;
+            };
+            """, uniqueFlag, executable),
+        parameters
+    );
   }
 
   /** Sets the icon for the floating action button.
