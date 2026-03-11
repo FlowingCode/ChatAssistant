@@ -42,13 +42,13 @@
 }
 
 /* Specific cursors for each corner */
-.fc-chat-assistant-resize-bottom-left.active { cursor: sw-resize; } /* North-West */
-.fc-chat-assistant-resize-bottom-right.active   { cursor: se-resize; } /* North-East */
-.fc-chat-assistant-resize-top-left.active  { cursor: nw-resize; } /* South-West */
-.fc-chat-assistant-resize-top-right.active  { cursor: ne-resize; } /* South-East */
+.fc-chat-assistant-resize-bottom-left.active { cursor: sw-resize; }
+.fc-chat-assistant-resize-bottom-right.active   { cursor: se-resize; }
+.fc-chat-assistant-resize-top-left.active  { cursor: nw-resize; }
+.fc-chat-assistant-resize-top-right.active  { cursor: ne-resize; }
 
 /* Specific cursors for the sides */
-.fc-chat-assistant-resize-bottom.active   { cursor: s-resize; }  /* North/Top */
-.fc-chat-assistant-resize-top.active   { cursor: n-resize; }  /* South/Bottom */
-.fc-chat-assistant-resize-left.active   { cursor: w-resize; }  /* West/Left */
-.fc-chat-assistant-resize-right.active   { cursor: e-resize; }  /* East/Right */
+.fc-chat-assistant-resize-bottom.active   { cursor: s-resize; }
+.fc-chat-assistant-resize-top.active   { cursor: n-resize; }
+.fc-chat-assistant-resize-left.active   { cursor: w-resize; }
+.fc-chat-assistant-resize-right.active   { cursor: e-resize; }
