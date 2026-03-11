@@ -75,13 +75,17 @@ window.fcChatAssistantResizeTop = (item, container, popoverTag, sizeRaw, maxSize
         isDragging = false;
         item.style.height = size + 'px';
         item.style.marginTop = '';
-        item.releasePointerCapture(e.pointerId);
+        if (item.hasPointerCapture(e.pointerId)) {
+            item.releasePointerCapture(e.pointerId);
+        }
     });
 
     item.addEventListener('pointerleave', (e) => {
         isDragging = false;
         item.style.height = size + 'px';
         item.style.marginTop = '';
-        item.releasePointerCapture(e.pointerId);
+        if (item.hasPointerCapture(e.pointerId)) {
+            item.releasePointerCapture(e.pointerId);
+        }
     });
 };

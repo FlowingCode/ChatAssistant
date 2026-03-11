@@ -90,7 +90,9 @@ window.fcChatAssistantResizeTopLeft = (item, container, popoverTag, sizeRaw, max
         item.style.width = size + 'px';
         item.style.marginTop = '';
         item.style.marginLeft = '';
-        item.releasePointerCapture(e.pointerId);
+        if (item.hasPointerCapture(e.pointerId)) {
+            item.releasePointerCapture(e.pointerId);
+        }
     });
 
     item.addEventListener('pointerleave', (e) => {
@@ -99,6 +101,8 @@ window.fcChatAssistantResizeTopLeft = (item, container, popoverTag, sizeRaw, max
         item.style.width = size + 'px';
         item.style.marginTop = '';
         item.style.marginLeft = '';
-        item.releasePointerCapture(e.pointerId);
+        if (item.hasPointerCapture(e.pointerId)) {
+            item.releasePointerCapture(e.pointerId);
+        }
     });
 };
