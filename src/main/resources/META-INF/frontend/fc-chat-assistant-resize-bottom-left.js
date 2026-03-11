@@ -63,7 +63,6 @@ window.fcChatAssistantResizeBottomLeft = (item, container, popoverTag, sizeRaw, 
             item.style.width = maxSize + 'px';
             item.style.marginBottom = -(maxSize / 2) + 'px';
             item.style.marginLeft = -(maxSize / 2) + 'px';
-            newHeight = offsetY + container.clientHeight;
             minHeight = container.style.minHeight ? parseFloat(container.style.minHeight) : 0;
             minWidth = container.style.minWidth ? parseFloat(container.style.minWidth) : 0;
             maxWidth = container.style.maxWidth ? parseFloat(container.style.maxWidth) : Infinity;
