@@ -108,8 +108,8 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
 
     item.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
-        const offsetX = screenWidth - e.clientX - itemWidth;
-        const offsetY = screenHeight - e.clientY - itemHeight;
+        const offsetX = screenWidth - e.clientX - itemWidth / 2;
+        const offsetY = screenHeight - e.clientY - itemHeight / 2;
         position.x = offsetX;
         position.y = offsetY;
         updatePosition();
