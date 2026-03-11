@@ -122,7 +122,7 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
         item.releasePointerCapture(e.pointerId);
         snapToBoundary();
         if (isClickOnlyEvent()) {
-            root.$server.onClick();
+            root.$server?.onClick();
         }
     });
 
