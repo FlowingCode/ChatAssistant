@@ -351,7 +351,7 @@ public class ChatAssistant<T extends Message> extends Div {
             """
             if(!this['%1$s']) { %2$s }
             if(!this['%1$s']) {
-              this['%1$s'] = this;
+              this['%1$s'] = '%1$s';
             };
             """, uniqueFlag, executable),
         parameters
