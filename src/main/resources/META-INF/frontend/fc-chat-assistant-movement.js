@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw) => {
+window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensitivityRaw) => {
     const itemWidth = fab.clientWidth;
     const itemHeight = fab.clientHeight;
     const margin = parseFloat(marginRaw);
@@ -36,6 +36,35 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw) =>
     window.addEventListener("resize", (_) => {
         screenWidth = window.innerWidth;
         screenHeight = window.innerHeight;
+        
+        // Adjust container dimensions to fit within screen bounds
+        if (container) {
+            const rect = container.getBoundingClientRect();
+            let widthAdjustment = 0;
+            let heightAdjustment = 0;
+            if (rect.left < 0) {
+                widthAdjustment = Math.abs(rect.left);
+            }
+            if (rect.right > screenWidth) {
+                widthAdjustment = Math.max(widthAdjustment, rect.right - screenWidth);
+            }
+            if (rect.top < 0) {
+                heightAdjustment = Math.abs(rect.top);
+            }
+            if (rect.bottom > screenHeight) {
+                heightAdjustment = Math.max(heightAdjustment, rect.bottom - screenHeight);
+            }
+            // Apply adjustments
+            if (widthAdjustment > 0) {
+                const newWidth = Math.max(0, rect.width - widthAdjustment);
+                container.style.width = newWidth + 'px';
+            }
+            if (heightAdjustment > 0) {
+                const newHeight = Math.max(0, rect.height - heightAdjustment);
+                container.style.height = newHeight + 'px';
+            }
+        }
+        
         // Reposition the item to ensure it stays within the new screen bounds
         snapToBoundary();
     });

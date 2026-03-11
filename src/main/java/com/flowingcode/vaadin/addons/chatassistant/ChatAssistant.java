@@ -134,8 +134,8 @@ public class ChatAssistant<T extends Message> extends Div {
     addComponentRefreshedListener(
         "fc-chat-assistant-drag-listener",
         () -> this.getElement().executeJs(
-            "window.fcChatAssistantMovement($0, $1, $2, $3, $4);",
-            this.getElement(), fabWrapper.getElement(), fab.getElement(), DEFAULT_FAB_MARGIN, DEFAULT_DRAG_SENSITIVITY
+            "window.fcChatAssistantMovement($0, $1, $2, $3, $4, $5);",
+            this.getElement(), fabWrapper.getElement(), overlay, fab.getElement(), DEFAULT_FAB_MARGIN, DEFAULT_DRAG_SENSITIVITY
         )
     );
     chatWindow.addOpenedChangeListener(ev -> {
