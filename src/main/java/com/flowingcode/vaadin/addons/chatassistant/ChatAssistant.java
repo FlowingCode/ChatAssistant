@@ -91,7 +91,7 @@ public class ChatAssistant<T extends Message> extends Div {
   protected static final int DEFAULT_FAB_ICON_SIZE = 45;
   protected static final int DEFAULT_FAB_MARGIN = 25;
   protected static final int DEFAULT_RESIZER_SIZE = 25;
-  protected static final int DEFAULT_MAX_RESIZER_SIZE = 150;
+  protected static final int DEFAULT_MAX_RESIZER_SIZE = 200;
   protected static final int DEFAULT_DRAG_SENSITIVITY = 10;
 
   private static final int DEFAULT_CONTENT_MIN_WIDTH = 150;

@@ -45,10 +45,9 @@ window.fcChatAssistantResizeBottom = (item, container, popoverTag, sizeRaw, maxS
         return overlay && !overlay.style.bottom && overlay.style.top;
     }
 
-    item.addEventListener('pointerenter', (e) => {
+    item.addEventListener('pointerenter', (_) => {
         if (shouldDrag()) {
             item.classList.add('active');
-            item.setPointerCapture(e.pointerId);
             minHeight = container.style.minHeight ? parseFloat(container.style.minHeight) : 0;
             maxHeight = container.style.maxHeight ? parseFloat(container.style.maxHeight) : Infinity;
         }
@@ -57,9 +56,10 @@ window.fcChatAssistantResizeBottom = (item, container, popoverTag, sizeRaw, maxS
         }
     });
 
-    item.addEventListener('pointerdown', (_) => {
+    item.addEventListener('pointerdown', (e) => {
         isDragging = shouldDrag();
         if (isDragging) {
+            item.setPointerCapture(e.pointerId);
             item.style.height = maxSize + 'px';
             item.style.marginBottom = -(maxSize / 2) + 'px';
         }
@@ -74,21 +74,17 @@ window.fcChatAssistantResizeBottom = (item, container, popoverTag, sizeRaw, maxS
         }
     });
 
-    item.addEventListener('pointerup', (e) => {
-        isDragging = false;
-        item.style.height = size + 'px';
-        item.style.marginBottom = '';
-        if (item.hasPointerCapture(e.pointerId)) {
-            item.releasePointerCapture(e.pointerId);
-        }
-    });
+    item.addEventListener('pointerup', (e) => stopDragging(e));
+    item.addEventListener('pointerleave', (e) => stopDragging(e));
+    item.addEventListener('pointercancel', (e) => stopDragging(e));
 
-    item.addEventListener('pointerleave', (e) => {
+    function stopDragging(e) {
         isDragging = false;
+        item.classList.remove('active');
         item.style.height = size + 'px';
         item.style.marginBottom = '';
         if (item.hasPointerCapture(e.pointerId)) {
             item.releasePointerCapture(e.pointerId);
         }
-    });
+    }
 };

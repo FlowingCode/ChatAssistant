@@ -117,16 +117,22 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
         updatePosition();
     });
 
-    item.addEventListener('pointerup', (e) => {
-        isDragging = false;
-        item.style.transition = snapTransition + ', ' + sizeTransition;
-        fab.classList.remove('dragging');
-        item.releasePointerCapture(e.pointerId);
-        snapToBoundary();
-        if (isClickOnlyEvent()) {
-            root.$server?.onClick();
+    item.addEventListener('pointerup', (e) => stopDragging(e));
+    item.addEventListener('pointerleave', (e) => stopDragging(e));
+    item.addEventListener('pointercancel', (e) => stopDragging(e));
+
+    function stopDragging(e) {
+        if(isDragging) {
+            isDragging = false;
+            item.style.transition = snapTransition + ', ' + sizeTransition;
+            fab.classList.remove('dragging');
+            item.releasePointerCapture(e.pointerId);
+            snapToBoundary();
+            if (isClickOnlyEvent()) {
+                root.$server?.onClick();
+            }
         }
-    });
+    }
 
     updatePosition();
 };
