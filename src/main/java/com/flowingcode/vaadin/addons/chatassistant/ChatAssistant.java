@@ -57,14 +57,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JsModule("./fc-chat-assistant-movement.js")
-@JsModule("./fc-chat-assistant-resize-top.js")
-@JsModule("./fc-chat-assistant-resize-top-right.js")
-@JsModule("./fc-chat-assistant-resize-right.js")
-@JsModule("./fc-chat-assistant-resize-bottom-right.js")
-@JsModule("./fc-chat-assistant-resize-bottom.js")
-@JsModule("./fc-chat-assistant-resize-left.js")
-@JsModule("./fc-chat-assistant-resize-bottom-left.js")
-@JsModule("./fc-chat-assistant-resize-top-left.js")
+@JsModule("./fc-chat-assistant-resize.js")
 @CssImport("./styles/fc-chat-assistant-style.css")
 @Tag("animated-fab")
 public class ChatAssistant<T extends Message> extends Div {
@@ -143,50 +136,50 @@ public class ChatAssistant<T extends Message> extends Div {
       if (ev.isOpened()) {
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-top-listener",
-            "window.fcChatAssistantResizeTop($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'top');",
             resizerTop.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
 
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-right-listener",
-            "window.fcChatAssistantResizeBottomRight($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'bottom-right');",
             resizerBottomRight.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-top-right-listener",
-            "window.fcChatAssistantResizeTopRight($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'top-right');",
             resizerTopRight.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-right-listener",
-            "window.fcChatAssistantResizeRight($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'right');",
             resizerRight.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-listener",
-            "window.fcChatAssistantResizeBottom($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'bottom');",
             resizerBottom.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-left-listener",
-            "window.fcChatAssistantResizeLeft($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'left');",
             resizerLeft.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-top-left-listener",
-            "window.fcChatAssistantResizeTopLeft($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'top-left');",
             resizerTopLeft.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
         addComponentRefreshedListener(
             "fc-chat-assistant-resize-bottom-left-listener",
-            "window.fcChatAssistantResizeBottomLeft($0, $1, $2, $3, $4);",
+            "window.fcChatAssistantResize($0, $1, $2, $3, $4, 'bottom-left');",
             resizerBottomLeft.getElement(), overlay,
             DEFAULT_POPOVER_TAG, DEFAULT_RESIZER_SIZE, DEFAULT_MAX_RESIZER_SIZE
         );
