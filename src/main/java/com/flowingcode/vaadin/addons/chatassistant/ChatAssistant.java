@@ -258,18 +258,21 @@ public class ChatAssistant<T extends Message> extends Div {
     applyGenericResizerStyle(resizerTop, "top");
     resizerTop.getStyle()
         .setTop("0")
+        .setLeft("0")
         .setHeight(DEFAULT_RESIZER_SIZE + "px")
         .setWidth("100%");
 
     applyGenericResizerStyle(resizerBottom, "bottom");
     resizerBottom.getStyle()
         .setBottom("0")
+        .setLeft("0")
         .setHeight(DEFAULT_RESIZER_SIZE + "px")
         .setWidth("100%");
 
     applyGenericResizerStyle(resizerTopRight, "top-right");
     resizerTopRight.getStyle()
         .setRight("0")
+        .setTop("0")
         .setHeight(DEFAULT_RESIZER_SIZE + "px")
         .setWidth(DEFAULT_RESIZER_SIZE + "px");
 
@@ -282,12 +285,14 @@ public class ChatAssistant<T extends Message> extends Div {
 
     applyGenericResizerStyle(resizerRight, "right");
     resizerRight.getStyle()
+        .setTop("0")
         .setRight("0")
         .setHeight("100%")
         .setWidth(DEFAULT_RESIZER_SIZE + "px");
 
     applyGenericResizerStyle(resizerLeft, "left");
     resizerLeft.getStyle()
+        .setTop("0")
         .setLeft("0")
         .setHeight("100%")
         .setWidth(DEFAULT_RESIZER_SIZE + "px");
