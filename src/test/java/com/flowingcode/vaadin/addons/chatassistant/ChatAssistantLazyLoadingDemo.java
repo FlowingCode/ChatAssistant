@@ -167,7 +167,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       chatAssistant.scrollToEnd();
     });
     Icon minimize = VaadinIcon.MINUS.create();
-    minimize.addClickListener(ev -> chatAssistant.setMinimized(!chatAssistant.isMinimized()));
+    minimize.addClickListener(ev -> chatAssistant.setOpened(!chatAssistant.isOpened()));
     Span title = new Span("Customized Assistant Header");
     title.setWidthFull();
     HorizontalLayout headerBar = new HorizontalLayout(title, minimize);

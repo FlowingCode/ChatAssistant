@@ -24,7 +24,6 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -98,8 +97,8 @@ public class ChatAssistant<T extends Message> extends Div {
   @Getter
   private Component headerComponent;
   private Component footerContainer;
-  private VirtualList<T> content;
-  private List<T> messages;
+  private final VirtualList<T> content;
+  private final List<T> messages;
   private MessageInput messageInput;
   private Span whoIsTyping;
   private Registration defaultSubmitListenerRegistration;
@@ -108,7 +107,7 @@ public class ChatAssistant<T extends Message> extends Div {
   public ChatAssistant(List<T> messages, boolean markdownEnabled) {
     this.setUI();
 
-    this.content = new VirtualList();
+    this.content = new VirtualList<>();
     this.messages = messages;
     this.initializeHeader();
     this.initializeFooter();
@@ -117,11 +116,11 @@ public class ChatAssistant<T extends Message> extends Div {
   }
 
   public ChatAssistant() {
-    this(new ArrayList(), false);
+    this(new ArrayList<>(), false);
   }
 
   public ChatAssistant(boolean markdownEnabled) {
-    this(new ArrayList(), markdownEnabled);
+    this(new ArrayList<>(), markdownEnabled);
   }
 
   @Override
@@ -397,6 +396,11 @@ public class ChatAssistant<T extends Message> extends Div {
     chatWindow.close();
   }
 
+  /** Returns true if the chat window is opened, false otherwise. */
+  public boolean isOpened() {
+    return chatWindow.isOpened();
+  }
+
   /** Sets the chat window minimum width. Applies when resizing. **/
   public void setWindowMinWidth(String minWidth) {
     this.overlay.setMinWidth(minWidth);
@@ -427,19 +431,18 @@ public class ChatAssistant<T extends Message> extends Div {
     this.overlay.setWidth(width);
   }
 
-  @SuppressWarnings("unchecked")
-  private void initializeHeader() {
+  protected void initializeHeader() {
     Icon minimize = VaadinIcon.CLOSE.create();
     minimize.addClickListener((ev) -> onClick());
     Span title = new Span("Chat Assistant");
     title.setWidthFull();
-    HorizontalLayout header = new HorizontalLayout(new Component[]{title, minimize});
+    HorizontalLayout header = new HorizontalLayout(title, minimize);
     header.setWidthFull();
     this.headerComponent = header;
   }
 
   @SuppressWarnings("unchecked")
-  private void initializeFooter() {
+  protected void initializeFooter() {
     this.messageInput = new MessageInput();
     this.messageInput.setWidthFull();
     this.messageInput.setMaxHeight("80px");
@@ -450,7 +453,7 @@ public class ChatAssistant<T extends Message> extends Div {
     this.whoIsTyping = new Span();
     this.whoIsTyping.setClassName("chat-assistant-who-is-typing");
     this.whoIsTyping.setVisible(false);
-    VerticalLayout footer = new VerticalLayout(new Component[]{this.whoIsTyping, this.messageInput});
+    VerticalLayout footer = new VerticalLayout(this.whoIsTyping, this.messageInput);
     footer.setWidthFull();
     footer.setSpacing(false);
     footer.setMargin(false);
@@ -459,11 +462,14 @@ public class ChatAssistant<T extends Message> extends Div {
   }
 
   @SuppressWarnings("unchecked")
-  private void initializeContent(boolean markdownEnabled) {
-    this.content.setRenderer(new ComponentRenderer((message) -> new ChatMessage((Message) message, markdownEnabled), (component, message) -> {
-      ((ChatMessage)component).setMessage((Message) message);
-      return component;
-    }));
+  protected void initializeContent(boolean markdownEnabled) {
+    this.content.setRenderer(new ComponentRenderer<>(
+        message -> new ChatMessage<>(message, markdownEnabled),
+        (component, message) -> {
+          ((ChatMessage<T>) component).setMessage(message);
+          return component;
+        })
+    );
     this.content.setItems(this.messages);
     this.content.setSizeFull();
     this.container.add(this.headerComponent, this.content, this.footerContainer);
@@ -472,15 +478,14 @@ public class ChatAssistant<T extends Message> extends Div {
     this.container.setSpacing(false);
     this.container.setSizeFull();
     this.container.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-    this.container.setFlexGrow((double)1.0F, new HasElement[]{this.content});
+    this.container.setFlexGrow(1.0, this.content);
   }
 
-  private void initializeChatWindow() {
+  protected void initializeChatWindow() {
     this.chatWindow.setOpenOnClick(false);
     this.chatWindow.setCloseOnOutsideClick(false);
   }
 
-  @SuppressWarnings("unchecked")
   public void setDataProvider(DataProvider<T, ?> dataProvider) {
     this.content.setDataProvider(dataProvider);
   }
@@ -508,7 +513,7 @@ public class ChatAssistant<T extends Message> extends Div {
    * Clears the text shown over the message input to indicate that someone is typing.
    */
   public void clearWhoIsTyping() {
-    this.whoIsTyping.setText((String)null);
+    this.whoIsTyping.setText(null);
     this.whoIsTyping.setVisible(false);
   }
 
@@ -533,7 +538,7 @@ public class ChatAssistant<T extends Message> extends Div {
 
   /**
    * Sends a message programmatically to the component. Should not be used when a custom
-   * DataProvider is used. Instead just refresh the custom DataProvider.
+   * DataProvider is used. Instead, just refresh the custom DataProvider.
    *
    * @param message the message to be sent programmatically
    */
@@ -555,6 +560,7 @@ public class ChatAssistant<T extends Message> extends Div {
    * Shows or hides chat window.
    *
    * @param minimized true for hiding the chat window and false for displaying it
+   * @deprecated use {@link #setOpened(boolean)} instead
    */
   public void setMinimized(boolean minimized) {
     if (minimized && this.chatWindow.isOpened()) {
@@ -568,6 +574,7 @@ public class ChatAssistant<T extends Message> extends Div {
    * Returns the visibility of the chat window.
    *
    * @return true if the chat window is minimized false otherwise
+   * @deprecated use {@link #isOpened()} instead
    */
   public boolean isMinimized() {
     return !chatWindow.isOpened();
@@ -580,7 +587,7 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   public void setHeaderComponent(Component component) {
     if (this.headerComponent != null) {
-      this.container.remove(new Component[]{this.headerComponent});
+      this.container.remove(this.headerComponent);
     }
 
     component.addClassName("chat-header");
@@ -595,9 +602,9 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   public void setFooterComponent(Component component) {
     Objects.requireNonNull(component, "Component cannot not be null");
-    this.container.remove(new Component[]{this.footerContainer});
+    this.container.remove(this.footerContainer);
     this.footerContainer = component;
-    this.container.add(new Component[]{this.footerContainer});
+    this.container.add(this.footerContainer);
   }
 
   /**
@@ -650,7 +657,7 @@ public class ChatAssistant<T extends Message> extends Div {
   /**
    * Sets the avatar provider that will be used to create the avatar
    *
-   * @param avatarProvider
+   * @param avatarProvider the avatar provider that will be used to create the avatar
    * @deprecated use {@link #setFabIcon(Component)} instead
    */
   @Deprecated(since = "5.0.0", forRemoval = true)
@@ -661,7 +668,7 @@ public class ChatAssistant<T extends Message> extends Div {
   }
 
     /**
-     * Return the number of unread messages to be displayed in the chat assistant.
+     * Return the number of unread messages displayed in the chat assistant.
      * @return the number of unread messages
      */
   public int getUnreadMessages() {
@@ -670,7 +677,7 @@ public class ChatAssistant<T extends Message> extends Div {
 
   /**
    * Sets the number of unread messages to be displayed in the chat assistant.
-   * @param unreadMessages
+   * @param unreadMessages the number of unread messages to set
    */
   public void setUnreadMessages(int unreadMessages) {
     this.unreadMessages = unreadMessages >= 0 ? Math.min(unreadMessages, 99) : 0;
