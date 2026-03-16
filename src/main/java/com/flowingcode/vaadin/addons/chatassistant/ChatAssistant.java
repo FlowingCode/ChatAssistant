@@ -537,8 +537,7 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   public void sendMessage(T message) {
     this.messages.add(message);
-    this.content.getDataProvider().refreshAll();
-    this.content.scrollToEnd();
+    refreshContent();
   }
 
   /**
