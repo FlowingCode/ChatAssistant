@@ -45,7 +45,9 @@ public class ChatAssistantDemo extends VerticalLayout {
   
   public ChatAssistantDemo() {
     ChatAssistant<CustomMessage> chatAssistant = new ChatAssistant<>();
-    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
+    SvgIcon icon = new SvgIcon("chatbot.svg");
+    icon.setColor("var(--lumo-primary-contrast-color)");
+    chatAssistant.setFabIcon(icon);
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
     TextArea message = new TextArea();

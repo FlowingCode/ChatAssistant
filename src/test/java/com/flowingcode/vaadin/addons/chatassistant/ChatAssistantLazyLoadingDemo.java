@@ -126,7 +126,9 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
   public ChatAssistantLazyLoadingDemo() {
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
     chatAssistant.setClassName("small");
-    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
+    SvgIcon icon = new SvgIcon("chatbot.svg");
+    icon.setColor("var(--lumo-primary-contrast-color)");
+    chatAssistant.setFabIcon(icon);
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
     Span lazyLoadingData = new Span();
@@ -137,7 +139,6 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
       return messages.size();
     });
     chatAssistant.setDataProvider(dataProvider);
-    chatAssistant.setFabIcon(new SvgIcon("chatbot.svg"));
     
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant");

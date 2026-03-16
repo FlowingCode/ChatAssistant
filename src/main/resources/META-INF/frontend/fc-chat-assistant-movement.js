@@ -18,6 +18,12 @@
  * #L%
  */
 window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensitivityRaw) => {
+    // Prevent duplicate initialization
+    const guard = `__fcChatAssistantMovement`;
+    if (item[guard]) {
+        return;
+    }
+    item[guard] = true;
     const margin = parseFloat(marginRaw);
     const sensitivity = parseFloat(sensitivityRaw);
     const sizeTransition = 'transform 0.2s ease';

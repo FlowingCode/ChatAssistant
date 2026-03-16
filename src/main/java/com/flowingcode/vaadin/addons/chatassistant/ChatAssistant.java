@@ -85,7 +85,7 @@ public class ChatAssistant<T extends Message> extends Div {
   protected static final int DEFAULT_FAB_MARGIN = 25;
   protected static final int DEFAULT_RESIZER_SIZE = 25;
   protected static final int DEFAULT_MAX_RESIZER_SIZE = 200;
-  protected static final int DEFAULT_DRAG_SENSITIVITY = 10;
+  protected static final int DEFAULT_DRAG_SENSITIVITY = 25;
 
   private static final int DEFAULT_CONTENT_MIN_WIDTH = 150;
   private static final int DEFAULT_CONTENT_MIN_HEIGHT = 150;
@@ -221,6 +221,7 @@ public class ChatAssistant<T extends Message> extends Div {
 
     unreadBadge.setText(String.valueOf(unreadMessages));
     unreadBadge.addClassName(DEFAULT_UNREAD_BADGE_CLASS);
+    String fontSize = "var(--lumo-font-size-xs)";
     unreadBadge.getStyle()
         .setTextAlign(Style.TextAlign.CENTER)
         .setPosition(Style.Position.ABSOLUTE)
@@ -229,19 +230,19 @@ public class ChatAssistant<T extends Message> extends Div {
         .setDisplay(Style.Display.FLEX)
         .setPadding("var(--lumo-space-xs)")
         .setFontWeight(Style.FontWeight.BOLD)
-        .setFontSize("var(--lumo-font-size-xs)")
+        .setFontSize(fontSize)
         .setBorderRadius("50%")
         .setBackgroundColor("var(--lumo-warning-color)")
         .setScale("0")
-        .setMinHeight("var(--lumo-font-size-xs)")
-        .setMinWidth("var(--lumo-font-size-xs)")
-        .setHeight("var(--lumo-font-size-xs)")
-        .setWidth("var(--lumo-font-size-xs)")
-        .setMaxHeight("var(--lumo-font-size-xs)")
-        .setMaxWidth("var(--lumo-font-size-xs)")
+        .setMinHeight(fontSize)
+        .setMinWidth(fontSize)
+        .setHeight(fontSize)
+        .setWidth(fontSize)
+        .setMaxHeight(fontSize)
+        .setMaxWidth(fontSize)
         .setTop("0")
         .setRight("0")
-        .setColor("var(--lumo-warning-text-color)");
+        .setColor("var(--lumo-warning-contrast-color)");
 
     chatWindow.add(overlay);
     chatWindow.setPosition(PopoverPosition.TOP);

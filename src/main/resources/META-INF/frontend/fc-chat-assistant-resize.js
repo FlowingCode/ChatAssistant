@@ -20,6 +20,13 @@
 
 // Combined resize functionality for all directions
 window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw, direction) => {
+    // Prevent duplicate initialization
+    const guard = `__fcChatAssistantResize_${direction}`;
+    if (item[guard]) {
+        return;
+    }
+    item[guard] = true;
+
     const size = parseFloat(sizeRaw);
     const maxSize = parseFloat(maxSizeRaw);
     const overlayTag = "vaadin-popover-overlay".toUpperCase();
@@ -33,7 +40,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
 
     const directionConfig = {
         'top': {
-            shouldDrag: () => overlay && overlay.style.bottom && !overlay.style.top,
+            shouldDrag: () => overlay?.style?.bottom && !overlay?.style?.top,
             handleResize: (e) => {
                 const offsetY = container.getBoundingClientRect().top - e.clientY;
                 const newHeight = offsetY + container.clientHeight;
@@ -52,8 +59,8 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
         },
         'top-right': {
             shouldDrag: () => {
-                const topRule = overlay && overlay.style.bottom && !overlay.style.top;
-                const rightRule = overlay && overlay.style.left && !overlay.style.right;
+                const topRule = overlay?.style?.bottom && !overlay?.style?.top;
+                const rightRule = overlay?.style?.left && !overlay?.style?.right;
                 return topRule && rightRule;
             },
             handleResize: (e) => {
@@ -82,7 +89,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
             }
         },
         'right': {
-            shouldDrag: () => overlay && overlay.style.left && !overlay.style.right,
+            shouldDrag: () => overlay?.style?.left && !overlay?.style?.right,
             handleResize: (e) => {
                 const offsetX = e.clientX - container.getBoundingClientRect().right;
                 const newWidth = offsetX + container.clientWidth;
@@ -101,8 +108,8 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
         },
         'bottom-right': {
             shouldDrag: () => {
-                const bottomRule = overlay && !overlay.style.bottom && overlay.style.top;
-                const rightRule = overlay && overlay.style.left && !overlay.style.right;
+                const bottomRule = !overlay?.style?.bottom && overlay?.style?.top;
+                const rightRule = overlay?.style?.left && !overlay?.style?.right;
                 return bottomRule && rightRule;
             },
             handleResize: (e) => {
@@ -131,7 +138,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
             }
         },
         'bottom': {
-            shouldDrag: () => overlay && !overlay.style.bottom && overlay.style.top,
+            shouldDrag: () => !overlay?.style?.bottom && overlay?.style?.top,
             handleResize: (e) => {
                 const offsetY = e.clientY - container.getBoundingClientRect().bottom;
                 const newHeight = offsetY + container.clientHeight;
@@ -150,8 +157,8 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
         },
         'bottom-left': {
             shouldDrag: () => {
-                const bottomRule = overlay && !overlay.style.bottom && overlay.style.top;
-                const leftRule = overlay && overlay.style.right && !overlay.style.left;
+                const bottomRule = !overlay?.style?.bottom && overlay?.style?.top;
+                const leftRule = overlay?.style?.right && !overlay?.style?.left;
                 return bottomRule && leftRule;
             },
             handleResize: (e) => {
@@ -180,7 +187,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
             }
         },
         'left': {
-            shouldDrag: () => overlay && overlay.style.right && !overlay.style.left,
+            shouldDrag: () => overlay?.style?.right && !overlay?.style?.left,
             handleResize: (e) => {
                 const offsetX = container.getBoundingClientRect().left - e.clientX;
                 const newWidth = offsetX + container.clientWidth;
@@ -199,8 +206,8 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
         },
         'top-left': {
             shouldDrag: () => {
-                const topRule = overlay && overlay.style.bottom && !overlay.style.top;
-                const leftRule = overlay && overlay.style.right && !overlay.style.left;
+                const topRule = overlay?.style?.bottom && !overlay?.style?.top;
+                const leftRule = overlay?.style?.right && !overlay?.style?.left;
                 return topRule && leftRule;
             },
             handleResize: (e) => {
@@ -252,10 +259,11 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
     item.addEventListener('pointerenter', (e) => {
         if (config.shouldDrag()) {
             item.classList.add('active');
-            minHeight = container.style.minHeight ? parseFloat(container.style.minHeight) : 0;
-            minWidth = container.style.minWidth ? parseFloat(container.style.minWidth) : 0;
-            maxWidth = container.style.maxWidth ? parseFloat(container.style.maxWidth) : Infinity;
-            maxHeight = container.style.maxHeight ? parseFloat(container.style.maxHeight) : Infinity;
+            const computedStyle = window.getComputedStyle(container);
+            minHeight = computedStyle.minHeight ? parseFloat(computedStyle.minHeight) || 0 : 0;
+            minWidth = computedStyle.minWidth ? parseFloat(computedStyle.minWidth) || 0 : 0;
+            maxWidth = computedStyle.maxWidth ? parseFloat(computedStyle.maxWidth) || Infinity : Infinity;
+            maxHeight = computedStyle.maxHeight ? parseFloat(computedStyle.maxHeight) || Infinity : Infinity;
         }
         else {
             item.classList.remove('active');
