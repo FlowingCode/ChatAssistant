@@ -81,7 +81,7 @@ public class ChatAssistant<T extends Message> extends Div {
   protected final Div resizerTopLeft = new Div();
 
   protected static final int DEFAULT_FAB_SIZE = 60;
-  protected static final int DEFAULT_FAB_ICON_SIZE = 45;
+  protected static final int DEFAULT_FAB_ICON_SIZE = 40;
   protected static final int DEFAULT_FAB_MARGIN = 25;
   protected static final int DEFAULT_RESIZER_SIZE = 25;
   protected static final int DEFAULT_MAX_RESIZER_SIZE = 200;
@@ -359,9 +359,19 @@ public class ChatAssistant<T extends Message> extends Div {
   /** Sets the icon for the floating action button.
    * <br>The icon's size is automatically adjusted to fit within the FAB. */
   public void setFabIcon(Component icon) {
+    Objects.requireNonNull(icon, "Icon cannot be null");
     icon.getStyle()
         .setWidth(DEFAULT_FAB_ICON_SIZE + "px")
         .setHeight(DEFAULT_FAB_ICON_SIZE + "px");
+    fab.setIcon(icon);
+  }
+
+  /** Sets the icon for the floating action button. Allows customizing the icon's size. */
+  public void setFabIcon(Component icon, int size) {
+    Objects.requireNonNull(icon, "Icon cannot be null");
+    icon.getStyle()
+        .setWidth(Math.min(size, DEFAULT_FAB_SIZE) + "px")
+        .setHeight(Math.min(size, DEFAULT_FAB_SIZE) + "px");
     fab.setIcon(icon);
   }
 
