@@ -49,6 +49,7 @@ import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.function.SerializableSupplier;
 import com.vaadin.flow.shared.Registration;
+import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -94,6 +95,7 @@ public class ChatAssistant<T extends Message> extends Div {
   private static final String DEFAULT_RESIZE_CLASS = "fc-chat-assistant-resize";
   private static final String DEFAULT_UNREAD_BADGE_CLASS = "fc-chat-assistant-unread-badge";
 
+  @Getter
   private Component headerComponent;
   private Component footerContainer;
   private VirtualList<T> content;
@@ -584,15 +586,6 @@ public class ChatAssistant<T extends Message> extends Div {
     component.addClassName("chat-header");
     this.headerComponent = component;
     this.container.addComponentAsFirst(this.headerComponent);
-  }
-
-  /**
-   * Returns the current component configured as the header of the chat window.
-   *
-   * @return component used as the header of the chat window
-   */
-  public Component getHeaderComponent() {
-    return this.headerComponent;
   }
 
   /**
