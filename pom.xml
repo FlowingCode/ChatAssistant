@@ -16,9 +16,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<drivers.dir>${project.basedir}/drivers</drivers.dir>
+		<webdriver.chrome.driver>${drivers.dir}/chromedriver</webdriver.chrome.driver>
 		<jetty.version>11.0.26</jetty.version>
 		<flowingcode.commons.demo.version>5.2.0</flowingcode.commons.demo.version>
-		<markdown-editor.version>2.0.1</markdown-editor.version>	
+		<markdown-editor.version>2.0.3</markdown-editor.version>
+		<lombok.version>1.18.34</lombok.version>
+		<hamcrest.version>1.3</hamcrest.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+		<webdrivermanager.version>6.1.0</webdrivermanager.version>	
 		<frontend.hotdeploy>true</frontend.hotdeploy>
 	</properties>
 
@@ -31,7 +36,7 @@
 	<licenses>
 		<license>
 			<name>Apache 2</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -128,7 +133,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
-			<version>1.18.34</version>
+			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -149,20 +154,20 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
-			<version>1.3</version>
+			<version>${hamcrest.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>${servlet-api.version}</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-            <version>6.1.0</version>
+            <version>${webdrivermanager.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -236,7 +241,7 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.version}</version>
 				<configuration>
-					<scanIntervalSeconds>3</scanIntervalSeconds>
+					<scan>3</scan>
 					<!-- Use test scope because the UI/demo classes are in the test package. -->
 					<useTestScope>true</useTestScope>
 					<webApp>
@@ -366,7 +371,7 @@
 						<artifactId>jetty-maven-plugin</artifactId>
 						<version>${jetty.version}</version>
 						<configuration>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
+							<scan>0</scan>
 							<supportedPackagings>
 								<supportedPackaging>jar</supportedPackaging>
 							</supportedPackagings>
@@ -407,9 +412,7 @@
 							<enableAssertions>true</enableAssertions>
 							<systemPropertyVariables>
 								<!-- Pass location of downloaded webdrivers to the tests -->
-								<webdriver.chrome.driver>
-									${webdriver.chrome.driver}
-								</webdriver.chrome.driver>
+								<webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
