@@ -13,6 +13,10 @@ Vaadin Add-on that displays a chat assistant floating window using [Material UI'
 * Listen for new messages written by the user.
 * Toggle the chat window on/off.
 
+## Supported versions
+
+Supported versions: Vaadin 24-25 (add-on version 4.x)
+
 ## Online demo
 
 [Online demo here](http://addonsv24.flowingcode.com/chat-assistant)
