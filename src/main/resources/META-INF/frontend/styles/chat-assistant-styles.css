@@ -55,6 +55,10 @@ vaadin-popover-overlay::part(overlay) {
     max-height: 100vh; /* Prevent height beyond viewport */
 }
 
+vaadin-grid.chat-assistant-grid-compact vaadin-grid-cell-content {
+	padding: 0px;
+}
+
 /* Mobile breakpoint */
 @media (max-width: 768px) {
     vaadin-popover-overlay::part(overlay) {
