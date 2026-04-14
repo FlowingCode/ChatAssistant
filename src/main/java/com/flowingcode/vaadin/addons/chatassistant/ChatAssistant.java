@@ -55,6 +55,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Component that allows to create a floating chat button that will open a chat window that can be
+ * used to provide a chat assistant feature.
+ *
+ * @author mmlopez
+ */
 @JsModule("./fc-chat-assistant-movement.js")
 @JsModule("./fc-chat-assistant-resize.js")
 @CssImport("./styles/fc-chat-assistant-style.css")
@@ -113,10 +119,18 @@ public class ChatAssistant<T extends Message> extends Div {
     this.initializeChatWindow();
   }
 
+  /**
+   * Default constructor. Creates a ChatAssistant with no messages.
+   */
   public ChatAssistant() {
     this(new ArrayList<>(), false);
   }
 
+  /**
+   * Creates a ChatAssistant with no messages.
+   *
+   * @param markdownEnabled flag to enable or disable markdown support
+   */
   public ChatAssistant(boolean markdownEnabled) {
     this(new ArrayList<>(), markdownEnabled);
   }
