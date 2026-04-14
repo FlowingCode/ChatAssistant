@@ -395,10 +395,10 @@ public class ChatAssistant<T extends Message> extends Div {
   /** Sets the opened state of the chat window. If true, opens the window; if false, closes it. */
   public void setOpened(boolean opened) {
     if(opened) {
-      chatWindow.open();
+      open();
     }
     else {
-      chatWindow.close();
+      close();
     }
   }
 
