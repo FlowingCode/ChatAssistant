@@ -330,11 +330,11 @@ public class ChatAssistant<T extends Message> extends Div {
   /** Receives click events from the client side to toggle the chat window's opened state. */
   @ClientCallable
   protected void onClick() {
-    if(chatWindow.isOpened()) {
-      chatWindow.close();
+    if(isOpened()) {
+      close();
     }
     else {
-      chatWindow.open();
+      open();
     }
   }
 
@@ -580,10 +580,10 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   @Deprecated(since = "5.0.0")
   public void setMinimized(boolean minimized) {
-    if (minimized && this.chatWindow.isOpened()) {
-      this.chatWindow.close();
-    } else if (!minimized && !this.chatWindow.isOpened()) {
-      this.chatWindow.open();
+    if (minimized && isOpened()) {
+      close();
+    } else if (!minimized && !isOpened()) {
+      open();
     }
   }
 
@@ -595,7 +595,7 @@ public class ChatAssistant<T extends Message> extends Div {
    */
   @Deprecated(since = "5.0.0")
   public boolean isMinimized() {
-    return !chatWindow.isOpened();
+    return !isOpened();
   }
 
   /**
