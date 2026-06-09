@@ -1,6 +1,7 @@
 [![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/chat-assistant-add-on)
 [![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/chat-assistant-add-on.svg)](https://vaadin.com/directory/component/chat-assistant-add-on)
 [![Build Status](https://jenkins.flowingcode.com/job/ChatAssistant-addon/badge/icon)](https://jenkins.flowingcode.com/job/ChatAssistant-addon)
+[![Maven Central](https://img.shields.io/maven-central/v/org.vaadin.addons.flowingcode/chat-assistant-addon)](https://mvnrepository.com/artifact/org.vaadin.addons.flowingcode/chat-assistant-addon)
 [![Javadoc](https://img.shields.io/badge/javadoc-00b4f0)](https://javadoc.flowingcode.com/artifact/org.vaadin.addons.flowingcode/chat-assistant-addon)
 
 # Chat Assistant Add-on
@@ -38,14 +39,7 @@ Add the following dependencies in your pom.xml file:
 ```
 <!-- the above dependency should be updated with latest released version information -->
 
-```xml
-<repository>
-   <id>vaadin-addons</id>
-   <url>https://maven.vaadin.com/vaadin-addons</url>
-</repository>
-```
-
-For SNAPSHOT versions see [here](https://maven.flowingcode.com/snapshots/).
+Release versions since 5.0.1 are available from Maven Central repository. Earlier versions are available from the Vaadin add-on repository. For SNAPSHOT versions see [here](https://maven.flowingcode.com/snapshots/).
 
 ## Building and running demo
 
