@@ -2,7 +2,6 @@ package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.vaadin.flow.component.html.Span;
 
-@SuppressWarnings("serial")
 public class CustomChatMessage extends ChatMessage<CustomMessage> {
   
   private Span tagline = new Span();
