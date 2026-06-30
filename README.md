@@ -10,9 +10,16 @@ Vaadin Add-on that displays a chat assistant floating window using [Material UI'
 
 ## Features
 
-* Messages can be sent by the user or programmatically.
-* Listen for new messages written by the user.
-* Toggle the chat window on/off.
+* Send messages from the user or programmatically, and listen for messages written by the user.
+* Toggle the chat window open/closed, or open it as a full-screen dialog on mobile.
+* Markdown rendering, lazy loading via a `DataProvider`, and streaming ("generative") answers.
+* Customizable floating action button (FAB): icon, size, color (`ButtonVariant` theme variants),
+  corner position and margin, draggable or fixed, and viewport- or container-anchored placement.
+* Resizable chat window with eight drag handles, optional resize direction indicators, and
+  configurable initial size with min/max bounds.
+* Responsive desktop/mobile modes with optional breakpoint-based auto-switching, plus listeners for
+  mode changes and for the chat window crossing a size threshold.
+* A fluent `ChatAssistant.builder()` to configure everything declaratively.
 
 ## Supported versions
 
@@ -96,24 +103,79 @@ Chat Assistant Add-on is written by Flowing Code S.A.
 
 ## Getting started
 
-Simple example showing the basic options:
+`ChatAssistant<T extends Message>` renders a floating action button (FAB) that opens a chat window.
+Add it to any layout and send messages to it; it shows a FAB in the bottom-right corner by default.
 
-	ChatAssistant chatAssistant = new ChatAssistant();
-	TextArea message = new TextArea();
-	message.setLabel("Enter a message from the assistant");
-	message.setSizeFull();
-	
-	Button chat = new Button("Chat");
-	chat.addClickListener(ev->{
-	  Message m = new Message(message.getValue(),false,false,0,false,new Sender("Assistant","1","https://ui-avatars.com/api/?name=Bot"));
-	  chatAssistant.sendMessage(m);
-	  message.clear();
-	});
-	chatAssistant.sendMessage(new Message("Hello, I am here to assist you",false,false,0,false,new Sender("Assistant","1","https://ui-avatars.com/api/?name=Bot")));
-	chatAssistant.toggle();
-	chatAssistant.addChatSentListener(ev->{
-		Notification.show(ev.getMessage());
-	});
+```java
+ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
+add(chatAssistant);
+
+// Send a message programmatically (e.g. from the assistant).
+chatAssistant.sendMessage(Message.builder()
+    .name("Assistant")
+    .content("Hello, I am here to assist you")
+    .messageTime(LocalDateTime.now())
+    .build());
+
+// React to messages typed by the user.
+chatAssistant.setSubmitListener(ev ->
+    chatAssistant.sendMessage(Message.builder()
+        .name("User")
+        .content(ev.getValue())
+        .messageTime(LocalDateTime.now())
+        .build()));
+
+// Open or close the window programmatically.
+chatAssistant.setOpened(true);
+```
+
+### Configuring with the builder
+
+Use `ChatAssistant.builder()` to configure the FAB and window declaratively:
+
+```java
+ChatAssistant<Message> chatAssistant = ChatAssistant.<Message>builder()
+    .fabIcon(new SvgIcon("icons/my-icon.svg")) // custom FAB icon (defaults to a chatbot icon)
+    .defaultFabPosition(FabPosition.BOTTOM_LEFT)
+    .fabMovable(true)                           // allow dragging the FAB
+    .resizable(true)                            // allow resizing the window
+    .markdownEnabled(true)                      // render message content as Markdown
+    .build();
+```
+
+Everything in the builder also has a setter, so the FAB and window can be reconfigured at runtime.
+
+### Styling the FAB
+
+```java
+chatAssistant.setFabPosition(FabPosition.TOP_RIGHT); // move it (and set the reset corner)
+chatAssistant.addFabThemeVariants(ButtonVariant.LUMO_LARGE);   // grow the FAB (LUMO_SMALL/LUMO_LARGE)
+chatAssistant.addFabThemeVariants(ButtonVariant.LUMO_CONTRAST); // recolor it (color variants)
+chatAssistant.setResizeIndicatorsVisible(true);     // show resize-direction hints
+```
+
+### Sizing the window
+
+```java
+chatAssistant.setWindowWidth("400px");
+chatAssistant.setWindowHeight("500px");
+chatAssistant.setWindowMinWidth(300);   // bounds honored on open and while resizing
+chatAssistant.setWindowMaxWidth(700);
+```
+
+### Responsive / mobile mode
+
+In `MOBILE` mode the chat opens as a full-screen dialog. Set a breakpoint to switch automatically
+between desktop (anchored popover) and mobile as the viewport crosses it:
+
+```java
+ChatAssistant<Message> chatAssistant = ChatAssistant.<Message>builder()
+    .mobileBreakpoint(768) // auto-switch to mobile below 768px (auto-switching is opt-in)
+    .build();
+
+chatAssistant.addModeChangedListener(ev -> Notification.show("Now in " + ev.getMode() + " mode"));
+chatAssistant.setMode(ChatAssistantMode.MOBILE); // or switch manually
+```
 
 ## Special configuration when using Spring
 
