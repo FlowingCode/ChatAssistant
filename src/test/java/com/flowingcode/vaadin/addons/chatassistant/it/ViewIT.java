@@ -22,11 +22,11 @@ package com.flowingcode.vaadin.addons.chatassistant.it;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 import com.vaadin.testbench.TestBenchElement;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.junit.Test;
 
@@ -59,6 +59,6 @@ public class ViewIT extends AbstractViewTest {
   @Test
   public void componentWorks() {
     TestBenchElement element = $("chat-bot").first();
-    assertThat(element, hasBeenUpgradedToCustomElement);
+    MatcherAssert.assertThat(element, hasBeenUpgradedToCustomElement);
   }
 }
