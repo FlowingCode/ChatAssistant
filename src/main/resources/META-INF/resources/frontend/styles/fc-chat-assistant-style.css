@@ -38,7 +38,55 @@
 }
 
 .fc-chat-assistant-unread-badge {
-    transition: all 0.15s ease-out;
+    transition: all 0.12s ease-out;
+}
+
+vaadin-popover-overlay::part(overlay) {
+    border-radius: var(--lumo-border-radius-l);
+}
+
+/* The chat overlay fills this part; the part already clamps itself to the viewport
+   (max-height/width: 100%), so the content shrinks with the popover instead of overflowing.
+   The min/max bounds are applied as inline styles from JS (fcChatAssistantApplyConstraints), sourced from
+   the component's configured values, so they are intentionally not hardcoded here. */
+vaadin-popover-overlay.fc-chat-assistant-popover::part(content) {
+    display: flex;
+    flex-direction: column;
+    max-width : 100%;
+    max-height: 100%;
+}
+
+vaadin-popover.fc-chat-assistant-popover::part(content) {
+    display: flex;
+    flex-direction: column;
+    max-width : 100%;
+    max-height: 100%;
+}
+
+/* Let the chat overlay Div shrink so its VirtualList scrolls internally under the clamp. */
+vaadin-popover-overlay.fc-chat-assistant-popover::part(content) > * {
+    min-height: 0;
+    min-width: 0;
+}
+
+/* Let the chat overlay Div shrink so its VirtualList scrolls internally under the clamp. */
+vaadin-popover.fc-chat-assistant-popover::part(content) > * {
+    min-height: 0;
+    min-width: 0;
+}
+
+vaadin-dialog.fc-chat-assistant-dialog::part(content) {
+    height : 100%;
+    width : 100%;
+    display : flex;
+    align-items: stretch;
+}
+
+vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
+    height : 100%;
+    width : 100%;
+    display : flex;
+    align-items: stretch;
 }
 
 /* Specific cursors for each corner */
@@ -52,3 +100,42 @@
 .fc-chat-assistant-resize-top.active   { cursor: n-resize; }
 .fc-chat-assistant-resize-left.active   { cursor: w-resize; }
 .fc-chat-assistant-resize-right.active   { cursor: e-resize; }
+
+/* Resize direction indicators: a subtle arrowhead pointing in each handle's drag direction. Hidden by
+   default; shown via setResizeIndicatorsVisible, and only on handles that can currently be dragged. */
+.fc-chat-assistant-resize-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;        /* never steal drags from the resizer */
+    display: none;
+    /* filled triangle pointing right by default; rotated per direction below */
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid var(--lumo-contrast-20pct);
+}
+
+/* Feature enabled (overlay class) AND this resizer is draggable now (can-drag on the resizer). */
+.fc-chat-assistant-resize-indicator-visible
+    .fc-chat-assistant-resize-can-drag
+    .fc-chat-assistant-resize-arrow {
+    display: block;
+}
+
+/* While actively resizing, the handle grows and would push the arrowhead outside the overlay; hide it.
+   Specificity matches the show rule above and comes later, so it wins. */
+.fc-chat-assistant-resize-indicator-visible
+    .fc-chat-assistant-resize-resizing.fc-chat-assistant-resize-can-drag
+    .fc-chat-assistant-resize-arrow {
+    display: none;
+}
+
+/* Anchor each arrow inside its resizer and rotate it to point outward (base triangle points right). */
+.fc-chat-assistant-resize-arrow-right        { right: 3px;  top: 50%;  transform: translateY(-50%); }
+.fc-chat-assistant-resize-arrow-left         { left: 3px;   top: 50%;  transform: translateY(-50%) rotate(180deg); }
+.fc-chat-assistant-resize-arrow-top          { top: 3px;    left: 50%; transform: translateX(-50%) rotate(-90deg); }
+.fc-chat-assistant-resize-arrow-bottom       { bottom: 3px; left: 50%; transform: translateX(-50%) rotate(90deg); }
+.fc-chat-assistant-resize-arrow-top-right    { top: 3px;    right: 3px; transform: rotate(-45deg); }
+.fc-chat-assistant-resize-arrow-bottom-right { bottom: 3px; right: 3px; transform: rotate(45deg); }
+.fc-chat-assistant-resize-arrow-bottom-left  { bottom: 3px; left: 3px;  transform: rotate(135deg); }
+.fc-chat-assistant-resize-arrow-top-left     { top: 3px;    left: 3px;  transform: rotate(-135deg); }

@@ -18,14 +18,22 @@
  * #L%
  */
 
-// Combined resize functionality for all directions
+// Combined resize functionality for all directions.
+// `container` is the chat overlay Div (it fills the popover content part, so its rendered size is the
+// current content size). Resizing writes the desired size onto the popover's public content-height/
+// content-width, which Vaadin clamps to the viewport, so the content can never overflow the popover.
 window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw, direction) => {
-    // Prevent duplicate initialization
+    // Prevent duplicate initialization. The handlers always attach once; whether a drag is allowed is
+    // decided live (see isResizable) so toggling resizable after init takes effect immediately.
     const guard = `__fcChatAssistantResize_${direction}`;
     if (item[guard]) {
         return;
     }
     item[guard] = true;
+
+    // The resizable state is read live at event time, not captured at init, so setWindowResizable()
+    // enables/disables resizing on an already-initialized handle.
+    const isResizable = () => container.hasAttribute('resizable');
 
     const size = parseFloat(sizeRaw);
     const maxSize = parseFloat(maxSizeRaw);
@@ -35,8 +43,25 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
     let minHeight = 0;
     let maxWidth = Infinity;
     let maxHeight = Infinity;
-    let overlay;
+    let overlay;       // the vaadin-popover-overlay element (used for shouldDrag positioning rules)
+    let contentPart;   // its [part='content'], which our overlay Div fills
     let isDragging = false;
+
+    // Write the desired size directly onto the overlay's content part. This part keeps
+    // overflow:auto + max-height/width:100% in both Vaadin 24 and 25, so the size is clamped to the
+    // viewport and the content never overflows. (Vaadin 25 removed the content-height/width API, so
+    // sizing the part directly is the version-agnostic approach.)
+    // The desired size is also stored on the (durable) overlay Div so it can be restored when the
+    // popover is closed and reopened, since Vaadin rebuilds the overlay's shadow DOM each time.
+    const sizeTarget = () => contentPart || overlay;
+    const setContentHeight = (px) => {
+        container.style.setProperty('--fc-height', px + 'px');
+        sizeTarget().style.height = px + 'px';
+    };
+    const setContentWidth = (px) => {
+        container.style.setProperty('--fc-width', px + 'px');
+        sizeTarget().style.width = px + 'px';
+    };
 
     const directionConfig = {
         'top': {
@@ -45,7 +70,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = container.getBoundingClientRect().top - e.clientY;
                 const newHeight = offsetY + container.clientHeight;
                 if (newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
             },
             setupDrag: () => {
@@ -67,12 +92,12 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = container.getBoundingClientRect().top - e.clientY;
                 const newHeight = offsetY + container.clientHeight;
                 if(newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
                 const offsetX = e.clientX - container.getBoundingClientRect().right;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -94,7 +119,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetX = e.clientX - container.getBoundingClientRect().right;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -116,12 +141,12 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = e.clientY - container.getBoundingClientRect().bottom;
                 const newHeight = offsetY + container.clientHeight;
                 if (newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
                 const offsetX = e.clientX - container.getBoundingClientRect().right;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -143,7 +168,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = e.clientY - container.getBoundingClientRect().bottom;
                 const newHeight = offsetY + container.clientHeight;
                 if (newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
             },
             setupDrag: () => {
@@ -165,12 +190,12 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = e.clientY - container.getBoundingClientRect().bottom;
                 const newHeight = offsetY + container.clientHeight;
                 if(newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
                 const offsetX = container.getBoundingClientRect().left - e.clientX;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -192,7 +217,7 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetX = container.getBoundingClientRect().left - e.clientX;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -214,12 +239,12 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
                 const offsetY = container.getBoundingClientRect().top - e.clientY;
                 const newHeight = offsetY + container.clientHeight;
                 if(newHeight >= minHeight && newHeight <= maxHeight) {
-                    container.style.height = newHeight + 'px';
+                    setContentHeight(newHeight);
                 }
                 const offsetX = container.getBoundingClientRect().left - e.clientX;
                 const newWidth = offsetX + container.clientWidth;
                 if (newWidth >= minWidth && newWidth <= maxWidth) {
-                    container.style.width = newWidth + 'px';
+                    setContentWidth(newWidth);
                 }
             },
             setupDrag: () => {
@@ -239,31 +264,65 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
 
     const config = directionConfig[direction];
     if (!config) {
-        console.error(`Invalid direction: ${direction}. Valid directions: ${Object.keys(directionConfig).join(', ')}`);
+        console.error(`Invalid direction: ${JSON.stringify(direction)}. Valid directions: ${Object.keys(directionConfig).join(', ')}`);
         return;
+    }
+
+    // Reflects the live "can this handle be dragged right now" state as a class, so the CSS can show the
+    // direction arrowhead only on the handles that are currently draggable (see fc-chat-assistant-style.css).
+    let styleObserver = null;
+    function updateCanDrag() {
+        item.classList.toggle('fc-chat-assistant-resize-can-drag', isResizable() && config.shouldDrag());
+    }
+
+    // shouldDrag() is a pure function of the overlay's inline top/bottom/left/right, which the popover
+    // mutates on open and during cross-edge resizes. Also watch the container's `resizable` attribute so
+    // toggling setWindowResizable() shows/hides the direction indicators immediately (without a hover).
+    // Re-observe whenever a (new) overlay is resolved.
+    function observeOverlayStyle() {
+        styleObserver?.disconnect();
+        styleObserver = new MutationObserver(updateCanDrag);
+        styleObserver.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+        styleObserver.observe(container, { attributes: true, attributeFilter: ['resizable'] });
+        updateCanDrag();
     }
 
     window.requestAnimationFrame(fetchOverlay);
     setTimeout(fetchOverlay, 2000); // in case the overlay is not available immediately, check again after 2 seconds
 
-    // Fetch the root overlay component
+    // Fetch the root overlay component and its content part.
     function fetchOverlay() {
         if (!overlay) {
             overlay = document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag);
             if(!overlay) {
                 overlay = [...document.getElementsByClassName(popoverTag)].find(p => p.tagName == overlayTag);
             }
+            if (overlay) {
+                observeOverlayStyle();
+            }
+        }
+        if (overlay && !contentPart) {
+            contentPart = overlay.shadowRoot?.querySelector('[part="content"]');
         }
     }
 
+    window.addEventListener('resize', () => updateCanDrag());
+
     item.addEventListener('pointerenter', (e) => {
-        if (config.shouldDrag()) {
+        updateCanDrag();
+        if (isResizable() && config.shouldDrag()) {
             item.classList.add('active');
+            // Resize bounds come from custom properties on the overlay Div (set from the Java
+            // setWindowMin*/Max* methods), so they don't affect the 100% Div's own layout.
             const computedStyle = window.getComputedStyle(container);
-            minHeight = computedStyle.minHeight ? parseFloat(computedStyle.minHeight) || 0 : 0;
-            minWidth = computedStyle.minWidth ? parseFloat(computedStyle.minWidth) || 0 : 0;
-            maxWidth = computedStyle.maxWidth ? parseFloat(computedStyle.maxWidth) || Infinity : Infinity;
-            maxHeight = computedStyle.maxHeight ? parseFloat(computedStyle.maxHeight) || Infinity : Infinity;
+            const bound = (prop, dflt) => {
+                const value = parseFloat(computedStyle.getPropertyValue(prop));
+                return Number.isFinite(value) ? value : dflt;
+            };
+            minHeight = bound('--fc-min-height', 0);
+            minWidth = bound('--fc-min-width', 0);
+            maxHeight = bound('--fc-max-height', Infinity);
+            maxWidth = bound('--fc-max-width', Infinity);
         }
         else {
             item.classList.remove('active');
@@ -271,9 +330,12 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
     });
 
     item.addEventListener('pointerdown', (e) => {
-        isDragging = config.shouldDrag();
+        isDragging = isResizable() && config.shouldDrag();
         if (isDragging) {
             item.setPointerCapture(e.pointerId);
+            // The handle grows while dragging (setupDrag), which would push the arrowhead outside the
+            // overlay; hide it for the duration of the resize.
+            item.classList.add('fc-chat-assistant-resize-resizing');
             config.setupDrag();
         }
     });
@@ -291,11 +353,83 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
         const wasDragging = isDragging;
         isDragging = false;
         item.classList.remove('active');
+        item.classList.remove('fc-chat-assistant-resize-resizing');
         if (wasDragging) {
             config.cleanupDrag();
             if (item.hasPointerCapture(e.pointerId)) {
                 item.releasePointerCapture(e.pointerId);
             }
+            // A resize can pin/unpin edges, changing which handles are draggable.
+            updateCanDrag();
         }
     }
+};
+
+// Resolves the popover overlay's [part='content'] element, retrying briefly because the overlay is
+// (re)created lazily when the popover opens.
+function fcChatAssistantContentPart(popoverTag, callback, attempts = 0) {
+    const overlayTag = "vaadin-popover-overlay".toUpperCase();
+    const overlay = document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
+        || [...document.getElementsByClassName(popoverTag)].find(p => p.tagName === overlayTag);
+    const contentPart = overlay?.shadowRoot?.querySelector('[part="content"]');
+    if (contentPart) {
+        callback(contentPart);
+    } else if (attempts < 20) {
+        setTimeout(() => fcChatAssistantContentPart(popoverTag, callback, attempts + 1), 100);
+    }
+}
+
+// Applies the chat window's configured size and bounds to the popover content part, sourced from the
+// `--fc-*` custom properties on the durable overlay Div (which survive close/reopen; the content part is
+// rebuilt each open). This is the single source of truth used on open and whenever a Java size/bound
+// setter runs. The content part is sized directly (works on Vaadin 24 and 25), and the desired
+// width/height are clamped into the [min, max] range so an explicit/previously-resized size that violates
+// a (later-set) bound is corrected. Setting the part directly is required because a `var()` on
+// ::part(content) cannot read a custom property set on the inner overlay Div (custom properties inherit
+// downward, and the overlay Div is a descendant of the content part).
+window.fcChatAssistantApplyConstraints = (overlayDiv, popoverTag) => {
+    const raw = (prop) => overlayDiv.style.getPropertyValue(prop);
+    const num = (prop, dflt) => {
+        const value = parseFloat(raw(prop));
+        return Number.isFinite(value) ? value : dflt;
+    };
+    const widthRaw = raw('--fc-width');
+    const heightRaw = raw('--fc-height');
+    const minWidth = raw('--fc-min-width');
+    const minHeight = raw('--fc-min-height');
+    const maxWidth = raw('--fc-max-width');
+    const maxHeight = raw('--fc-max-height');
+
+    // Clamp a desired size string into [min, max] (min wins if they cross, matching CSS).
+    const clamp = (valueRaw, minProp, maxProp) => {
+        const value = parseFloat(valueRaw);
+        if (!Number.isFinite(value)) {
+            return valueRaw;
+        }
+        let result = Math.min(value, num(maxProp, Infinity));
+        result = Math.max(result, num(minProp, 0));
+        return result + 'px';
+    };
+
+    fcChatAssistantContentPart(popoverTag, (contentPart) => {
+        if (minWidth) contentPart.style.minWidth = minWidth;
+        if (minHeight) contentPart.style.minHeight = minHeight;
+        if (maxWidth) contentPart.style.maxWidth = maxWidth;
+        if (maxHeight) contentPart.style.maxHeight = maxHeight;
+        if (widthRaw) contentPart.style.width = clamp(widthRaw, '--fc-min-width', '--fc-max-width');
+        if (heightRaw) contentPart.style.height = clamp(heightRaw, '--fc-min-height', '--fc-max-height');
+    });
+};
+
+// Sets the chat window's initial/desired width or height. Stores it on the durable overlay Div (so it
+// survives close/reopen) and (re)applies all constraints, clamping the new size to the current bounds.
+window.fcChatAssistantSetWindowSize = (overlayDiv, popoverTag, dimension, value) => {
+    overlayDiv.style.setProperty(dimension === 'height' ? '--fc-height' : '--fc-width', value);
+    window.fcChatAssistantApplyConstraints(overlayDiv, popoverTag);
+};
+
+// Re-applies the desired size and bounds (stored on the overlay Div) to the content part. Called whenever
+// the popover opens, because Vaadin rebuilds the overlay's shadow DOM and the inline size is lost.
+window.fcChatAssistantRestoreWindowSize = (overlayDiv, popoverTag) => {
+    window.fcChatAssistantApplyConstraints(overlayDiv, popoverTag);
 };
