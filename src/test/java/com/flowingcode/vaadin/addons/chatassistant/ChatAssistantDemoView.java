@@ -25,14 +25,19 @@ import com.flowingcode.vaadin.addons.demo.TabbedDemo;
 import com.vaadin.flow.router.ParentLayout;
 import com.vaadin.flow.router.Route;
 
-@SuppressWarnings("serial")
 @ParentLayout(DemoLayout.class)
 @Route("chat-assistant")
 @GithubLink("https://github.com/FlowingCode/ChatAssistant")
 public class ChatAssistantDemoView extends TabbedDemo {
 
   public ChatAssistantDemoView() {
+    // Core usage and FAB/window configuration.
     addDemo(ChatAssistantDemo.class);
+    addDemo(ChatAssistantFabConfigDemo.class);
+    addDemo(ChatAssistantBoxDemo.class);
+    addDemo(ChatAssistantModeDemo.class);
+
+    // Content and data-handling features.
     addDemo(ChatAssistantLazyLoadingDemo.class);
     addDemo(ChatAssistantMarkdownDemo.class);
     addDemo(ChatAssistantGenerativeDemo.class);
