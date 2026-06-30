@@ -88,17 +88,14 @@
     color: var(--lumo-secondary-text-color, var(--vaadin-text-color-secondary));
 }
 
-.wmde-markdown {
-    height: 100%;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    display: flex;
-    flex-direction: column;
-    background: none !important;
+/* Markdown messages render block HTML into the vaadin-markdown light DOM, whose default block margins
+   add whitespace inside and between message bubbles. Collapse the outer margins and tighten the gaps. */
+vaadin-markdown > :first-child {
+    margin-top: 0;
 }
-
-.language-mermaid {
-	padding: 0px !important;
+vaadin-markdown > :last-child {
+    margin-bottom: 0;
+}
+vaadin-markdown > * + * {
+    margin-top: var(--lumo-space-s, 0.5rem);
 }
