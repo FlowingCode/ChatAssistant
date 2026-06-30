@@ -33,7 +33,6 @@ import lombok.experimental.SuperBuilder;
  *
  * @author mmlopez
  */
-@SuppressWarnings("serial")
 @Getter
 @Setter
 @SuperBuilder
