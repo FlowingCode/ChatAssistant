@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,39 +34,58 @@ import java.time.LocalDateTime;
 
 @DemoSource(sourcePosition = SourcePosition.PRIMARY)
 @PageTitle("Markdown Demo")
-@SuppressWarnings("serial")
 @Route(value = "chat-assistant/markdown-demo", layout = ChatAssistantDemoView.class)
 @CssImport("./styles/chat-assistant-styles-demo.css")
 public class ChatAssistantMarkdownDemo extends VerticalLayout {
-  
+
   public ChatAssistantMarkdownDemo() {
+    // Pass true to the constructor to render message content as Markdown.
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>(true);
     SvgIcon icon = new SvgIcon("chatbot.svg");
     icon.setColor("var(--lumo-primary-contrast-color)");
     chatAssistant.setFabIcon(icon);
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
+
+    // Text area used to compose the assistant's answer, prefilled with a Markdown sample to send.
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant (try using Markdown)");
     message.setSizeFull();
-    message.addKeyPressListener(ev->{
+    message.setValue("# Heading\n\n"
+        + "Some **bold** and *italic* text, with `inline code`.\n\n"
+        + "- First item\n"
+        + "- Second item\n");
+    message.addKeyPressListener(ev -> {
       if (Strings.isNullOrEmpty(chatAssistant.getWhoIsTyping())) {
         chatAssistant.setWhoIsTyping("Assistant is generating an answer ...");
       }
     });
-    message.addBlurListener(ev->chatAssistant.clearWhoIsTyping());
+    message.addBlurListener(ev -> chatAssistant.clearWhoIsTyping());
 
+    // Send the composed Markdown as an assistant message.
     Button chat = new Button("Chat");
     chat.addClickListener(ev -> {
-      Message m = Message.builder().content(message.getValue()).messageTime(LocalDateTime.now())
-          .name("Assistant").avatar("chatbot.png").build();
-
-      chatAssistant.sendMessage(m);
+      chatAssistant.sendMessage(
+        Message.builder()
+          .content(message.getValue())
+          .messageTime(LocalDateTime.now())
+          .name("Assistant")
+          .avatar("chatbot.png")
+          .build()
+      );
       message.clear();
     });
-    chatAssistant.sendMessage(Message.builder().content("**Hello, I am here to assist you**")
+
+    // Seed the conversation with a Markdown-formatted greeting and open the window.
+    chatAssistant.sendMessage(
+      Message.builder()
+        .content("**Hello, I am here to assist you**")
         .messageTime(LocalDateTime.now())
-        .name("Assistant").avatar("chatbot.png").build());
+        .name("Assistant")
+        .avatar("chatbot.png")
+        .build()
+    );
+    chatAssistant.setOpened(true);
 
     add(message, chat, chatAssistant);
   }
