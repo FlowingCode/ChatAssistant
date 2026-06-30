@@ -45,7 +45,7 @@ public class SerializationTest {
   @Test
   public void testSerialization() throws ClassNotFoundException, IOException {
     try {
-      ChatAssistant chatAssistant = new ChatAssistant();
+      ChatAssistant<Message> chatAssistant = new ChatAssistant<Message>();
       chatAssistant.sendMessage(Message.builder().build());
       testSerializationOf(chatAssistant);
     } catch (Exception e) {
