@@ -20,13 +20,14 @@
 package com.flowingcode.vaadin.addons.chatassistant;
 
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
-import com.flowingcode.vaadin.addons.markdown.MarkdownViewer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.markdown.Markdown;
+
 import java.time.format.DateTimeFormatter;
 import lombok.EqualsAndHashCode;
 
@@ -35,7 +36,6 @@ import lombok.EqualsAndHashCode;
  *
  * @author mmlopez
  */
-@SuppressWarnings("serial")
 @JsModule("@vaadin/message-list/src/vaadin-message.js")
 @Tag("vaadin-message")
 @CssImport("./styles/fc-chat-message-styles.css")
@@ -45,7 +45,7 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
   private T message;
   private boolean markdownEnabled;
   private Div loader;
-  private MarkdownViewer markdownViewer;
+  private Markdown markdown;
   
   /**
    * Creates a new ChatMessage based on the supplied message without markdown support.
@@ -69,8 +69,8 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
     loader.setVisible(false);
     this.add(loader);
     if (markdownEnabled) {
-      markdownViewer = new MarkdownViewer(message.getContent());
-      this.add(markdownViewer);
+      markdown = new Markdown(message.getContent());
+      this.add(markdown);
     }
     setMessage(message);
   }
@@ -103,10 +103,13 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
     loader.setVisible(message.isLoading());
     if (!message.isLoading()) {
       if (markdownEnabled) {
-        markdownViewer.setContent(message.getContent());
+        markdown.setContent(message.getContent());
       } else {
-        this.getElement().executeJs("[...this.childNodes].forEach(node => node.nodeType === 3 && this.removeChild(node));");
-        this.getElement().executeJs("this.appendChild(document.createTextNode($0));", message.getContent());
+        // Strip any stale text node left in the slot, then append the current content as fresh text.
+        this.getElement().executeJs(
+            "[...this.childNodes].forEach(node => node.nodeType === 3 && this.removeChild(node));"
+                + "this.appendChild(document.createTextNode($0));",
+            message.getContent());
       }
     }
   }
