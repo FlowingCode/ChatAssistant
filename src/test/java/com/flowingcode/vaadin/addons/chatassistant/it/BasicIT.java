@@ -23,7 +23,6 @@ import com.flowingcode.vaadin.addons.chatassistant.it.po.ChatAssistantElement;
 import com.flowingcode.vaadin.addons.chatassistant.it.po.ChatBubbleElement;
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
-import com.vaadin.flow.component.html.testbench.ParagraphElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
 import com.vaadin.flow.component.textfield.testbench.TextAreaElement;
 import com.vaadin.testbench.TestBenchElement;
