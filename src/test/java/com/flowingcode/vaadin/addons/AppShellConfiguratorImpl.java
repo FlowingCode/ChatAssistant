@@ -24,7 +24,6 @@ import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.AppShellSettings;
 
-@SuppressWarnings("serial")
 @Push
 public class AppShellConfiguratorImpl implements AppShellConfigurator {
 
