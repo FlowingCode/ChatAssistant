@@ -17,7 +17,43 @@
  * limitations under the License.
  * #L%
  */
-window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensitivityRaw) => {
+// Resolves the FAB's rendered size, falling back to the offset/CSS size when the element has not
+// been laid out yet (getBoundingClientRect returns 0 before the first layout pass).
+function fcChatAssistantSize(fab) {
+    const rect = fab.getBoundingClientRect();
+    const width = rect.width || fab.offsetWidth || parseFloat(fab.style.width) || 0;
+    const height = rect.height || fab.offsetHeight || parseFloat(fab.style.height) || 0;
+    return { width, height };
+}
+
+// Returns the box the FAB is positioned against: the viewport when fixed, otherwise its offset
+// parent (e.g. a containing div). The right/bottom offsets are relative to this box.
+function fcChatAssistantBounds(item) {
+    if (getComputedStyle(item).position === 'fixed' || !item.offsetParent) {
+        return { width: window.innerWidth, height: window.innerHeight };
+    }
+    const rect = item.offsetParent.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+}
+
+// Computes the FAB's position, expressed as right/bottom offsets, for the given corner.
+function fcChatAssistantCornerPosition(item, fab, corner, margin) {
+    const size = fcChatAssistantSize(fab);
+    const bounds = fcChatAssistantBounds(item);
+    const right = margin;
+    const bottom = margin;
+    const left = Math.max(margin, bounds.width - size.width - margin);
+    const top = Math.max(margin, bounds.height - size.height - margin);
+    switch (corner) {
+        case 'BOTTOM_LEFT': return { x: left, y: bottom };
+        case 'TOP_RIGHT': return { x: right, y: top };
+        case 'TOP_LEFT': return { x: left, y: top };
+        case 'BOTTOM_RIGHT':
+        default: return { x: right, y: bottom };
+    }
+}
+
+window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, positionRaw) => {
     // Prevent duplicate initialization
     const guard = `__fcChatAssistantMovement`;
     if (item[guard]) {
@@ -30,6 +66,8 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
     const snapTransition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
     const position = { x: margin, y: margin };
     const initialPosition = { x: margin, y: margin };
+    // Expose the live position so the reset hook can move the FAB after initialization.
+    item.__fcPosition = position;
 
     let screenWidth = window.innerWidth;
     let screenHeight = window.innerHeight;
@@ -40,38 +78,9 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
     const resizeHandler = (_) => {
         screenWidth = window.innerWidth;
         screenHeight = window.innerHeight;
-        
-        // Adjust container dimensions to fit within screen bounds
-        if (container) {
-            const rect = container.getBoundingClientRect();
-            let widthAdjustment = 0;
-            let heightAdjustment = 0;
-            if (rect.left < 0) {
-                widthAdjustment = Math.abs(rect.left);
-            }
-            if (rect.right > screenWidth) {
-                widthAdjustment = Math.max(widthAdjustment, rect.right - screenWidth);
-            }
-            if (rect.top < 0) {
-                heightAdjustment = Math.abs(rect.top);
-            }
-            if (rect.bottom > screenHeight) {
-                heightAdjustment = Math.max(heightAdjustment, rect.bottom - screenHeight);
-            }
-            // Apply adjustments
-            if (widthAdjustment > 0) {
-                const minWidth = parseFloat(container.style.minWidth) || 0;
-                const newWidth = Math.max(minWidth, rect.width - widthAdjustment);
-                container.style.width = newWidth + 'px';
-            }
-            if (heightAdjustment > 0) {
-                const minHeight = parseFloat(container.style.minHeight) || 0;
-                const newHeight = Math.max(minHeight, rect.height - heightAdjustment);
-                container.style.height = newHeight + 'px';
-            }
-        }
-        
-        // Reposition the item to ensure it stays within the new screen bounds
+
+        // The popover content part clamps itself to the viewport (max-height/width: 100%), so no
+        // manual container shrinking is needed here. Just keep the FAB within the new screen bounds.
         snapToBoundary();
     };
     window.addEventListener("resize", resizeHandler);
@@ -79,6 +88,8 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
     const origDisconnectedCallback = root.disconnectedCallback?.bind(root);
     root.disconnectedCallback = () => {
         window.removeEventListener("resize", resizeHandler);
+        window.fcChatAssistantMobileModeOff?.(root);
+        window.fcChatAssistantScreenSizeOffAll?.(root);
         origDisconnectedCallback?.();
     };
 
@@ -112,7 +123,8 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
     }
 
     item.addEventListener('pointerdown', (e) => {
-        isDragging = true;
+        isDragging = fab.hasAttribute('movable') && fab.hasAttribute('anchored');
+        if (!isDragging) return;
         fab.classList.add('dragging');
         item.setPointerCapture(e.pointerId);
         item.style.transition = sizeTransition;
@@ -123,13 +135,17 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
     item.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
         const itemRect = fab.getBoundingClientRect();
-        // Calculate position from right and bottom edges
+        // Calculate position from right and bottom edges, keeping the FAB centered on the cursor.
         position.x = screenWidth - e.clientX - (itemRect.width / 2);
         position.y = screenHeight - e.clientY - (itemRect.height / 2);
-        
+        // Do not move if delta is below sensitivity
+        if (isClickOnlyEvent()) {
+            return;
+        }
         updatePosition();
     });
 
+    item.addEventListener('click', () => onFabClick());
     item.addEventListener('pointerup', (e) => stopDragging(e));
     item.addEventListener('pointerleave', (e) => stopDragging(e));
     item.addEventListener('pointercancel', (e) => stopDragging(e));
@@ -149,5 +165,144 @@ window.fcChatAssistantMovement = (root, item, container, fab, marginRaw, sensiti
         }
     }
 
+    function onFabClick() {
+        if(!fab.hasAttribute('movable') || !fab.hasAttribute('anchored')) {
+            root.$server?.onClick();
+        }
+    }
+
+    // Apply the configured corner once the FAB has a real size. getBoundingClientRect returns 0
+    // before the first layout pass (and while the FAB lives in a hidden tab), which would push it
+    // off-screen for any corner other than the bottom-right default. An IntersectionObserver fires
+    // when the FAB becomes visible, so the size is known by then.
+    function applyCorner() {
+        const start = fcChatAssistantCornerPosition(item, fab, positionRaw, margin);
+        position.x = start.x;
+        position.y = start.y;
+        initialPosition.x = start.x;
+        initialPosition.y = start.y;
+        updatePosition();
+    }
+    if (fcChatAssistantSize(fab).width > 0) {
+        applyCorner();
+    } else {
+        const observer = new IntersectionObserver((_, obs) => {
+            if (fcChatAssistantSize(fab).width > 0) {
+                obs.disconnect();
+                applyCorner();
+            }
+        });
+        observer.observe(fab);
+    }
+
     updatePosition();
+};
+
+// Moves the FAB back to the given corner, animating the transition like a drag-snap.
+window.fcChatAssistantResetPosition = (item, marginRaw, positionRaw) => {
+    const margin = parseFloat(marginRaw);
+    const fab = item.querySelector('.fc-chat-assistant-fab') || item;
+    const target = fcChatAssistantCornerPosition(item, fab, positionRaw, margin);
+    // A gentle ease-out with a small overshoot (1.1 vs the snappier 1.275 used while dragging) so the
+    // reset settles into the corner without bouncing.
+    const resetTransition = 'all 0.45s cubic-bezier(0.22, 0.61, 0.36, 1.1)';
+    item.style.transition = resetTransition;
+    item.style.right = target.x + 'px';
+    item.style.bottom = target.y + 'px';
+    // Keep the live drag state in sync so the next drag starts from the reset position.
+    if (item.__fcPosition) {
+        item.__fcPosition.x = target.x;
+        item.__fcPosition.y = target.y;
+    }
+};
+
+// Removes any active media-query listener, freezing the component in its current mode. Also clears
+// the server-side listener guard so a later re-enable re-attaches cleanly.
+window.fcChatAssistantMobileModeOff = (root) => {
+    if (root.__fcMobileMql && root.__fcMobileHandler) {
+        root.__fcMobileMql.removeEventListener('change', root.__fcMobileHandler);
+    }
+    root.__fcMobileMql = null;
+    root.__fcMobileHandler = null;
+    root['fc-chat-assistant-mobile-listener'] = null;
+};
+
+// Watches the viewport width against the given breakpoint and notifies the server whenever the
+// mobile/desktop state changes. Fires once immediately so the initial mode matches the viewport.
+// A breakpoint of 0 (or less) disables mobile mode entirely (always desktop).
+window.fcChatAssistantMobileMode = (root, breakpointRaw) => {
+    // Replace any previous listener so repeated calls (e.g. breakpoint changes) don't stack up.
+    window.fcChatAssistantMobileModeOff(root);
+    const breakpoint = parseFloat(breakpointRaw);
+    if (!(breakpoint > 0)) {
+        // Disabled: ensure desktop mode and register no listener.
+        root.$server?.onMobileModeChange(false);
+        return;
+    }
+    const mql = window.matchMedia('(max-width: ' + breakpoint + 'px)');
+    const handler = (e) => root.$server?.onMobileModeChange(e.matches);
+    mql.addEventListener('change', handler);
+    root.__fcMobileMql = mql;
+    root.__fcMobileHandler = handler;
+    // Evaluate the current viewport so the initial mode is correct.
+    handler(mql);
+};
+
+// Watches the CHAT WINDOW's own size (the given overlay Div, which fills the popover content) against a
+// width and/or height threshold, identified by `key`. A null threshold means that axis is not tracked;
+// when both are given they must both be satisfied (AND). The server is notified only when the
+// above/below state actually flips (crossing), plus once on registration with the initial state, so a
+// resize within one side of the threshold sends no calls. Multiple keys coexist independently.
+window.fcChatAssistantScreenSize = (root, overlayDiv, key, widthRaw, heightRaw) => {
+    if (!root.__fcScreenSizeListeners) {
+        root.__fcScreenSizeListeners = {};
+    }
+    // Replace any previous registration under this key so repeated calls don't stack observers.
+    window.fcChatAssistantScreenSizeOff(root, key);
+
+    const width = parseFloat(widthRaw);
+    const height = parseFloat(heightRaw);
+    const isAbove = (rect) =>
+        (Number.isNaN(width) || rect.width >= width)
+        && (Number.isNaN(height) || rect.height >= height);
+
+    const entry = { observer: null, last: null };
+    const notify = (rect) => {
+        // Ignore the pre-layout 0x0 state so the initial delivery reflects the real size.
+        if (rect.width === 0 && rect.height === 0) {
+            return;
+        }
+        const above = isAbove(rect);
+        if (above !== entry.last) {
+            entry.last = above;
+            root.$server?.onScreenSizeChange(key, above);
+        }
+    };
+
+    entry.observer = new ResizeObserver((entries) => notify(entries[0].contentRect));
+    entry.observer.observe(overlayDiv);
+    root.__fcScreenSizeListeners[key] = entry;
+    // Deliver the current state immediately (if already laid out; otherwise the observer's first
+    // callback delivers it).
+    notify(overlayDiv.getBoundingClientRect());
+};
+
+// Removes the size observer registered under `key` (no-op if absent).
+window.fcChatAssistantScreenSizeOff = (root, key) => {
+    const listeners = root.__fcScreenSizeListeners;
+    if (listeners && listeners[key]) {
+        listeners[key].observer?.disconnect();
+        delete listeners[key];
+    }
+    // Clear the refresh guard so the same key can be re-registered later.
+    root['fc-chat-assistant-screen-size-' + key] = null;
+};
+
+// Removes every screen-size observer (used on disconnect).
+window.fcChatAssistantScreenSizeOffAll = (root) => {
+    const listeners = root.__fcScreenSizeListeners;
+    if (listeners) {
+        Object.keys(listeners).forEach((key) => listeners[key].observer?.disconnect());
+    }
+    root.__fcScreenSizeListeners = {};
 };
