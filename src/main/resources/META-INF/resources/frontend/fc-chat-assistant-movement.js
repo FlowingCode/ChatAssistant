@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,25 @@
  * limitations under the License.
  * #L%
  */
+// The root element (<animated-fab>) has no backing web component, so register a minimal custom
+// element whose disconnectedCallback runs the teardown callbacks that the movement and resize
+// modules push onto root.__fcCleanups. Without an upgraded element the browser never fires
+// disconnectedCallback, leaving the window/observer listeners uncleaned and the init guards set.
+if (!customElements.get('animated-fab')) {
+    customElements.define('animated-fab', class extends HTMLElement {
+        disconnectedCallback() {
+            (this.__fcCleanups || []).forEach(fn => {
+                try {
+                    fn();
+                } catch (e) {
+                    // keep running the remaining teardown callbacks
+                }
+            });
+            this.__fcCleanups = [];
+        }
+    });
+}
+
 // Resolves the FAB's rendered size, falling back to the offset/CSS size when the element has not
 // been laid out yet (getBoundingClientRect returns 0 before the first layout pass).
 function fcChatAssistantSize(fab) {
@@ -85,13 +104,14 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     };
     window.addEventListener("resize", resizeHandler);
 
-    const origDisconnectedCallback = root.disconnectedCallback?.bind(root);
-    root.disconnectedCallback = () => {
+    (root.__fcCleanups = root.__fcCleanups || []).push(() => {
         window.removeEventListener("resize", resizeHandler);
         window.fcChatAssistantMobileModeOff?.(root);
         window.fcChatAssistantScreenSizeOffAll?.(root);
-        origDisconnectedCallback?.();
-    };
+        // Clear the init guards so movement re-initializes on reattach.
+        item[guard] = false;
+        root['fc-chat-assistant-drag-listener'] = null;
+    });
 
     // Update FAB position
     function updatePosition() {
@@ -135,13 +155,17 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     item.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
         const itemRect = fab.getBoundingClientRect();
-        // Calculate position from right and bottom edges, keeping the FAB centered on the cursor.
-        position.x = screenWidth - e.clientX - (itemRect.width / 2);
-        position.y = screenHeight - e.clientY - (itemRect.height / 2);
-        // Do not move if delta is below sensitivity
-        if (isClickOnlyEvent()) {
+        // Candidate position from the right/bottom edges, keeping the FAB centered on the cursor.
+        const nextX = screenWidth - e.clientX - (itemRect.width / 2);
+        const nextY = screenHeight - e.clientY - (itemRect.height / 2);
+        // Ignore movement below the sensitivity threshold, and do not mutate position for it, so a
+        // click never nudges the FAB when it is later committed by snapToBoundary/updatePosition.
+        if (Math.abs(nextX - initialPosition.x) < sensitivity
+            && Math.abs(nextY - initialPosition.y) < sensitivity) {
             return;
         }
+        position.x = nextX;
+        position.y = nextY;
         updatePosition();
     });
 
@@ -302,7 +326,12 @@ window.fcChatAssistantScreenSizeOff = (root, key) => {
 window.fcChatAssistantScreenSizeOffAll = (root) => {
     const listeners = root.__fcScreenSizeListeners;
     if (listeners) {
-        Object.keys(listeners).forEach((key) => listeners[key].observer?.disconnect());
+        Object.keys(listeners).forEach((key) => {
+            listeners[key].observer?.disconnect();
+            // Clear the per-key refresh guard too (mirroring fcChatAssistantScreenSizeOff), otherwise it
+            // would block re-registration of the same key after a detach/reattach.
+            root['fc-chat-assistant-screen-size-' + key] = null;
+        });
     }
     root.__fcScreenSizeListeners = {};
 };

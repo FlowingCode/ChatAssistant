@@ -33,5 +33,4 @@ public class AppShellConfiguratorImpl implements AppShellConfigurator {
       DynamicTheme.LUMO.initialize(settings);
     }
   }
-
 }

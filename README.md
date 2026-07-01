@@ -13,7 +13,7 @@ Vaadin Add-on that displays a chat assistant floating window using [Material UI'
 * Send messages from the user or programmatically, and listen for messages written by the user.
 * Toggle the chat window open/closed, or open it as a full-screen dialog on mobile.
 * Markdown rendering, lazy loading via a `DataProvider`, and streaming ("generative") answers.
-* Customizable floating action button (FAB): icon, size, color (`ButtonVariant` theme variants),
+* Customizable floating action button (FAB): icon, size, color (`FabVariant` theme variants),
   corner position and margin, draggable or fixed, and viewport- or container-anchored placement.
 * Resizable chat window with eight drag handles, optional resize direction indicators, and
   configurable initial size with min/max bounds.
@@ -149,8 +149,8 @@ Everything in the builder also has a setter, so the FAB and window can be reconf
 
 ```java
 chatAssistant.setFabPosition(FabPosition.TOP_RIGHT); // move it (and set the reset corner)
-chatAssistant.addFabThemeVariants(ButtonVariant.LUMO_LARGE);   // grow the FAB (LUMO_SMALL/LUMO_LARGE)
-chatAssistant.addFabThemeVariants(ButtonVariant.LUMO_CONTRAST); // recolor it (color variants)
+chatAssistant.addFabThemeVariants(FabVariant.LARGE);        // grow the FAB (FabVariant.SMALL/LARGE)
+chatAssistant.addFabThemeVariants(FabVariant.LUMO_CONTRAST); // recolor it (color variants)
 chatAssistant.setResizeIndicatorsVisible(true);     // show resize-direction hints
 ```
 

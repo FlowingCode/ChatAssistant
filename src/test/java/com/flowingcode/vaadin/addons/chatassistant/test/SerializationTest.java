@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,10 @@ public class SerializationTest {
   @Test
   public void testSerialization() throws ClassNotFoundException, IOException {
     try {
-      ChatAssistant<Message> chatAssistant = new ChatAssistant<Message>();
+      ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
       chatAssistant.sendMessage(Message.builder().build());
+      // Register a screen-size listener so the listener-map state is covered by serialization.
+      chatAssistant.addScreenSizeListener(300, null, ev -> {});
       testSerializationOf(chatAssistant);
     } catch (Exception e) {
       Assert.fail("Problem while testing serialization: " + e.getMessage());
