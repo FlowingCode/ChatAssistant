@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@
 // `container` is the chat overlay Div (it fills the popover content part, so its rendered size is the
 // current content size). Resizing writes the desired size onto the popover's public content-height/
 // content-width, which Vaadin clamps to the viewport, so the content can never overflow the popover.
-window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw, direction) => {
+window.fcChatAssistantResize = (root, item, container, popoverTag, sizeRaw, maxSizeRaw, direction) => {
     // Prevent duplicate initialization. The handlers always attach once; whether a drag is allowed is
     // decided live (see isResizable) so toggling resizable after init takes effect immediately.
     const guard = `__fcChatAssistantResize_${direction}`;
@@ -37,7 +37,6 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
 
     const size = parseFloat(sizeRaw);
     const maxSize = parseFloat(maxSizeRaw);
-    const overlayTag = "vaadin-popover-overlay".toUpperCase();
 
     let minWidth = 0;
     let minHeight = 0;
@@ -288,27 +287,45 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
     }
 
     window.requestAnimationFrame(fetchOverlay);
-    setTimeout(fetchOverlay, 2000); // in case the overlay is not available immediately, check again after 2 seconds
+    // In case the overlay is not available immediately, check again after 2 seconds. Tracked so it can
+    // be cancelled on disconnect (it may otherwise fire against a torn-down component).
+    const fetchOverlayTimeout = setTimeout(fetchOverlay, 2000);
 
-    // Fetch the root overlay component and its content part.
+    // Fetch the root overlay component and its content part. The popover rebuilds its overlay (and the
+    // content part) on each open, so re-resolve whenever the cached nodes are gone or detached — keeping
+    // stale (disconnected) references out of shouldDrag()/setContentWidth()/setContentHeight().
     function fetchOverlay() {
-        if (!overlay) {
-            overlay = document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag);
-            if(!overlay) {
-                overlay = [...document.getElementsByClassName(popoverTag)].find(p => p.tagName == overlayTag);
-            }
+        if (!overlay || !overlay.isConnected) {
+            contentPart = null; // a new overlay means the old content part is stale too
+            overlay = resolveOverlay(popoverTag);
             if (overlay) {
                 observeOverlayStyle();
             }
         }
-        if (overlay && !contentPart) {
+        if (overlay && (!contentPart || !contentPart.isConnected)) {
             contentPart = overlay.shadowRoot?.querySelector('[part="content"]');
         }
     }
 
-    window.addEventListener('resize', () => updateCanDrag());
+    const resizeHandler = () => updateCanDrag();
+    window.addEventListener('resize', resizeHandler);
+
+    // Teardown on detach (run by the animated-fab custom element's disconnectedCallback, defined in
+    // fc-chat-assistant-movement.js): drop this direction's window resize listener, disconnect its
+    // style observer, cancel the pending overlay lookup, and clear the init guards so the direction
+    // re-initializes on reattach. Runs only on a genuine detach, not on popover reopen.
+    (root.__fcCleanups = root.__fcCleanups || []).push(() => {
+        window.removeEventListener('resize', resizeHandler);
+        styleObserver?.disconnect();
+        clearTimeout(fetchOverlayTimeout);
+        item[guard] = false;
+        root['fc-chat-assistant-resize-' + direction + '-listener'] = null;
+    });
 
     item.addEventListener('pointerenter', (e) => {
+        // Refresh the overlay/content-part references in case the popover was closed and reopened since
+        // the last interaction (which rebuilds the overlay's shadow DOM).
+        fetchOverlay();
         updateCanDrag();
         if (isResizable() && config.shouldDrag()) {
             item.classList.add('active');
@@ -365,12 +382,19 @@ window.fcChatAssistantResize = (item, container, popoverTag, sizeRaw, maxSizeRaw
     }
 };
 
+// Resolves the popover's overlay element across Vaadin 24 (the overlay carries the class directly) and
+// Vaadin 25 (the overlay lives inside the popover's shadow root). Shared by fetchOverlay() and
+// fcChatAssistantContentPart() so the selector chain is defined in one place.
+function resolveOverlay(popoverTag) {
+    const overlayTag = "vaadin-popover-overlay".toUpperCase();
+    return document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
+        || [...document.getElementsByClassName(popoverTag)].find(p => p.tagName === overlayTag);
+}
+
 // Resolves the popover overlay's [part='content'] element, retrying briefly because the overlay is
 // (re)created lazily when the popover opens.
 function fcChatAssistantContentPart(popoverTag, callback, attempts = 0) {
-    const overlayTag = "vaadin-popover-overlay".toUpperCase();
-    const overlay = document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
-        || [...document.getElementsByClassName(popoverTag)].find(p => p.tagName === overlayTag);
+    const overlay = resolveOverlay(popoverTag);
     const contentPart = overlay?.shadowRoot?.querySelector('[part="content"]');
     if (contentPart) {
         callback(contentPart);
@@ -389,8 +413,14 @@ function fcChatAssistantContentPart(popoverTag, callback, attempts = 0) {
 // downward, and the overlay Div is a descendant of the content part).
 window.fcChatAssistantApplyConstraints = (overlayDiv, popoverTag) => {
     const raw = (prop) => overlayDiv.style.getPropertyValue(prop);
+    // Numeric bound in px, or the default for non-px units (%/vw/…), which are left to the CSS
+    // min/max the content part already carries rather than clamped numerically here.
     const num = (prop, dflt) => {
-        const value = parseFloat(raw(prop));
+        const rawValue = raw(prop);
+        if (!/^\s*\d*\.?\d+(px)?\s*$/.test(rawValue)) {
+            return dflt;
+        }
+        const value = parseFloat(rawValue);
         return Number.isFinite(value) ? value : dflt;
     };
     const widthRaw = raw('--fc-width');
@@ -400,8 +430,13 @@ window.fcChatAssistantApplyConstraints = (overlayDiv, popoverTag) => {
     const maxWidth = raw('--fc-max-width');
     const maxHeight = raw('--fc-max-height');
 
-    // Clamp a desired size string into [min, max] (min wins if they cross, matching CSS).
+    // Clamp a desired size string into [min, max] (min wins if they cross, matching CSS). Only plain
+    // px/number lengths are clamped numerically; other units (%/vw/vh/rem/…) pass through verbatim
+    // and are left to the CSS min/max-width already applied to the content part.
     const clamp = (valueRaw, minProp, maxProp) => {
+        if (!/^\s*\d*\.?\d+(px)?\s*$/.test(valueRaw)) {
+            return valueRaw;
+        }
         const value = parseFloat(valueRaw);
         if (!Number.isFinite(value)) {
             return valueRaw;
@@ -419,13 +454,6 @@ window.fcChatAssistantApplyConstraints = (overlayDiv, popoverTag) => {
         if (widthRaw) contentPart.style.width = clamp(widthRaw, '--fc-min-width', '--fc-max-width');
         if (heightRaw) contentPart.style.height = clamp(heightRaw, '--fc-min-height', '--fc-max-height');
     });
-};
-
-// Sets the chat window's initial/desired width or height. Stores it on the durable overlay Div (so it
-// survives close/reopen) and (re)applies all constraints, clamping the new size to the current bounds.
-window.fcChatAssistantSetWindowSize = (overlayDiv, popoverTag, dimension, value) => {
-    overlayDiv.style.setProperty(dimension === 'height' ? '--fc-height' : '--fc-width', value);
-    window.fcChatAssistantApplyConstraints(overlayDiv, popoverTag);
 };
 
 // Re-applies the desired size and bounds (stored on the overlay Div) to the content part. Called whenever

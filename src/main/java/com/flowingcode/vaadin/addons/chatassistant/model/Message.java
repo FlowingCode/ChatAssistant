@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,10 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(of = "id")
 public class Message implements Serializable {
 
-  @Builder.Default
-  private UUID id = UUID.randomUUID();
-  @Builder.Default
-  private String content = "";
+  @Builder.Default private UUID id = UUID.randomUUID();
+  @Builder.Default private String content = "";
   private boolean loading;
   private String name;
   private String avatar;
   private LocalDateTime messageTime;
-  
 }

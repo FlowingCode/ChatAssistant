@@ -2,14 +2,14 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2025 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,33 +45,36 @@ public class ChatAssistantModeDemo extends VerticalLayout {
 
     // Build the assistant with auto-switching enabled: setting a breakpoint makes it switch to
     // mobile (full-screen dialog) below 768px and back to desktop (anchored popover) above it.
-    ChatAssistant<Message> chatAssistant = ChatAssistant.<Message>builder()
-        .fabIcon(icon)
-        .mobileBreakpoint(768)
-        .build();
+    ChatAssistant<Message> chatAssistant =
+        ChatAssistant.<Message>builder().fabIcon(icon).mobileBreakpoint(768).build();
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
 
     // React to every mode change, whether automatic or manual.
     chatAssistant.addModeChangedListener(
-        ev -> Notification.show("Switched to " + ev.getMode() + " mode")
-      );
+        ev -> Notification.show("Switched to " + ev.getMode() + " mode"));
 
     // React to the chat window's own size crossing a 500px width threshold (independent of the
     // viewport breakpoint above). Fires once on registration and then on every crossing.
-    chatAssistant.addScreenSizeListener(500, null,
-        ev -> Notification.show("Chat window is now " + ev.getDirection() + " 500px wide")
-      );
+    chatAssistant.addScreenSizeListener(
+        500,
+        null,
+        ev -> Notification.show("Chat window is now " + ev.getDirection() + " 500px wide"));
 
     // Switch the mode manually (only sticks while auto-switching is disabled).
     Button mobile = new Button("Set mobile", ev -> chatAssistant.setMode(ChatAssistantMode.MOBILE));
-    Button desktop = new Button("Set desktop", ev -> chatAssistant.setMode(ChatAssistantMode.DESKTOP));
+    Button desktop =
+        new Button("Set desktop", ev -> chatAssistant.setMode(ChatAssistantMode.DESKTOP));
 
     // Freeze/resume automatic switching on the configured breakpoint.
-    Button toggleSwitching = new Button("Toggle auto switching", ev -> {
-      chatAssistant.setMobileModeSwitchingEnabled(!chatAssistant.isMobileModeSwitchingEnabled());
-      Notification.show("Auto switching: " + chatAssistant.isMobileModeSwitchingEnabled());
-    });
+    Button toggleSwitching =
+        new Button(
+            "Toggle auto switching",
+            ev -> {
+              chatAssistant.setMobileModeSwitchingEnabled(
+                  !chatAssistant.isMobileModeSwitchingEnabled());
+              Notification.show("Auto switching: " + chatAssistant.isMobileModeSwitchingEnabled());
+            });
 
     // Move the FAB back to its configured corner after it has been dragged.
     Button reset = new Button("Reset FAB position", ev -> chatAssistant.resetFabPosition());
@@ -81,13 +84,12 @@ public class ChatAssistantModeDemo extends VerticalLayout {
 
     // Seed the conversation with a greeting and open the window.
     chatAssistant.sendMessage(
-      Message.builder()
-        .content("Resize the window to switch modes.")
-        .messageTime(LocalDateTime.now())
-        .name("Assistant")
-        .avatar("chatbot.png")
-        .build()
-    );
+        Message.builder()
+            .content("Resize the window to switch modes.")
+            .messageTime(LocalDateTime.now())
+            .name("Assistant")
+            .avatar("chatbot.png")
+            .build());
     chatAssistant.setOpened(true);
 
     add(controls, chatAssistant);

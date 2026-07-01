@@ -2,14 +2,14 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2025 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,10 +46,8 @@ public class ChatAssistantBoxDemo extends VerticalLayout {
 
     // With fabAnchoredToViewport(false) the FAB is positioned relative to its container instead of
     // the viewport, so it lives inside the box below rather than floating over the whole screen.
-    ChatAssistant<Message> chatAssistant = ChatAssistant.<Message>builder()
-        .fabIcon(icon)
-        .fabAnchoredToViewport(false)
-        .build();
+    ChatAssistant<Message> chatAssistant =
+        ChatAssistant.<Message>builder().fabIcon(icon).fabAnchoredToViewport(false).build();
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
 
@@ -60,20 +58,22 @@ public class ChatAssistantBoxDemo extends VerticalLayout {
             .messageTime(LocalDateTime.now())
             .name("Assistant")
             .avatar("chatbot.png")
-            .build()
-    );
+            .build());
 
     // Move the FAB to each corner of the box.
-    HorizontalLayout controls = new HorizontalLayout(
-        new Button("Top left", ev -> chatAssistant.setFabPosition(FabPosition.TOP_LEFT)),
-        new Button("Top right", ev -> chatAssistant.setFabPosition(FabPosition.TOP_RIGHT)),
-        new Button("Bottom left", ev -> chatAssistant.setFabPosition(FabPosition.BOTTOM_LEFT)),
-        new Button("Bottom right", ev -> chatAssistant.setFabPosition(FabPosition.BOTTOM_RIGHT))
-    );
+    HorizontalLayout controls =
+        new HorizontalLayout(
+            new Button("Top left", ev -> chatAssistant.setFabPosition(FabPosition.TOP_LEFT)),
+            new Button("Top right", ev -> chatAssistant.setFabPosition(FabPosition.TOP_RIGHT)),
+            new Button("Bottom left", ev -> chatAssistant.setFabPosition(FabPosition.BOTTOM_LEFT)),
+            new Button(
+                "Bottom right", ev -> chatAssistant.setFabPosition(FabPosition.BOTTOM_RIGHT)));
     controls.getStyle().set("flex-wrap", "wrap");
 
     // A visible, relatively-positioned box that hosts the non-fixed FAB.
-    Span description = new Span("The FAB is not anchored to the viewport but positioned relative to this box. This behaviour disables dragging.");
+    Span description =
+        new Span(
+            "The FAB is not anchored to the viewport but positioned relative to this box. This behaviour disables dragging.");
     Div box = new Div(chatAssistant);
     box.getStyle()
         .set("position", "relative")

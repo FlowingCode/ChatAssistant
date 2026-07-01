@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.markdown.Markdown;
-
 import java.time.format.DateTimeFormatter;
 import lombok.EqualsAndHashCode;
 
@@ -39,37 +38,39 @@ import lombok.EqualsAndHashCode;
 @JsModule("@vaadin/message-list/src/vaadin-message.js")
 @Tag("vaadin-message")
 @CssImport("./styles/fc-chat-message-styles.css")
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class ChatMessage<T extends Message> extends Component implements HasComponents {
-  
+
   private T message;
   private boolean markdownEnabled;
   private Div loader;
   private Markdown markdown;
-  
+  private static final String DEFAULT_MARKDOWN_CLASS = "fc-chat-message-markdown";
+
   /**
    * Creates a new ChatMessage based on the supplied message without markdown support.
-   * 
+   *
    * @param message message used to populate the ChatMessage instance
    */
   public ChatMessage(T message) {
     this(message, false);
   }
-  
+
   /**
    * Creates a new ChatMessage based on the supplied message.
-   * 
+   *
    * @param message message used to populate the ChatMessage instance
    * @param markdownEnabled whether the message supports markdown or not
    */
   public ChatMessage(T message, boolean markdownEnabled) {
     this.markdownEnabled = markdownEnabled;
-    loader = new Div(new Div(),new Div(), new Div(), new Div());
+    loader = new Div(new Div(), new Div(), new Div(), new Div());
     loader.setClassName("lds-ellipsis");
     loader.setVisible(false);
     this.add(loader);
     if (markdownEnabled) {
       markdown = new Markdown(message.getContent());
+      markdown.setClassName(DEFAULT_MARKDOWN_CLASS);
       this.add(markdown);
     }
     setMessage(message);
@@ -77,62 +78,65 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
 
   /**
    * Updates the component by setting the current underlying message.
-   * 
+   *
    * @param message message used to populate the ChatMessage instance
    */
   public void setMessage(T message) {
     this.message = message;
     updateMessage(message);
-    if (message.getName()!=null) {
+    if (message.getName() != null) {
       this.setUserName(message.getName());
-      if (message.getAvatar()!=null) {
+      if (message.getAvatar() != null) {
         this.setUserImg(message.getAvatar());
       }
     }
-    if (message.getMessageTime()!=null) {
-      String formattedTime = message.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    if (message.getMessageTime() != null) {
+      String formattedTime =
+          message.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       this.setTime(formattedTime);
     }
   }
 
   /**
    * Updates the displayed message content and loading state.
-   * @param message
+   *
+   * @param message the message whose content and loading state to render
    */
   private void updateMessage(T message) {
     loader.setVisible(message.isLoading());
-    if (!message.isLoading()) {
-      if (markdownEnabled) {
-        markdown.setContent(message.getContent());
-      } else {
-        // Strip any stale text node left in the slot, then append the current content as fresh text.
-        this.getElement().executeJs(
-            "[...this.childNodes].forEach(node => node.nodeType === 3 && this.removeChild(node));"
-                + "this.appendChild(document.createTextNode($0));",
-            message.getContent());
-      }
+    // Clear the content while loading so a recycled VirtualList row does not keep showing the
+    // previous message's text/markdown next to the spinner.
+    String content = message.isLoading() ? "" : message.getContent();
+    if (markdownEnabled) {
+      markdown.setContent(content);
+    } else {
+      // Strip any stale text node left in the slot, then append the current content as fresh text.
+      this.getElement()
+          .executeJs(
+              "[...this.childNodes].forEach(node => node.nodeType === 3 && this.removeChild(node));"
+                  + "if ($0) this.appendChild(document.createTextNode($0));",
+              content);
     }
   }
-  
+
   /**
    * Returns the underlying message.
-   * 
+   *
    * @return the message object used to populate this ChatMessage
    */
   public T getMessage() {
     return message;
   }
-  
+
   private void setUserName(String username) {
     getElement().setAttribute("user-name", username);
   }
-  
+
   private void setUserImg(String imageUrl) {
     getElement().setAttribute("user-img", imageUrl);
   }
-  
+
   private void setTime(String time) {
     getElement().setAttribute("time", time);
   }
-  
 }
