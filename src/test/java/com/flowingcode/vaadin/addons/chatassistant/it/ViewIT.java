@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,8 @@ public class ViewIT extends AbstractViewTest {
 
         @Override
         protected boolean matchesSafely(TestBenchElement item, Description mismatchDescription) {
-          String script = "let s=arguments[0].shadowRoot; return !!(s&&s.childElementCount)";
+          String script =
+              "return !!window.customElements.get(arguments[0].tagName.toLowerCase())";
           if (!item.getTagName().contains("-")) {
             return true;
           }
@@ -58,7 +59,7 @@ public class ViewIT extends AbstractViewTest {
 
   @Test
   public void componentWorks() {
-    TestBenchElement element = $("chat-bot").first();
+    TestBenchElement element = $("animated-fab").first();
     MatcherAssert.assertThat(element, hasBeenUpgradedToCustomElement);
   }
 }

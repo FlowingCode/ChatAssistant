@@ -2,14 +2,14 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,40 +51,41 @@ public class ChatAssistantMarkdownDemo extends VerticalLayout {
     TextArea message = new TextArea();
     message.setLabel("Enter a message from the assistant (try using Markdown)");
     message.setSizeFull();
-    message.setValue("# Heading\n\n"
-        + "Some **bold** and *italic* text, with `inline code`.\n\n"
-        + "- First item\n"
-        + "- Second item\n");
-    message.addKeyPressListener(ev -> {
-      if (Strings.isNullOrEmpty(chatAssistant.getWhoIsTyping())) {
-        chatAssistant.setWhoIsTyping("Assistant is generating an answer ...");
-      }
-    });
+    message.setValue(
+        "# Heading\n\n"
+            + "Some **bold** and *italic* text, with `inline code`.\n\n"
+            + "- First item\n"
+            + "- Second item\n");
+    message.addKeyPressListener(
+        ev -> {
+          if (Strings.isNullOrEmpty(chatAssistant.getWhoIsTyping())) {
+            chatAssistant.setWhoIsTyping("Assistant is generating an answer ...");
+          }
+        });
     message.addBlurListener(ev -> chatAssistant.clearWhoIsTyping());
 
     // Send the composed Markdown as an assistant message.
     Button chat = new Button("Chat");
-    chat.addClickListener(ev -> {
-      chatAssistant.sendMessage(
-        Message.builder()
-          .content(message.getValue())
-          .messageTime(LocalDateTime.now())
-          .name("Assistant")
-          .avatar("chatbot.png")
-          .build()
-      );
-      message.clear();
-    });
+    chat.addClickListener(
+        ev -> {
+          chatAssistant.sendMessage(
+              Message.builder()
+                  .content(message.getValue())
+                  .messageTime(LocalDateTime.now())
+                  .name("Assistant")
+                  .avatar("chatbot.png")
+                  .build());
+          message.clear();
+        });
 
     // Seed the conversation with a Markdown-formatted greeting and open the window.
     chatAssistant.sendMessage(
-      Message.builder()
-        .content("**Hello, I am here to assist you**")
-        .messageTime(LocalDateTime.now())
-        .name("Assistant")
-        .avatar("chatbot.png")
-        .build()
-    );
+        Message.builder()
+            .content("**Hello, I am here to assist you**")
+            .messageTime(LocalDateTime.now())
+            .name("Assistant")
+            .avatar("chatbot.png")
+            .build());
     chatAssistant.setOpened(true);
 
     add(message, chat, chatAssistant);

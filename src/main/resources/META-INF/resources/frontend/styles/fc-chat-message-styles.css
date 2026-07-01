@@ -19,7 +19,7 @@
  */
 .lds-ellipsis {
   /* change color here */
-  color: #1c4c5b
+  color: #1c4c5b;
 }
 .lds-ellipsis,
 .lds-ellipsis div {
@@ -85,17 +85,17 @@
 	width: 100%;
     padding: var(--lumo-space-xs, var(--vaadin-padding-xs, 0.25rem));
     font-size: var(--lumo-font-size-xs, var(--aura-font-size-s, small));
-    color: var(--lumo-secondary-text-color, var(--vaadin-text-color-secondary));
+    color: var(--lumo-secondary-text-color, var(--vaadin-text-color-secondary, #697177));
 }
 
 /* Markdown messages render block HTML into the vaadin-markdown light DOM, whose default block margins
    add whitespace inside and between message bubbles. Collapse the outer margins and tighten the gaps. */
-vaadin-markdown > :first-child {
+vaadin-markdown.fc-chat-message-markdown > :first-child {
     margin-top: 0;
 }
-vaadin-markdown > :last-child {
+vaadin-markdown.fc-chat-message-markdown > :last-child {
     margin-bottom: 0;
 }
-vaadin-markdown > * + * {
+vaadin-markdown.fc-chat-message-markdown > * + * {
     margin-top: var(--lumo-space-s, 0.5rem);
 }

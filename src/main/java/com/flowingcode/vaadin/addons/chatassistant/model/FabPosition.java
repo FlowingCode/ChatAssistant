@@ -2,14 +2,14 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,11 @@
  */
 package com.flowingcode.vaadin.addons.chatassistant.model;
 
-/** The corner of the viewport where the floating action button is initially placed. */
+/**
+ * The corner of the viewport where the floating action button is initially placed.
+ *
+ * @since 5.1.0
+ */
 public enum FabPosition {
   BOTTOM_RIGHT,
   BOTTOM_LEFT,

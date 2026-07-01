@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,19 +22,20 @@
 .fc-chat-assistant-fab {
     cursor: pointer;
     transform: scale(1);
-    box-shadow: var(--lumo-box-shadow-m);
+    /* Cross-theme fallback: Lumo token, then a literal shadow (Aura has no equivalent scale token). */
+    box-shadow: var(--lumo-box-shadow-m, 0 2px 6px rgba(0, 0, 0, 0.2));
 }
 
 /* Expansion state when being dragged */
 .fc-chat-assistant-fab.dragging {
     cursor: grabbing;
     transform: scale(1.15);
-    box-shadow: var(--lumo-box-shadow-xl);
+    box-shadow: var(--lumo-box-shadow-xl, 0 8px 24px rgba(0, 0, 0, 0.3));
 }
 
 .fc-chat-assistant-popover {
-    --vaadin-popover-offset-top : 15px;
-    --vaadin-popover-offset-bottom : 15px;
+    --vaadin-popover-offset-top: 15px;
+    --vaadin-popover-offset-bottom: 15px;
 }
 
 .fc-chat-assistant-unread-badge {
@@ -42,50 +43,33 @@
 }
 
 vaadin-popover-overlay::part(overlay) {
-    border-radius: var(--lumo-border-radius-l);
+    /* Cross-theme fallback: Lumo radius token, then Aura base radius, then a literal. */
+    border-radius: var(--lumo-border-radius-l, var(--aura-base-radius, 12px));
 }
 
 /* The chat overlay fills this part; the part already clamps itself to the viewport
    (max-height/width: 100%), so the content shrinks with the popover instead of overflowing.
    The min/max bounds are applied as inline styles from JS (fcChatAssistantApplyConstraints), sourced from
    the component's configured values, so they are intentionally not hardcoded here. */
-vaadin-popover-overlay.fc-chat-assistant-popover::part(content) {
-    display: flex;
-    flex-direction: column;
-    max-width : 100%;
-    max-height: 100%;
-}
-
+/* The Vaadin 24 (vaadin-popover-overlay) and Vaadin 25 (vaadin-popover) selectors share one rule. */
+vaadin-popover-overlay.fc-chat-assistant-popover::part(content),
 vaadin-popover.fc-chat-assistant-popover::part(content) {
     display: flex;
     flex-direction: column;
-    max-width : 100%;
+    max-width: 100%;
     max-height: 100%;
 }
 
-/* Let the chat overlay Div shrink so its VirtualList scrolls internally under the clamp. */
-vaadin-popover-overlay.fc-chat-assistant-popover::part(content) > * {
-    min-height: 0;
-    min-width: 0;
-}
+/* The chat overlay Div itself carries min-width/min-height: 0 (set from Java) so it can shrink and let
+   its VirtualList scroll internally under the clamp; that cannot be expressed here because a combinator
+   after ::part(content) is invalid CSS (rejected by lightningcss). */
 
-/* Let the chat overlay Div shrink so its VirtualList scrolls internally under the clamp. */
-vaadin-popover.fc-chat-assistant-popover::part(content) > * {
-    min-height: 0;
-    min-width: 0;
-}
-
-vaadin-dialog.fc-chat-assistant-dialog::part(content) {
-    height : 100%;
-    width : 100%;
-    display : flex;
-    align-items: stretch;
-}
-
+/* Likewise, the Vaadin 25 (vaadin-dialog) and Vaadin 24 (vaadin-dialog-overlay) dialog selectors. */
+vaadin-dialog.fc-chat-assistant-dialog::part(content),
 vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
-    height : 100%;
-    width : 100%;
-    display : flex;
+    height: 100%;
+    width: 100%;
+    display: flex;
     align-items: stretch;
 }
 
@@ -112,7 +96,7 @@ vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
     /* filled triangle pointing right by default; rotated per direction below */
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
-    border-left: 7px solid var(--lumo-contrast-20pct);
+    border-left: 7px solid var(--lumo-contrast-20pct, var(--aura-border-color, rgba(0, 0, 0, 0.2)));
 }
 
 /* Feature enabled (overlay class) AND this resizer is draggable now (can-drag on the resizer). */

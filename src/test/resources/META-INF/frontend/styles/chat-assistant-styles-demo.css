@@ -2,7 +2,7 @@
  * #%L
  * Chat Assistant Add-on
  * %%
- * Copyright (C) 2023 - 2024 Flowing Code
+ * Copyright (C) 2023 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
  * limitations under the License.
  * #L%
  */
-  chat-bot {
+  animated-fab {
     --chatbot-avatar-img: url(chatbot.png);
     --chatbot-avatar-bg-color: white;
   }
-  
-  chat-bot.small vaadin-message {
+
+  animated-fab.small vaadin-message {
   	font-size: var(--lumo-font-size-xxs);
   }
