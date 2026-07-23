@@ -36,6 +36,37 @@ if (!customElements.get('animated-fab')) {
     });
 }
 
+// Lifts the FAB wrapper to <body> while it is anchored to the viewport, so its position:fixed
+// resolves against the viewport rather than an ancestor containing block. Any ancestor with
+// transform/filter/backdrop-filter/perspective/contain/will-change (e.g. Aura's AppLayout navbar)
+// would otherwise trap the wrapper. When it is not anchored, the wrapper is returned to its home
+// slot so position:absolute stays relative to its container. Idempotent.
+window.fcChatAssistantPortalFab = (item, anchored) => {
+    if (anchored) {
+        if (item.parentNode !== document.body) {
+            // Remember where the wrapper lived so it can be put back on teardown / un-anchor.
+            item.__fcHome = item.__fcHome || { parent: item.parentNode, next: item.nextSibling };
+            document.body.appendChild(item);
+        }
+    } else if (item.parentNode === document.body) {
+        fcChatAssistantRestoreFab(item);
+    }
+};
+
+// Returns the wrapper to its recorded home slot (falling back to appendChild if the recorded next
+// sibling is gone), so a detached host takes the wrapper with it instead of leaking it in <body>.
+function fcChatAssistantRestoreFab(item) {
+    const home = item.__fcHome;
+    if (home && home.parent) {
+        if (home.next && home.next.parentNode === home.parent) {
+            home.parent.insertBefore(item, home.next);
+        } else {
+            home.parent.appendChild(item);
+        }
+    }
+    item.__fcHome = null;
+}
+
 // Resolves the FAB's rendered size, falling back to the offset/CSS size when the element has not
 // been laid out yet (getBoundingClientRect returns 0 before the first layout pass).
 function fcChatAssistantSize(fab) {
@@ -108,10 +139,16 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         window.removeEventListener("resize", resizeHandler);
         window.fcChatAssistantMobileModeOff?.(root);
         window.fcChatAssistantScreenSizeOffAll?.(root);
+        // Put the wrapper back in its home slot so it is removed with the detached host, not left
+        // behind in <body>; on reattach this function re-runs and re-portals it.
+        fcChatAssistantRestoreFab(item);
         // Clear the init guards so movement re-initializes on reattach.
         item[guard] = false;
         root['fc-chat-assistant-drag-listener'] = null;
     });
+
+    // Escape any ancestor containing block by portaling the wrapper to <body> while anchored.
+    window.fcChatAssistantPortalFab(item, fab.hasAttribute('anchored'));
 
     // Update FAB position
     function updatePosition() {
