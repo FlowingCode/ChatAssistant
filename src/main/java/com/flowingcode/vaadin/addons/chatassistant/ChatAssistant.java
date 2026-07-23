@@ -375,7 +375,10 @@ public class ChatAssistant<T extends Message> extends Div {
         .setDisplay(Style.Display.INLINE_FLEX)
         .setAlignItems(Style.AlignItems.CENTER)
         .setJustifyContent(Style.JustifyContent.CENTER)
-        .setPosition(Style.Position.FIXED);
+        .setPosition(Style.Position.FIXED)
+        // Kept below Vaadin overlays (z-index ~200, so the popover/dialog layer above) but above
+        // page content, since an anchored FAB is portaled to document.body.
+        .set("z-index", "100");
 
     // Apply the FAB diameter and icon size (the single sizing code path).
     setFabSize(DEFAULT_FAB_SIZE);
@@ -932,6 +935,14 @@ public class ChatAssistant<T extends Message> extends Div {
     } else {
       fab.getElement().removeAttribute("anchored");
     }
+    // An anchored FAB is lifted to document.body so its position:fixed clears any ancestor
+    // containing block (a transformed/filtered container traps a fixed descendant otherwise);
+    // un-anchoring returns it to its container. Idempotent with the portal done at movement init.
+    fabWrapper
+        .getElement()
+        .executeJs(
+            "window.fcChatAssistantPortalFab && window.fcChatAssistantPortalFab(this, $0)",
+            anchoredToViewport);
   }
 
   /**
