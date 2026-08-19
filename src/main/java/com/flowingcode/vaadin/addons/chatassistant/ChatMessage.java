@@ -84,16 +84,25 @@ public class ChatMessage<T extends Message> extends Component implements HasComp
   public void setMessage(T message) {
     this.message = message;
     updateMessage(message);
+    // Each attribute is cleared in its null branch so a recycled VirtualList row does not keep
+    // showing the previous message's metadata. The avatar is handled independently of the name
+    // because a message can carry one without the other.
     if (message.getName() != null) {
       this.setUserName(message.getName());
-      if (message.getAvatar() != null) {
-        this.setUserImg(message.getAvatar());
-      }
+    } else {
+      getElement().removeAttribute("user-name");
+    }
+    if (message.getAvatar() != null) {
+      this.setUserImg(message.getAvatar());
+    } else {
+      getElement().removeAttribute("user-img");
     }
     if (message.getMessageTime() != null) {
       String formattedTime =
           message.getMessageTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
       this.setTime(formattedTime);
+    } else {
+      getElement().removeAttribute("time");
     }
   }
 
