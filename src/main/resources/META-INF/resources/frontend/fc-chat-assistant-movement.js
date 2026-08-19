@@ -23,6 +23,18 @@
 // disconnectedCallback, leaving the window/observer listeners uncleaned and the init guards set.
 if (!customElements.get('animated-fab')) {
     customElements.define('animated-fab', class extends HTMLElement {
+        // Flow derives the insertion reference for a new child from the DOM sibling that follows the
+        // preceding state-tree child (SimpleElementBindingStrategy#addChildren). While
+        // fcChatAssistantPortalFab keeps the FAB wrapper lifted into <body>, that lookup can yield a
+        // <body>-level node, and insertBefore would then throw NotFoundError. Appending instead is
+        // the right fallback: a reference outside this element marks no position within it.
+        insertBefore(node, reference) {
+            if (reference && reference.parentNode !== this) {
+                return super.appendChild(node);
+            }
+            return super.insertBefore(node, reference);
+        }
+
         disconnectedCallback() {
             (this.__fcCleanups || []).forEach(fn => {
                 try {
