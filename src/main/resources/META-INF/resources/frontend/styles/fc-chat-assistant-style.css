@@ -111,7 +111,8 @@ vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
 }
 
 /* While actively resizing, the handle grows and would push the arrowhead outside the overlay; hide it.
-   Specificity matches the show rule above and comes later, so it wins. */
+   This rule matches one class more than the show rule above, so it wins on specificity
+   regardless of source order. */
 .fc-chat-assistant-resize-indicator-visible
     .fc-chat-assistant-resize-resizing.fc-chat-assistant-resize-can-drag
     .fc-chat-assistant-resize-arrow {
