@@ -266,6 +266,10 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
             }
         });
         observer.observe(fab);
+        // The callback only disconnects once the FAB has a real size, so a host that detaches while
+        // the FAB is still 0x0 (e.g. in a tab that is never shown) would leave the observer holding
+        // a reference to it. Tear it down with the rest of the module's cleanups.
+        root.__fcCleanups.push(() => observer.disconnect());
     }
 
     updatePosition();
