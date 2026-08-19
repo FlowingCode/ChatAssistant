@@ -352,7 +352,11 @@ window.fcChatAssistantScreenSize = (root, overlayDiv, key, widthRaw, heightRaw) 
         }
     };
 
-    entry.observer = new ResizeObserver((entries) => notify(entries[0].contentRect));
+    // Both deliveries measure the same box: the observer's own contentRect excludes the padding that
+    // `container` carries in desktop mode, so mixing it with getBoundingClientRect() below would let
+    // a threshold near the current size report one state on registration and the opposite one on the
+    // first observer callback.
+    entry.observer = new ResizeObserver(() => notify(overlayDiv.getBoundingClientRect()));
     entry.observer.observe(overlayDiv);
     root.__fcScreenSizeListeners[key] = entry;
     // Deliver the current state immediately (if already laid out; otherwise the observer's first
