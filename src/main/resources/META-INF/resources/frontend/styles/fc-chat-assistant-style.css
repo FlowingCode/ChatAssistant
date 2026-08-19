@@ -42,7 +42,11 @@
     transition: all 0.12s ease-out;
 }
 
-vaadin-popover-overlay::part(overlay) {
+/* Scoped with the add-on class so this @CssImport does not restyle every popover in the host
+   application. The Vaadin 24 (vaadin-popover-overlay) and Vaadin 25 (vaadin-popover) selectors
+   share one rule. */
+vaadin-popover-overlay.fc-chat-assistant-popover::part(overlay),
+vaadin-popover.fc-chat-assistant-popover::part(overlay) {
     /* Cross-theme fallback: Lumo radius token, then Aura base radius, then a literal. */
     border-radius: var(--lumo-border-radius-l, var(--aura-base-radius, 12px));
 }
