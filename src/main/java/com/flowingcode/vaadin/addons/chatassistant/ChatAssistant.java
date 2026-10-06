@@ -62,6 +62,7 @@ import com.vaadin.flow.shared.Registration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -163,6 +164,7 @@ public class ChatAssistant<T extends Message> extends Div {
   private Component headerComponent;
   private Component footerContainer;
   private FabPosition fabPosition = DEFAULT_POSITION;
+  private Duration fabPositionMemory = Duration.ZERO;
   private FabVariant activeSizeVariant = null;
   private Span whoIsTyping;
   private Registration defaultSubmitListenerRegistration;
@@ -199,6 +201,7 @@ public class ChatAssistant<T extends Message> extends Div {
         DEFAULT_RESIZE_INDICATORS_VISIBLE,
         markdownEnabled,
         messages,
+        null,
         null,
         null,
         null,
@@ -259,6 +262,8 @@ public class ChatAssistant<T extends Message> extends Div {
    *     the default)
    * @param maxWidth the chat window maximum width ({@code null} keeps the default)
    * @param maxHeight the chat window maximum height ({@code null} keeps the default)
+   * @param fabPositionMemory how long the FAB keeps a dragged position after the user leaves the
+   *     page ({@code null} keeps it off, see {@link #setFabPositionMemory(Duration)})
    */
   @Builder
   private ChatAssistant(
@@ -277,7 +282,8 @@ public class ChatAssistant<T extends Message> extends Div {
       String width,
       String height,
       String maxWidth,
-      String maxHeight) {
+      String maxHeight,
+      Duration fabPositionMemory) {
     if (messages != null) {
       this.messages.addAll(messages);
     }
@@ -300,6 +306,9 @@ public class ChatAssistant<T extends Message> extends Div {
     this.initializeFooter();
     this.initializeContent(markdownEnabled);
     this.initializeChatWindow();
+    if (fabPositionMemory != null) {
+      setFabPositionMemory(fabPositionMemory);
+    }
   }
 
   /** Seeds the builder defaults for the flags whose real default is not {@code false}. */
@@ -965,6 +974,41 @@ public class ChatAssistant<T extends Message> extends Div {
     Objects.requireNonNull(fabPosition, "Position cannot be null");
     this.fabPosition = fabPosition;
     resetFabPosition();
+  }
+
+  /**
+   * Makes the FAB keep the position the user dragged it to across page loads, as long as the user
+   * comes back within the given time after leaving the page. Useful in applications where every
+   * navigation loads a new page. The position is kept per browser tab, in its
+   * session storage, as a proportion of the room the FAB can move in, so it survives a different
+   * window size. {@link #resetFabPosition()}, {@link #setFabPosition(FabPosition)} and switching
+   * between desktop and mobile mode forget it. Assistants on the same origin share it unless they
+   * have different ids. {@link Duration#ZERO}, the default, turns it off.
+   *
+   * @since 5.2.0
+   * @param timeout how long the position outlives the page; not negative
+   */
+  public void setFabPositionMemory(Duration timeout) {
+    Objects.requireNonNull(timeout, "Timeout cannot be null");
+    if (timeout.isNegative()) {
+      throw new IllegalArgumentException("Timeout cannot be negative");
+    }
+    this.fabPositionMemory = timeout;
+    if (timeout.isZero()) {
+      fab.getElement().removeAttribute("position-memory");
+    } else {
+      fab.getElement().setAttribute("position-memory", String.valueOf(timeout.toMillis()));
+    }
+  }
+
+  /**
+   * Returns how long the FAB keeps a dragged position after the user leaves the page.
+   *
+   * @since 5.2.0
+   * @see #setFabPositionMemory(Duration)
+   */
+  public Duration getFabPositionMemory() {
+    return fabPositionMemory;
   }
 
   /**

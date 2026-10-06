@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import com.flowingcode.vaadin.addons.chatassistant.model.FabVariant;
 import com.flowingcode.vaadin.addons.chatassistant.model.Message;
 import com.vaadin.flow.component.button.ButtonVariant;
+import java.time.Duration;
 import org.junit.Test;
 
 /**
@@ -173,5 +174,26 @@ public class ChatAssistantLogicTest {
     // Turning off movable makes it non-draggable regardless of anchoring.
     ca.setFabMovable(false);
     assertFalse(ca.isFabMovable());
+  }
+
+  // fabPositionMemory --------------------------------------------------------
+
+  @Test
+  public void fabPositionMemory_isOffByDefault() {
+    assertEquals(Duration.ZERO, newChatAssistant().getFabPositionMemory());
+  }
+
+  @Test
+  public void fabPositionMemory_isSetFromTheBuilder() {
+    ChatAssistant<Message> chat =
+        ChatAssistant.<Message>builder().fabPositionMemory(Duration.ofMinutes(2)).build();
+    assertEquals(Duration.ofMinutes(2), chat.getFabPositionMemory());
+  }
+
+  @Test
+  public void fabPositionMemory_rejectsNegativeTimeouts() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> newChatAssistant().setFabPositionMemory(Duration.ofSeconds(-1)));
   }
 }

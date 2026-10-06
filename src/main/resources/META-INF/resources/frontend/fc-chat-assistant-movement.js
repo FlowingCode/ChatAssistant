@@ -117,6 +117,75 @@ function fcChatAssistantCornerPosition(item, fab, corner, margin) {
     }
 }
 
+function fcChatAssistantClamp01(value) {
+    return Math.min(1, Math.max(0, Number(value) || 0));
+}
+
+// Remembers where the user dragged the FAB across page loads, in the tab's session storage, while
+// the FAB carries a position-memory attribute (a timeout in milliseconds). The timestamp is refreshed
+// when the page is left, so the timeout measures how long the user was away rather than how long
+// the page stayed open. FABs on the same origin share the entry unless their hosts have an id.
+function fcChatAssistantPositionMemory(root, fab) {
+    const key = 'fc-chat-assistant-fab-position' + (root.id ? ':' + root.id : '');
+    const timeout = () => parseFloat(fab.getAttribute('position-memory')) || 0;
+    const storage = () => {
+        try {
+            return window.sessionStorage;
+        } catch (e) {
+            return null; // storage blocked, e.g. by privacy settings: the FAB simply forgets
+        }
+    };
+    const read = () => {
+        try {
+            return JSON.parse(storage()?.getItem(key));
+        } catch (e) {
+            return null;
+        }
+    };
+    const write = (entry) => {
+        try {
+            storage()?.setItem(key, JSON.stringify(entry));
+        } catch (e) {
+            // quota or blocked storage: nothing to remember then
+        }
+    };
+    const forget = () => {
+        try {
+            storage()?.removeItem(key);
+        } catch (e) {
+            // blocked storage holds nothing to forget
+        }
+    };
+    return {
+        save(ratio) {
+            if (timeout() > 0) {
+                write({ x: ratio.x, y: ratio.y, at: Date.now() });
+            }
+        },
+        // Called when the page is left, so the next page measures the time away from this moment.
+        touch() {
+            const entry = read();
+            if (entry && timeout() > 0) {
+                write({ ...entry, at: Date.now() });
+            }
+        },
+        restore(ratio) {
+            const entry = read();
+            if (!entry || timeout() <= 0) {
+                return false;
+            }
+            if (!(Date.now() - entry.at <= timeout())) {
+                forget(); // expired: drop it, or leaving this page would revive it
+                return false;
+            }
+            ratio.x = fcChatAssistantClamp01(entry.x);
+            ratio.y = fcChatAssistantClamp01(entry.y);
+            return true;
+        },
+        forget,
+    };
+}
+
 window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, positionRaw) => {
     // Prevent duplicate initialization
     const guard = `__fcChatAssistantMovement`;
@@ -130,8 +199,11 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     const snapTransition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
     const position = { x: margin, y: margin };
     const initialPosition = { x: margin, y: margin };
-    // Expose the live position so the reset hook can move the FAB after initialization.
-    item.__fcPosition = position;
+    // Where the FAB sits within the room it can move in, from 0 (right/bottom edge) to 1 (left/top
+    // edge). A resize places the FAB from this ratio rather than from its pixel offsets, so a FAB
+    // dragged to the left stays on the left when the window shrinks and grows back.
+    const ratio = { x: 0, y: 0 };
+    const memory = fcChatAssistantPositionMemory(root, fab);
 
     let screenWidth = window.innerWidth;
     let screenHeight = window.innerHeight;
@@ -144,13 +216,16 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         screenHeight = window.innerHeight;
 
         // The popover content part clamps itself to the viewport (max-height/width: 100%), so no
-        // manual container shrinking is needed here. Just keep the FAB within the new screen bounds.
-        snapToBoundary();
+        // manual container shrinking is needed here. Just place the FAB within the new screen bounds.
+        applyRatio();
     };
     window.addEventListener("resize", resizeHandler);
+    const pageHideHandler = () => memory.touch();
+    window.addEventListener("pagehide", pageHideHandler);
 
     (root.__fcCleanups = root.__fcCleanups || []).push(() => {
         window.removeEventListener("resize", resizeHandler);
+        window.removeEventListener("pagehide", pageHideHandler);
         window.fcChatAssistantMobileModeOff?.(root);
         window.fcChatAssistantScreenSizeOffAll?.(root);
         // Put the wrapper back in its home slot so it is removed with the detached host, not left
@@ -169,6 +244,38 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         item.style.right = position.x + 'px';
         item.style.bottom = position.y + 'px';
     }
+
+    // The room the FAB can move in along each axis, between the margins.
+    function room() {
+        const size = fcChatAssistantSize(fab);
+        return {
+            x: Math.max(0, screenWidth - size.width - 2 * margin),
+            y: Math.max(0, screenHeight - size.height - 2 * margin),
+        };
+    }
+
+    function syncRatio() {
+        const available = room();
+        ratio.x = available.x > 0 ? fcChatAssistantClamp01((position.x - margin) / available.x) : 0;
+        ratio.y = available.y > 0 ? fcChatAssistantClamp01((position.y - margin) / available.y) : 0;
+    }
+
+    function applyRatio() {
+        const available = room();
+        position.x = margin + ratio.x * available.x;
+        position.y = margin + ratio.y * available.y;
+        updatePosition();
+    }
+
+    // Lets the reset hook move the FAB and clear what it remembered after initialization.
+    item.__fcMovement = {
+        moveTo(x, y) {
+            position.x = x;
+            position.y = y;
+            syncRatio();
+            memory.forget();
+        },
+    };
 
     // Ensure the item stays within the screen and margin bounds
     function snapToBoundary() {
@@ -236,6 +343,9 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
             snapToBoundary();
             if (isClickOnlyEvent()) {
                 root.$server?.onClick();
+            } else {
+                syncRatio();
+                memory.save(ratio);
             }
         }
     }
@@ -250,12 +360,17 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     // before the first layout pass (and while the FAB lives in a hidden tab), which would push it
     // off-screen for any corner other than the bottom-right default. An IntersectionObserver fires
     // when the FAB becomes visible, so the size is known by then.
+    // A remembered position, if any, takes over from the corner.
     function applyCorner() {
         const start = fcChatAssistantCornerPosition(item, fab, positionRaw, margin);
         position.x = start.x;
         position.y = start.y;
-        initialPosition.x = start.x;
-        initialPosition.y = start.y;
+        syncRatio();
+        if (fab.hasAttribute('movable') && memory.restore(ratio)) {
+            applyRatio();
+        }
+        initialPosition.x = position.x;
+        initialPosition.y = position.y;
         updatePosition();
     }
     if (fcChatAssistantSize(fab).width > 0) {
@@ -288,11 +403,9 @@ window.fcChatAssistantResetPosition = (item, marginRaw, positionRaw) => {
     item.style.transition = resetTransition;
     item.style.right = target.x + 'px';
     item.style.bottom = target.y + 'px';
-    // Keep the live drag state in sync so the next drag starts from the reset position.
-    if (item.__fcPosition) {
-        item.__fcPosition.x = target.x;
-        item.__fcPosition.y = target.y;
-    }
+    // Keep the live drag state in sync so the next drag starts from the reset position, and drop
+    // any remembered position: the user asked for the corner.
+    item.__fcMovement?.moveTo(target.x, target.y);
 };
 
 // Removes any active media-query listener, freezing the component in its current mode. Also clears
