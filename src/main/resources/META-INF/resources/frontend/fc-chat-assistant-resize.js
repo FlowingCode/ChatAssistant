@@ -297,7 +297,7 @@ window.fcChatAssistantResize = (root, item, container, popoverTag, sizeRaw, maxS
     function fetchOverlay() {
         if (!overlay || !overlay.isConnected) {
             contentPart = null; // a new overlay means the old content part is stale too
-            overlay = resolveOverlay(popoverTag);
+            overlay = resolveOverlay(popoverTag, container);
             if (overlay) {
                 observeOverlayStyle();
             }
@@ -385,21 +385,25 @@ window.fcChatAssistantResize = (root, item, container, popoverTag, sizeRaw, maxS
 // Resolves the popover's overlay element across Vaadin 24 (the overlay carries the class directly) and
 // Vaadin 25 (the overlay lives inside the popover's shadow root). Shared by fetchOverlay() and
 // fcChatAssistantContentPart() so the selector chain is defined in one place.
-function resolveOverlay(popoverTag) {
+function resolveOverlay(popoverTag, from) {
     const overlayTag = "vaadin-popover-overlay".toUpperCase();
-    return document.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
-        || [...document.getElementsByClassName(popoverTag)].find(p => p.tagName === overlayTag);
+    // Search from the caller's own root instead of the document, so the lookup also succeeds when the
+    // chat lives inside a shadow root. getRootNode() returns the document
+    // in the ordinary case, leaving that behaviour unchanged.
+    const scope = from?.getRootNode?.() ?? document;
+    return scope.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
+        || [...scope.querySelectorAll(`.${popoverTag}`)].find(p => p.tagName === overlayTag);
 }
 
 // Resolves the popover overlay's [part='content'] element, retrying briefly because the overlay is
-// (re)created lazily when the popover opens.
-function fcChatAssistantContentPart(popoverTag, callback, attempts = 0) {
-    const overlay = resolveOverlay(popoverTag);
+// (re)created lazily when the popover opens. `from` is any element of the chat, used as the lookup root.
+function fcChatAssistantContentPart(popoverTag, from, callback, attempts = 0) {
+    const overlay = resolveOverlay(popoverTag, from);
     const contentPart = overlay?.shadowRoot?.querySelector('[part="content"]');
     if (contentPart) {
         callback(contentPart);
     } else if (attempts < 20) {
-        setTimeout(() => fcChatAssistantContentPart(popoverTag, callback, attempts + 1), 100);
+        setTimeout(() => fcChatAssistantContentPart(popoverTag, from, callback, attempts + 1), 100);
     }
 }
 
@@ -446,7 +450,7 @@ window.fcChatAssistantApplyConstraints = (overlayDiv, popoverTag) => {
         return result + 'px';
     };
 
-    fcChatAssistantContentPart(popoverTag, (contentPart) => {
+    fcChatAssistantContentPart(popoverTag, overlayDiv, (contentPart) => {
         if (minWidth) contentPart.style.minWidth = minWidth;
         if (minHeight) contentPart.style.minHeight = minHeight;
         if (maxWidth) contentPart.style.maxWidth = maxWidth;
