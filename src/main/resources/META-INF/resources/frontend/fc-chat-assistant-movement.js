@@ -54,7 +54,9 @@ if (!customElements.get('animated-fab')) {
 // would otherwise trap the wrapper. When it is not anchored, the wrapper is returned to its home
 // slot so position:absolute stays relative to its container. Idempotent.
 window.fcChatAssistantPortalFab = (item, anchored) => {
-    if (anchored) {
+    // Inside a shadow root the portal would strip
+    // the FAB of the styles scoped to that root, so it stays put and relies on position:fixed alone.
+    if (anchored && (item.__fcHome ? item.__fcHome.parent : item.parentNode)?.getRootNode() === document) {
         if (item.parentNode !== document.body) {
             // Remember where the wrapper lived so it can be put back on teardown / un-anchor.
             item.__fcHome = item.__fcHome || { parent: item.parentNode, next: item.nextSibling };
