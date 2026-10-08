@@ -54,7 +54,7 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
     chatAssistant.setClassName("small");
     SvgIcon icon = new SvgIcon("chatbot.svg");
-    icon.setColor("var(--lumo-primary-contrast-color)");
+    icon.setColor("currentColor");
     chatAssistant.setFabIcon(icon);
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");

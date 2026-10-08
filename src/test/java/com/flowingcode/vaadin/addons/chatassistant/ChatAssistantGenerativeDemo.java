@@ -66,7 +66,7 @@ public class ChatAssistantGenerativeDemo extends VerticalLayout {
     // Create the assistant with all defaults and give it a custom FAB icon.
     ChatAssistant<CustomMessage> chatAssistant = new ChatAssistant<>();
     SvgIcon icon = new SvgIcon("chatbot.svg");
-    icon.setColor("var(--lumo-primary-contrast-color)");
+    icon.setColor("currentColor");
     chatAssistant.setFabIcon(icon);
     chatAssistant.setWindowWidth("400px");
     chatAssistant.setWindowHeight("400px");
