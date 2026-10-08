@@ -136,14 +136,23 @@ function fcChatAssistantPositionMemory(root, fab) {
             return null;
         }
     };
-    const forget = () => attempt(storage => storage.removeItem(key));
+    // Whether this page saved or restored the entry; only then does leaving the page refresh it
+    let held = false;
+    const forget = () => {
+        held = false;
+        attempt(storage => storage.removeItem(key));
+    };
     const isValid = (entry) => entry !== null && typeof entry === 'object'
         && Number.isFinite(entry.x) && Number.isFinite(entry.y)
         && Number.isFinite(entry.at) && entry.at <= Date.now();
+    const readValid = () => {
+        const entry = attempt(storage => JSON.parse(storage.getItem(key)));
+        return isValid(entry) ? entry : null;
+    };
     // The entry if it is well formed and within the timeout; anything else is dropped
     const read = () => {
-        const entry = attempt(storage => JSON.parse(storage.getItem(key)));
-        if (isValid(entry) && Date.now() - entry.at <= timeout()) {
+        const entry = readValid();
+        if (entry && Date.now() - entry.at <= timeout()) {
             return entry;
         }
         forget();
@@ -154,10 +163,12 @@ function fcChatAssistantPositionMemory(root, fab) {
         save(ratio) {
             if (timeout() > 0) {
                 write({ x: ratio.x, y: ratio.y, at: Date.now() });
+                held = true;
             }
         },
+        // The timeout runs from leaving the page, so a long stay must not expire the entry here
         touch() {
-            const entry = timeout() > 0 ? read() : null;
+            const entry = timeout() > 0 && held ? readValid() : null;
             if (entry) {
                 write({ ...entry, at: Date.now() });
             }
@@ -169,6 +180,7 @@ function fcChatAssistantPositionMemory(root, fab) {
             }
             ratio.x = fcChatAssistantClamp01(entry.x);
             ratio.y = fcChatAssistantClamp01(entry.y);
+            held = true;
             return true;
         },
         forget,
