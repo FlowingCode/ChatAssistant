@@ -983,7 +983,8 @@ public class ChatAssistant<T extends Message> extends Div {
    * in its session storage, as a proportion of the room the FAB can move in, so it survives a
    * different window size. Only a movable FAB anchored to the viewport restores it.
    * {@link #resetFabPosition()}, {@link #setFabPosition(FabPosition)} and switching between
-   * desktop and mobile mode forget it.
+   * desktop and mobile mode forget it once the FAB is on the page; configuring the corner or the
+   * mode before the assistant is attached does not, so a view can set them up on every load.
    *
    * <p>Assistants on the same origin share the saved position unless they have different ids, so
    * set the id before the assistant is attached. The timeout has millisecond precision.
