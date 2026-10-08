@@ -42,7 +42,7 @@ public class ChatAssistantBoxDemo extends VerticalLayout {
 
   public ChatAssistantBoxDemo() {
     SvgIcon icon = new SvgIcon("chatbot.svg");
-    icon.setColor("var(--lumo-primary-contrast-color)");
+    icon.setColor("currentColor");
 
     // With fabAnchoredToViewport(false) the FAB is positioned relative to its container instead of
     // the viewport, so it lives inside the box below rather than floating over the whole screen.
@@ -77,8 +77,8 @@ public class ChatAssistantBoxDemo extends VerticalLayout {
     Div box = new Div(chatAssistant);
     box.getStyle()
         .set("position", "relative")
-        .set("border", "2px dashed var(--lumo-contrast-30pct)")
-        .set("border-radius", "var(--lumo-border-radius-l)")
+        .set("border", "2px dashed var(--vaadin-border-color, var(--lumo-contrast-30pct))")
+        .set("border-radius", "var(--vaadin-radius-l, var(--lumo-border-radius-l))")
         .setWidth("600px")
         .setHeight("400px");
 

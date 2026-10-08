@@ -41,7 +41,7 @@ public class ChatAssistantModeDemo extends VerticalLayout {
 
   public ChatAssistantModeDemo() {
     SvgIcon icon = new SvgIcon("chatbot.svg");
-    icon.setColor("var(--lumo-primary-contrast-color)");
+    icon.setColor("currentColor");
 
     // Build the assistant with auto-switching enabled: setting a breakpoint makes it switch to
     // mobile (full-screen dialog) below 768px and back to desktop (anchored popover) above it.
