@@ -283,7 +283,7 @@ public class ChatAssistant<T extends Message> extends Div {
       String height,
       String maxWidth,
       String maxHeight,
-      Duration fabPositionMemory) {
+      final Duration fabPositionMemory) {
     if (messages != null) {
       this.messages.addAll(messages);
     }
@@ -945,8 +945,9 @@ public class ChatAssistant<T extends Message> extends Div {
       fab.getElement().removeAttribute("anchored");
     }
     // An anchored FAB is lifted to document.body so its position:fixed clears any ancestor
-    // containing block (a transformed/filtered container traps a fixed descendant otherwise);
-    // un-anchoring returns it to its container. Idempotent with the portal done at movement init.
+    // containing block (a transformed/filtered container traps a fixed descendant otherwise),
+    // except inside a shadow root, where it stays to keep its scoped styles; un-anchoring returns
+    // it to its container. Idempotent with the portal done at movement init.
     fabWrapper
         .getElement()
         .executeJs(
@@ -978,26 +979,37 @@ public class ChatAssistant<T extends Message> extends Div {
 
   /**
    * Makes the FAB keep the position the user dragged it to across page loads, as long as the user
-   * comes back within the given time after leaving the page. Useful in applications where every
-   * navigation loads a new page. The position is kept per browser tab, in its
-   * session storage, as a proportion of the room the FAB can move in, so it survives a different
-   * window size. {@link #resetFabPosition()}, {@link #setFabPosition(FabPosition)} and switching
-   * between desktop and mobile mode forget it. Assistants on the same origin share it unless they
-   * have different ids. {@link Duration#ZERO}, the default, turns it off.
+   * comes back within the given time after leaving the page. The position is kept per browser tab,
+   * in its session storage, as a proportion of the room the FAB can move in, so it survives a
+   * different window size. Only a movable FAB anchored to the viewport restores it.
+   * {@link #resetFabPosition()}, {@link #setFabPosition(FabPosition)} and switching between
+   * desktop and mobile mode forget it.
+   *
+   * <p>Assistants on the same origin share the saved position unless they have different ids, so
+   * set the id before the assistant is attached. The timeout has millisecond precision.
+   * {@link Duration#ZERO}, the default, turns the memory off; a position saved earlier is then
+   * ignored.
    *
    * @since 5.2.0
-   * @param timeout how long the position outlives the page; not negative
+   * @param timeout how long the position outlives the page; not {@code null}, not negative and,
+   *     unless zero, at least one millisecond
+   * @throws IllegalArgumentException if the timeout is negative or under one millisecond
+   * @throws ArithmeticException if the timeout does not fit in a {@code long} of milliseconds
    */
-  public void setFabPositionMemory(Duration timeout) {
+  public void setFabPositionMemory(final Duration timeout) {
     Objects.requireNonNull(timeout, "Timeout cannot be null");
     if (timeout.isNegative()) {
       throw new IllegalArgumentException("Timeout cannot be negative");
     }
+    final long millis = timeout.toMillis();
+    if (millis == 0 && !timeout.isZero()) {
+      throw new IllegalArgumentException("Timeout cannot be under one millisecond");
+    }
     this.fabPositionMemory = timeout;
-    if (timeout.isZero()) {
+    if (millis == 0) {
       fab.getElement().removeAttribute("position-memory");
     } else {
-      fab.getElement().setAttribute("position-memory", String.valueOf(timeout.toMillis()));
+      fab.getElement().setAttribute("position-memory", String.valueOf(millis));
     }
   }
 
