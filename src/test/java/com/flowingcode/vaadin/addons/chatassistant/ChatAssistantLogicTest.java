@@ -185,15 +185,48 @@ public class ChatAssistantLogicTest {
 
   @Test
   public void fabPositionMemory_isSetFromTheBuilder() {
-    ChatAssistant<Message> chat =
+    final ChatAssistant<Message> chat =
         ChatAssistant.<Message>builder().fabPositionMemory(Duration.ofMinutes(2)).build();
     assertEquals(Duration.ofMinutes(2), chat.getFabPositionMemory());
   }
 
   @Test
   public void fabPositionMemory_rejectsNegativeTimeouts() {
+    final ChatAssistant<Message> chat = newChatAssistant();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> newChatAssistant().setFabPositionMemory(Duration.ofSeconds(-1)));
+        IllegalArgumentException.class, () -> chat.setFabPositionMemory(Duration.ofSeconds(-1)));
+  }
+
+  @Test
+  public void fabPositionMemory_rejectsTimeoutsUnderOneMillisecond() {
+    final ChatAssistant<Message> chat = newChatAssistant();
+    assertThrows(
+        IllegalArgumentException.class, () -> chat.setFabPositionMemory(Duration.ofNanos(1)));
+  }
+
+  @Test
+  public void fabPositionMemory_isSentToTheClientInMilliseconds() {
+    final ChatAssistant<Message> chat = newChatAssistant();
+    chat.setFabPositionMemory(Duration.ofMinutes(2));
+    assertEquals("120000", chat.fab.getElement().getAttribute("position-memory"));
+  }
+
+  @Test
+  public void fabPositionMemory_zeroRemovesTheClientAttribute() {
+    final ChatAssistant<Message> chat = newChatAssistant();
+    chat.setFabPositionMemory(Duration.ofMinutes(2));
+    chat.setFabPositionMemory(Duration.ZERO);
+    assertFalse(chat.fab.getElement().hasAttribute("position-memory"));
+  }
+
+  @Test
+  public void fabPositionMemory_isLeftUnchangedWhenTheTimeoutIsRejected() {
+    final ChatAssistant<Message> chat = newChatAssistant();
+    chat.setFabPositionMemory(Duration.ofMinutes(2));
+    assertThrows(
+        ArithmeticException.class,
+        () -> chat.setFabPositionMemory(Duration.ofSeconds(Long.MAX_VALUE)));
+    assertEquals(Duration.ofMinutes(2), chat.getFabPositionMemory());
+    assertEquals("120000", chat.fab.getElement().getAttribute("position-memory"));
   }
 }

@@ -51,11 +51,11 @@ if (!customElements.get('animated-fab')) {
 // Lifts the FAB wrapper to <body> while it is anchored to the viewport, so its position:fixed
 // resolves against the viewport rather than an ancestor containing block. Any ancestor with
 // transform/filter/backdrop-filter/perspective/contain/will-change (e.g. Aura's AppLayout navbar)
-// would otherwise trap the wrapper. When it is not anchored, the wrapper is returned to its home
-// slot so position:absolute stays relative to its container. Idempotent.
+// would otherwise trap the wrapper. Inside a shadow root the wrapper stays in place, as the portal
+// would strip its scoped styles, so such an ancestor can still trap it there. When it is not
+// anchored, the wrapper is returned to its home slot so position:absolute stays relative to its
+// container. Idempotent.
 window.fcChatAssistantPortalFab = (item, anchored) => {
-    // Inside a shadow root the portal would strip
-    // the FAB of the styles scoped to that root, so it stays put and relies on position:fixed alone.
     if (anchored && (item.__fcHome ? item.__fcHome.parent : item.parentNode)?.getRootNode() === document) {
         if (item.parentNode !== document.body) {
             // Remember where the wrapper lived so it can be put back on teardown / un-anchor.
@@ -121,61 +121,50 @@ function fcChatAssistantClamp01(value) {
     return Math.min(1, Math.max(0, Number(value) || 0));
 }
 
-// Remembers where the user dragged the FAB across page loads, in the tab's session storage, while
-// the FAB carries a position-memory attribute (a timeout in milliseconds). The timestamp is refreshed
-// when the page is left, so the timeout measures how long the user was away rather than how long
-// the page stayed open. FABs on the same origin share the entry unless their hosts have an id.
+// Remembers where the user dragged the FAB, in the tab's session storage, while the FAB has a
+// position-memory timeout in milliseconds. Refreshing it on pagehide makes the timeout measure the
+// time away from the page.
 function fcChatAssistantPositionMemory(root, fab) {
+    // FABs on the same origin share the entry unless their hosts have an id
     const key = 'fc-chat-assistant-fab-position' + (root.id ? ':' + root.id : '');
-    const timeout = () => parseFloat(fab.getAttribute('position-memory')) || 0;
-    const storage = () => {
+    const timeout = () => Number.parseFloat(fab.getAttribute('position-memory')) || 0;
+    // Storage may be blocked or full; that must never interrupt the FAB
+    const attempt = (action) => {
         try {
-            return window.sessionStorage;
-        } catch (e) {
-            return null; // storage blocked, e.g. by privacy settings: the FAB simply forgets
-        }
-    };
-    const read = () => {
-        try {
-            return JSON.parse(storage()?.getItem(key));
+            return action(window.sessionStorage);
         } catch (e) {
             return null;
         }
     };
-    const write = (entry) => {
-        try {
-            storage()?.setItem(key, JSON.stringify(entry));
-        } catch (e) {
-            // quota or blocked storage: nothing to remember then
+    const forget = () => attempt(storage => storage.removeItem(key));
+    const isValid = (entry) => entry !== null && typeof entry === 'object'
+        && Number.isFinite(entry.x) && Number.isFinite(entry.y)
+        && Number.isFinite(entry.at) && entry.at <= Date.now();
+    // The entry if it is well formed and within the timeout; anything else is dropped
+    const read = () => {
+        const entry = attempt(storage => JSON.parse(storage.getItem(key)));
+        if (isValid(entry) && Date.now() - entry.at <= timeout()) {
+            return entry;
         }
+        forget();
+        return null;
     };
-    const forget = () => {
-        try {
-            storage()?.removeItem(key);
-        } catch (e) {
-            // blocked storage holds nothing to forget
-        }
-    };
+    const write = (entry) => attempt(storage => storage.setItem(key, JSON.stringify(entry)));
     return {
         save(ratio) {
             if (timeout() > 0) {
                 write({ x: ratio.x, y: ratio.y, at: Date.now() });
             }
         },
-        // Called when the page is left, so the next page measures the time away from this moment.
         touch() {
-            const entry = read();
-            if (entry && timeout() > 0) {
+            const entry = timeout() > 0 ? read() : null;
+            if (entry) {
                 write({ ...entry, at: Date.now() });
             }
         },
         restore(ratio) {
-            const entry = read();
-            if (!entry || timeout() <= 0) {
-                return false;
-            }
-            if (!(Date.now() - entry.at <= timeout())) {
-                forget(); // expired: drop it, or leaving this page would revive it
+            const entry = timeout() > 0 ? read() : null;
+            if (!entry) {
                 return false;
             }
             ratio.x = fcChatAssistantClamp01(entry.x);
@@ -199,9 +188,8 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     const snapTransition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
     const position = { x: margin, y: margin };
     const initialPosition = { x: margin, y: margin };
-    // Where the FAB sits within the room it can move in, from 0 (right/bottom edge) to 1 (left/top
-    // edge). A resize places the FAB from this ratio rather than from its pixel offsets, so a FAB
-    // dragged to the left stays on the left when the window shrinks and grows back.
+    // Ratios run from 0 at the right/bottom edge to 1 at the left/top one, so a resize keeps the
+    // FAB's place
     const ratio = { x: 0, y: 0 };
     const memory = fcChatAssistantPositionMemory(root, fab);
 
@@ -216,8 +204,13 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         screenHeight = window.innerHeight;
 
         // The popover content part clamps itself to the viewport (max-height/width: 100%), so no
-        // manual container shrinking is needed here. Just place the FAB within the new screen bounds.
-        applyRatio();
+        // manual container shrinking is needed here. Just keep the FAB within the new screen bounds.
+        // Only an anchored FAB is placed against the viewport; one in a container keeps its offsets.
+        if (fab.hasAttribute('anchored')) {
+            applyRatio();
+        } else {
+            snapToBoundary();
+        }
     };
     window.addEventListener("resize", resizeHandler);
     const pageHideHandler = () => memory.touch();
@@ -236,7 +229,8 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         root['fc-chat-assistant-drag-listener'] = null;
     });
 
-    // Escape any ancestor containing block by portaling the wrapper to <body> while anchored.
+    // Escape any ancestor containing block by portaling the wrapper to <body> while anchored,
+    // outside a shadow root.
     window.fcChatAssistantPortalFab(item, fab.hasAttribute('anchored'));
 
     // Update FAB position
@@ -245,7 +239,6 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         item.style.bottom = position.y + 'px';
     }
 
-    // The room the FAB can move in along each axis, between the margins.
     function room() {
         const size = fcChatAssistantSize(fab);
         return {
@@ -267,7 +260,6 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
         updatePosition();
     }
 
-    // Lets the reset hook move the FAB and clear what it remembered after initialization.
     item.__fcMovement = {
         moveTo(x, y) {
             position.x = x;
@@ -360,13 +352,12 @@ window.fcChatAssistantMovement = (root, item, fab, marginRaw, sensitivityRaw, po
     // before the first layout pass (and while the FAB lives in a hidden tab), which would push it
     // off-screen for any corner other than the bottom-right default. An IntersectionObserver fires
     // when the FAB becomes visible, so the size is known by then.
-    // A remembered position, if any, takes over from the corner.
     function applyCorner() {
         const start = fcChatAssistantCornerPosition(item, fab, positionRaw, margin);
         position.x = start.x;
         position.y = start.y;
         syncRatio();
-        if (fab.hasAttribute('movable') && memory.restore(ratio)) {
+        if (fab.hasAttribute('movable') && fab.hasAttribute('anchored') && memory.restore(ratio)) {
             applyRatio();
         }
         initialPosition.x = position.x;
@@ -403,8 +394,7 @@ window.fcChatAssistantResetPosition = (item, marginRaw, positionRaw) => {
     item.style.transition = resetTransition;
     item.style.right = target.x + 'px';
     item.style.bottom = target.y + 'px';
-    // Keep the live drag state in sync so the next drag starts from the reset position, and drop
-    // any remembered position: the user asked for the corner.
+    // Keep the live drag state in sync so the next drag starts from the reset position.
     item.__fcMovement?.moveTo(target.x, target.y);
 };
 

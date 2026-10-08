@@ -387,9 +387,7 @@ window.fcChatAssistantResize = (root, item, container, popoverTag, sizeRaw, maxS
 // fcChatAssistantContentPart() so the selector chain is defined in one place.
 function resolveOverlay(popoverTag, from) {
     const overlayTag = "vaadin-popover-overlay".toUpperCase();
-    // Search from the caller's own root instead of the document, so the lookup also succeeds when the
-    // chat lives inside a shadow root. getRootNode() returns the document
-    // in the ordinary case, leaving that behaviour unchanged.
+    // The popover may live in a shadow root, which document queries do not reach
     const scope = from?.getRootNode?.() ?? document;
     return scope.querySelector(`.${popoverTag}`)?.shadowRoot?.querySelector(overlayTag)
         || [...scope.querySelectorAll(`.${popoverTag}`)].find(p => p.tagName === overlayTag);
