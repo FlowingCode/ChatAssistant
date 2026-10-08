@@ -406,7 +406,9 @@ window.fcChatAssistantResetPosition = (item, marginRaw, positionRaw) => {
     item.style.transition = resetTransition;
     item.style.right = target.x + 'px';
     item.style.bottom = target.y + 'px';
-    // Keep the live drag state in sync so the next drag starts from the reset position.
+    // Keep the live drag state in sync so the next drag starts from the reset position. Before the
+    // movement is initialized the saved position is kept on purpose: a corner configured while the
+    // view is built must not discard it on every page load.
     item.__fcMovement?.moveTo(target.x, target.y);
 };
 
