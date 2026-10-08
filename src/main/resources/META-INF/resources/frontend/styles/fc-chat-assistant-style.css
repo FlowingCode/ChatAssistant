@@ -42,6 +42,12 @@
     transition: all 0.12s ease-out;
 }
 
+/* A long message scrolls inside the text area; capping the whole input instead pushed the text
+   and the send button out of it */
+.fc-chat-assistant-message-input > vaadin-text-area {
+    max-height: 80px;
+}
+
 /* Scoped with the add-on class so this @CssImport does not restyle every popover in the host
    application. The Vaadin 24 (vaadin-popover-overlay) and Vaadin 25 (vaadin-popover) selectors
    share one rule. */

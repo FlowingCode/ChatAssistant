@@ -131,6 +131,7 @@ public class ChatAssistant<T extends Message> extends Div {
   private static final String DEFAULT_FAB_CLASS = "fc-chat-assistant-fab";
   private static final String DEFAULT_RESIZE_CLASS = "fc-chat-assistant-resize";
   private static final String DEFAULT_UNREAD_BADGE_CLASS = "fc-chat-assistant-unread-badge";
+  private static final String DEFAULT_MESSAGE_INPUT_CLASS = "fc-chat-assistant-message-input";
   private static final String RESIZE_INDICATOR_VISIBLE_CLASS = "fc-chat-assistant-resize-indicator-visible";
   // Theme-agnostic token fallback chains (Lumo token, then Aura token, then a literal) so the badge
   // renders correctly under both the Lumo and Aura themes of Vaadin 25.
@@ -1212,7 +1213,8 @@ public class ChatAssistant<T extends Message> extends Div {
   @SuppressWarnings("unchecked")
   protected void initializeFooter() {
     this.messageInput = new MessageInput();
-    this.messageInput.getStyle().setMaxHeight("80px").set("width", "100%");
+    this.messageInput.addClassName(DEFAULT_MESSAGE_INPUT_CLASS);
+    this.messageInput.getStyle().set("width", "100%");
 
     this.defaultSubmitListenerRegistration =
         this.messageInput.addSubmitListener(
