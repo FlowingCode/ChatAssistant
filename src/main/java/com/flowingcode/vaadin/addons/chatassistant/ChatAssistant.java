@@ -1212,11 +1212,7 @@ public class ChatAssistant<T extends Message> extends Div {
   @SuppressWarnings("unchecked")
   protected void initializeFooter() {
     this.messageInput = new MessageInput();
-    this.messageInput
-        .getStyle()
-        .setMaxHeight("80px")
-        .set("width", "100%")
-        .setPadding("0 2px"); // Account for border when focused (it will get cropped otherwise)
+    this.messageInput.getStyle().setMaxHeight("80px").set("width", "100%");
 
     this.defaultSubmitListenerRegistration =
         this.messageInput.addSubmitListener(
