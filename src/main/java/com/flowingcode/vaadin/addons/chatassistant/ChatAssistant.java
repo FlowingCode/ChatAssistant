@@ -135,8 +135,10 @@ public class ChatAssistant<T extends Message> extends Div {
   private static final String RESIZE_INDICATOR_VISIBLE_CLASS = "fc-chat-assistant-resize-indicator-visible";
   // Theme-agnostic token fallback chains (Lumo token, then Aura token, then a literal) so the badge
   // renders correctly under both the Lumo and Aura themes of Vaadin 25.
-  private static final String DEFAULT_UNREAD_BADGE_BACKGROUND ="var(--lumo-warning-color, var(--aura-accent-yellow, #e07a00))";
+  private static final String DEFAULT_UNREAD_BADGE_BACKGROUND ="var(--lumo-warning-color, var(--aura-accent-color, #e07a00))";
   private static final String DEFAULT_UNREAD_BADGE_COLOR = "var(--lumo-warning-contrast-color, var(--aura-accent-contrast-color, #ffffff))";
+  // Aura accent class that makes the badge yellow, with matching contrast text.
+  private static final String UNREAD_BADGE_AURA_CLASS = "aura-accent-yellow";
   // Shared spacing/typography tokens used for the badge, with the same cross-theme fallback pattern.
   private static final String BADGE_FONT_SIZE = "var(--lumo-font-size-xs, var(--aura-font-size-s, 0.75rem))";
   private static final String BADGE_PADDING = "var(--lumo-space-xs, var(--vaadin-padding-xs, 0.25rem))";
@@ -394,7 +396,7 @@ public class ChatAssistant<T extends Message> extends Div {
     setFabSize(DEFAULT_FAB_SIZE);
 
     unreadBadge.setText(String.valueOf(unreadMessages));
-    unreadBadge.addClassName(DEFAULT_UNREAD_BADGE_CLASS);
+    unreadBadge.addClassNames(DEFAULT_UNREAD_BADGE_CLASS, UNREAD_BADGE_AURA_CLASS);
     unreadBadge
         .getStyle()
         .setTextAlign(Style.TextAlign.CENTER)

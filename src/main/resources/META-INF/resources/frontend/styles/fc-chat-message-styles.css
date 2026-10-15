@@ -18,8 +18,7 @@
  * #L%
  */
 .lds-ellipsis {
-  /* change color here */
-  color: #1c4c5b;
+  color: var(--lumo-secondary-text-color, var(--vaadin-text-color-secondary, #1c4c5b));
 }
 .lds-ellipsis,
 .lds-ellipsis div {
@@ -83,6 +82,7 @@
 
 .chat-assistant-who-is-typing {
 	width: 100%;
+    box-sizing: border-box;
     padding: var(--lumo-space-xs, var(--vaadin-padding-xs, 0.25rem));
     font-size: var(--lumo-font-size-xs, var(--aura-font-size-s, small));
     color: var(--lumo-secondary-text-color, var(--vaadin-text-color-secondary, #697177));
@@ -97,5 +97,5 @@ vaadin-markdown.fc-chat-message-markdown > :last-child {
     margin-bottom: 0;
 }
 vaadin-markdown.fc-chat-message-markdown > * + * {
-    margin-top: var(--lumo-space-s, 0.5rem);
+    margin-top: var(--lumo-space-s, var(--vaadin-gap-s, 0.5rem));
 }
