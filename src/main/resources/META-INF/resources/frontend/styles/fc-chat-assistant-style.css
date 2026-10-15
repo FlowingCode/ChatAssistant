@@ -22,15 +22,15 @@
 .fc-chat-assistant-fab {
     cursor: pointer;
     transform: scale(1);
-    /* Cross-theme fallback: Lumo token, then a literal shadow (Aura has no equivalent scale token). */
-    box-shadow: var(--lumo-box-shadow-m, 0 2px 6px rgba(0, 0, 0, 0.2));
+    /* Cross-theme fallback: Lumo token, then Aura token, then a literal shadow. */
+    box-shadow: var(--lumo-box-shadow-m, var(--aura-shadow-s, 0 2px 6px rgba(0, 0, 0, 0.2)));
 }
 
 /* Expansion state when being dragged */
 .fc-chat-assistant-fab.dragging {
     cursor: grabbing;
     transform: scale(1.15);
-    box-shadow: var(--lumo-box-shadow-xl, 0 8px 24px rgba(0, 0, 0, 0.3));
+    box-shadow: var(--lumo-box-shadow-xl, var(--aura-shadow-m, 0 8px 24px rgba(0, 0, 0, 0.3)));
 }
 
 .fc-chat-assistant-popover {
@@ -53,8 +53,8 @@
    share one rule. */
 vaadin-popover-overlay.fc-chat-assistant-popover::part(overlay),
 vaadin-popover.fc-chat-assistant-popover::part(overlay) {
-    /* Cross-theme fallback: Lumo radius token, then Aura base radius, then a literal. */
-    border-radius: var(--lumo-border-radius-l, var(--aura-base-radius, 12px));
+    /* Cross-theme fallback: Lumo radius token, then the Vaadin 25 radius token, then a literal. */
+    border-radius: var(--lumo-border-radius-l, var(--vaadin-radius-l, 12px));
 }
 
 /* The chat overlay fills this part; the part already clamps itself to the viewport
@@ -77,6 +77,8 @@ vaadin-popover.fc-chat-assistant-popover::part(content) {
 /* Likewise, the Vaadin 25 (vaadin-dialog) and Vaadin 24 (vaadin-dialog-overlay) dialog selectors. */
 vaadin-dialog.fc-chat-assistant-dialog::part(content),
 vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
+    /* Aura and the base styles default to content-box, which pushed the padding past the dialog */
+    box-sizing: border-box;
     height: 100%;
     width: 100%;
     display: flex;
@@ -106,7 +108,7 @@ vaadin-dialog-overlay.fc-chat-assistant-dialog::part(content) {
     /* filled triangle pointing right by default; rotated per direction below */
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
-    border-left: 7px solid var(--lumo-contrast-20pct, var(--aura-border-color, rgba(0, 0, 0, 0.2)));
+    border-left: 7px solid var(--lumo-contrast-20pct, var(--vaadin-border-color, rgba(0, 0, 0, 0.2)));
 }
 
 /* Feature enabled (overlay class) AND this resizer is draggable now (can-drag on the resizer). */

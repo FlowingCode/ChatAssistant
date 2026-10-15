@@ -17,11 +17,12 @@
  * limitations under the License.
  * #L%
  */
-  animated-fab {
-    --chatbot-avatar-img: url(chatbot.png);
-    --chatbot-avatar-bg-color: white;
+  /* chatbot.png is a dark icon on a transparent background: keep the theme background in light
+     mode and switch to white in dark mode so it stays visible */
+  vaadin-message[user-img="chatbot.png"] > vaadin-avatar {
+    --vaadin-avatar-background: light-dark(var(--vaadin-background-container-strong), white);
   }
 
-  animated-fab.small vaadin-message {
-  	font-size: var(--lumo-font-size-xxs);
+  animated-fab.compact vaadin-message {
+  	font-size: var(--lumo-font-size-xxs, var(--aura-font-size-xs, 0.75rem));
   }

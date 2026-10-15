@@ -50,9 +50,9 @@ public class ChatAssistantLazyLoadingDemo extends VerticalLayout {
     // Backing message list, served lazily by the data provider below.
     List<Message> messages = createMessages();
 
-    // Create the assistant; the "small" class shrinks the message font (see demo CSS).
+    // Create the assistant; the "compact" class shrinks the message font (see demo CSS).
     ChatAssistant<Message> chatAssistant = new ChatAssistant<>();
-    chatAssistant.setClassName("small");
+    chatAssistant.setClassName("compact");
     SvgIcon icon = new SvgIcon("chatbot.svg");
     icon.setColor("currentColor");
     chatAssistant.setFabIcon(icon);
