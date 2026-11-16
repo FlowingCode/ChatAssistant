@@ -31,7 +31,7 @@ Supported versions: Vaadin 24-25 (add-on version 4.x)
 
 ## Download release
 
-[Available in Vaadin Directory](https://vaadin.com/directory/component/chat-assistant)
+[Available in Vaadin Directory](https://vaadin.com/directory/component/chat-assistant-add-on)
 
 ### Maven install
 
