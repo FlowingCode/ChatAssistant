@@ -27,7 +27,7 @@ Supported versions: Vaadin 24-25 (add-on version 4.x)
 
 ## Online demo
 
-[Online demo here](http://addonsv24.flowingcode.com/chat-assistant)
+[Online demo here](http://addonsv25.flowingcode.com/chat-assistant)
 
 ## Download release
 
